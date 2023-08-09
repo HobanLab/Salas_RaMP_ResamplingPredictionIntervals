@@ -45,14 +45,22 @@ for(i in 1:nrow(final_quercus_results)){
   }
 # mean genetic diversity across all replicates for species 1
 e
-# graph of e 
-plot(e)
 
-plot(final_quercus_results[,1,1])
+# graph of e 
+plot(xlab = "Sample Size", ylab = "Genetic Diversity", e)
+leg.txt1 = c("Total Mean Genetic Diversity")
+legend(250, 0.7, legend = leg.txt1,
+       fill = c("black"))
+
+# graph of genetic diversity, replicates 1 - 3 are plotted along with a line showing the tmean gd
+plot(xlab = "Sample size", ylab = "Genetic Diversity", final_quercus_results[,1,1])
 points(final_quercus_results[,2,1], col="blue")
 points(final_quercus_results[,3,1], col="green")
 # recall this is the average and the above points are the individual replicates plotted on one graph
 lines(e, col="red", lwd=2)
+leg.txt2 <- c("Replicate 1", "Replicate 2", "Replicate 3", "Total Mean of Genetic Diversity")
+legend(200, 0.7, legend = leg.txt,
+       fill = c("black","blue","green","red"))
 
 # get the 95% CI of plot, but first go thru these ideas
 # IDEA 1
@@ -67,9 +75,12 @@ for (r in 1:1000) {
 #this gives mean across reps of the first individual to cross 95%
 boxplot(min_samp95)
 
-# distribution of min sample sizes across replicates
+# distribution of 95% min sample sizes across replicates for species one
 # not what we quite want however...
-plot(min_samp95)
+plot(xlab = "Replicate number", ylab = "95% minimum sample size", min_samp95)
+leg.txt3 <- "Sample size"
+legend(650, 250, legend = leg.txt3,
+       fill = c("black"))
 
 # IDEA 2
 p<-1

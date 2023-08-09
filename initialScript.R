@@ -12,7 +12,7 @@ dim(final_quercus_results)
 
 final_quercus_results[,,1]
 
-# This represents samples in a matrix of 1-100 for one replicate of one species
+# This represents samples in a matrix of 1-100 for one replicate of one species.
 final_quercus_results[1:100,1,1]
 
 # This represents one randomly selected sample replicated one hundred times for one species

@@ -6,8 +6,6 @@ setwd("C:/Users/gsalas/Documents/resampling_CIs/Code/")
 
 load("Datasets/quercus_final_results_orig.Rdata")
 
-ls()
-
 dim(final_quercus_results)
 
 final_quercus_results[,,1]

@@ -59,19 +59,21 @@ points(final_quercus_results[,3,1], col="green")
 # recall this is the average and the above points are the individual replicates plotted on one graph
 lines(e, col="red", lwd=2)
 leg.txt2 <- c("Replicate 1", "Replicate 2", "Replicate 3", "Total Mean of Genetic Diversity")
-legend(200, 0.7, legend = leg.txt,
+legend(200, 0.7, legend = leg.txt2,
        fill = c("black","blue","green","red"))
 
 # get the 95% CI of plot, but first go thru these ideas
 # IDEA 1
-# this gives us the position in the vector of the min 
-# genetic diversity value greater than 0.95
+# this gives us the position in the vector of the min genetic diversity value greater than 0.95
 min(which(final_quercus_results[,1,sp]>0.95))
 sp<-1; min_samp95<-vector(length = 1000)
 for (r in 1:1000) {
   min_samp95[r]<-min(which(final_quercus_results[,r,sp]>0.95))
   
 }
+
+min_samp95
+
 #this gives mean across reps of the first individual to cross 95%
 boxplot(min_samp95)
 
@@ -86,3 +88,44 @@ legend(650, 250, legend = leg.txt3,
 p<-1
 # this shows the genetic diversity value in 95 percentile of the values across the replicates for a sample size of one for species one
 quantile(final_quercus_results[p,,1],0.95)
+
+quantile(final_quercus_results[p,,1],.05)
+
+p<-2
+quantile(final_quercus_results[p,,1],.95);
+quantile(final_quercus_results[p,,1],.05)
+
+upper95 <- vector(length = 500)
+lower95 <- vector(length = 500)
+for (n in 1:500) {
+     upper95[n] <- quantile(final_quercus_results[n,,1],0.95)
+     lower95[n] <- quantile(final_quercus_results[n,,1],0.05)
+ }
+
+# add the lines to the legend, add an asymptote of 0.95 horizontal, and add the line at which sample size reaches the 0.95 benchmark vertically
+plot(xlab = "Sample Size", ylab = "Genetic Diversity", e, ylim = c(0,1))
+leg.txt4 = c("Total Mean Genetic Diversity", "95% Upper Limit", "95% Lower Limit")
+lines(upper95, col = "red",lwd = 2, lty = "dashed")
+lines(lower95, col = "green",lwd = 2, lty = "dashed")
+abline(h = 0.95, lty = "dotted", col = "orange")
+legend(250, 0.7, legend = leg.txt4,
+       fill = c("black", "red", "green"))
+which.min(min_samp95)
+min(min_samp95)
+mean(min_samp95)  
+mean95 <- list()
+for(a in 1:nrow(final_quercus_results)){
+  mean95[[a]] <- mean(final_quercus_results[a,,1])
+}
+# creates a vector from the list so we can find min sample size
+unlist(mean95)
+# function to more efficiently find min 0.95 value?
+
+abline(v = 191, lty = "dotted", col = "orange")
+
+
+abline(v = mean(min_samp95), lty ="dotted", col = "orange")
+
+
+
+

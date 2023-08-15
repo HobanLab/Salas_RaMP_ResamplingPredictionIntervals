@@ -126,61 +126,113 @@ abline(v = min(which(meanRepValues > 0.95)), lty = "dotted", col = "orange")
 legend(250, 0.7, legend = leg.txt4,
        fill = c("black", "red", "green"))
 
-meanRepValues <- vector()
-upper95 <- vector()
-lower95 <- vector()
-for (n in 1:nrow(final_quercus_results)) {
-  meanRepValues[n] <- mean(final_quercus_results[n,,3])
-  upper95[n] <- quantile(final_quercus_results[n,,3],0.95)
-  lower95[n] <- quantile(final_quercus_results[n,,3],0.05)
-}
-# add the lines to the legend, add an asymptote of 0.95 horizontal, and add the line at which sample size reaches the 0.95 benchmark vertically
-plot(xlab = "Sample Size", ylab = "Genetic Diversity", meanRepValues, ylim = c(0,1))
-leg.txt4 = c("Total Mean Genetic Diversity", "95% Upper Limit", "95% Lower Limit")
-lines(upper95, col = "red",lwd = 2, lty = "dashed")
-lines(lower95, col = "green",lwd = 2, lty = "dashed")
-abline(h = 0.95, lty = "dotted", col = "orange")
-abline(v = min(which(meanRepValues > 0.95)), lty = "dotted", col = "orange")
-legend(250, 0.7, legend = leg.txt4,
-       fill = c("black", "red", "green"))
 
+# testing for species 3
+# meanRepValuess3 <- vector()
+# upper953 <- vector()
+# lower953 <- vector()
+# for (n in 1:nrow(final_quercus_results)) {
+#   meanRepValuess3[n] <- mean(final_quercus_results[n,,3])
+#   upper953[n] <- quantile(final_quercus_results[n,,3],0.95)
+#   lower953[n] <- quantile(final_quercus_results[n,,3],0.05)
+# }
+# 
+# # add the lines to the legend, add an asymptote of 0.95 horizontal, and add the line at which sample size reaches the 0.95 benchmark vertically
+# plot(xlab = "Sample Size", ylab = "Genetic Diversity", meanRepValuess3, ylim = c(0,1))
+# leg.txt4 = c("Total Mean Genetic Diversity", "95% Upper Limit", "95% Lower Limit")
+# lines(upper953, col = "red",lwd = 2, lty = "dashed")
+# lines(lower953, col = "green",lwd = 2, lty = "dashed")
+# abline(h = 0.95, lty = "dotted", col = "orange")
+# abline(v = min(which(meanRepValuess3 > 0.95)), lty = "dotted", col = "orange")
+# legend(250, 0.7, legend = leg.txt4,
+#        fill = c("black", "red", "green"))
+
+# # array1<-array(c(meanRepValues, upper95, lower95), dim =c(500,3,1))
+# matrix1<-cbind(meanRepValues, upper95, lower95),500,3
+# matrix3<-cbind(meanRepValuess3,upper953, lower953),500,3
+# 
+# resultsArray1 <- array(data=c(matrix1, matrix3), dim = c(500, 3, 2),
+#                        dimnames=c("Samples","Stats","Species"))
+# str(resultsArray1)
 
 
 # now, we want to declare a higher dimension object for the 14 slices (spp.) of the array for the 3 vectors
-resultsArray <- array(dim = 3)
+resultsArray <- array(dim = c(500,3,14))
+meansppvalue <- vector()
+upper95spp <- vector()
+lower95spp <- vector()
 
-# meansppvalue <- vector()
-# upper95spp <- vector()
-# lower95spp <- vector()
+# for (n in 1:nrow(final_quercus_results)) {
+#   browser()
+#   meanRepValuess3[n] <- mean(final_quercus_results[n,,3])
+#   upper953[n] <- quantile(final_quercus_results[n,,3],0.95)
+#   lower953[n] <- quantile(final_quercus_results[n,,3],0.05)
+# }
+
 for (q in 1:14) {
-  for (n in 1:nrow(final_quercus_results)) {
-    resultsArray[,1,q] <- mean(final_quercus_results[n,,q])
-    # meansppvalue[n] <- mean(final_quercus_results[n,,q])
-    upper95spp[n] <- quantile(final_quercus_results[n,,q],0.95)
-    lower95spp[n] <- quantile(final_quercus_results[n,,q],0.05)
+  for (i in 1:nrow(final_quercus_results)) {
+    # 
+    meansppvalue[i] <- mean(final_quercus_results[i,,q])
+    upper95spp[i] <- quantile(final_quercus_results[i,,q],0.95)
+    lower95spp[i] <- quantile(final_quercus_results[i,,q],0.05)
   }
+  # Bind vectors together into a matrix
+  speciesMat <- cbind(meansppvalue, upper95spp, lower95spp)
+  # Pass the matrix into a slot of the array
+  resultsArray[,,q] <- speciesMat
+}
+str(resultsArray)
+par(mfrow=c(3,2))
+for (i in 1:14) {
+  x <- resultsArray[,,i]
+  plot(x[,1], ylim = c(0,1))
+  lines(x[,2], col = "red",lwd = 2, lty = "dashed")
+  lines(x[,3], col = "green",lwd = 2, lty = "dashed")
+  abline(h = 0.95, lty = "dotted", col = "orange")
+  abline(v = min(which(x[,1] > 0.95)), lty = "dotted", col = "orange")
+  legend(250, 0.7, legend = leg.txt4,
+         fill = c("black", "red", "green"))
 }
 
-
-meansppvalue
-
-
-
-
-
-mean95 <- list()
-for(a in 1:nrow(final_quercus_results)){
-  mean95[[a]] <- mean(final_quercus_results[a,,1])
-}
-# creates a vector from the list so we can find min sample size
-unlist(mean95)
-# function to more efficiently find min 0.95 value?
-
-abline(v = 191, lty = "dotted", col = "orange")
+# for (i in 1:14) {
+#   plot(resultsArray[,1,i])
+#   lines(resultsArray[,2,i])
+#   lines(resultsArray[,3,i])
+# }
 
 
-abline(v = mean(min_samp95), lty ="dotted", col = "orange")
+# for (q in 1:14) {
+#   for (n in 1:nrow(final_quercus_results)) {
+#     resultsArray[n,,q] <- c(matrix(cbind(mean(final_quercus_results[n,,q]), 
+#     quantile(final_quercus_results[n,,q],0.95),
+#     quantile(final_quercus_results[n,,q],0.05), dim = c(n,1000,q))))
+#   }
+# }
+
+# for (q in 1:14) {
+#   for (n in 1:nrow(final_quercus_results)) {
+#     matrix[n] <- matrix(cbind(mean(final_quercus_results[n,,q]), 
+#                  quantile(final_quercus_results[n,,q],0.95), 
+#                  quantile(final_quercus_results[n,,q],0.05),500,3))
+#     resultsArray[,,q] <- array(c(matrix[n]), dim = c(500,3,q))
+#   }
+# }
 
 
-
-
+# meansppvalue
+# 
+# 
+# resultsArray
+# 
+# mean95 <- list()
+# for(a in 1:nrow(final_quercus_results)){
+#   mean95[[a]] <- mean(final_quercus_results[a,,1])
+# }
+# # creates a vector from the list so we can find min sample size
+# unlist(mean95)
+# # function to more efficiently find min 0.95 value?
+# 
+# abline(v = 191, lty = "dotted", col = "orange")
+# 
+# 
+# abline(v = mean(min_samp95), lty ="dotted", col = "orange")

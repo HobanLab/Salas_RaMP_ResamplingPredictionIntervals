@@ -35,16 +35,16 @@ plot(final_quercus_results[,1,sp])
 lines(apply(final_quercus_results[,,sp],1,mean),col="red",lwd=2)
 
 # (loop alt) assign a variable to the vector to eventually capture all the means across the replicates
-e <- vector()
+meanRepValues <- vector()
 
 # nrow is soft code that detects how many rows there are in an object
 # we use it to get the amount of genetic diversity across replicates 
 # we then set an index for e in order to get a mean.
 for(i in 1:nrow(final_quercus_results)){
-  e[i] <- mean(final_quercus_results[i,,1])
+  meanRepValues[i] <- mean(final_quercus_results[i,,1])
   }
 # mean genetic diversity across all replicates for species 1
-e
+meanRepValues
 
 # graph of e 
 plot(xlab = "Sample Size", ylab = "Genetic Diversity", e)
@@ -57,25 +57,27 @@ plot(xlab = "Sample size", ylab = "Genetic Diversity", final_quercus_results[,1,
 points(final_quercus_results[,2,1], col="blue")
 points(final_quercus_results[,3,1], col="green")
 # recall this is the average and the above points are the individual replicates plotted on one graph
-lines(e, col="red", lwd=2)
+lines(meanRepValues, col="red", lwd=2)
 leg.txt2 <- c("Replicate 1", "Replicate 2", "Replicate 3", "Total Mean of Genetic Diversity")
 legend(200, 0.7, legend = leg.txt2,
        fill = c("black","blue","green","red"))
 
 # get the 95% CI of plot, but first go thru these ideas
 # IDEA 1
-# this gives us the position in the vector of the min genetic diversity value greater than 0.95
+# this gives us the position in the vector of the min genetic diversity value greater than 0.95 in replicate 1 of species 1
 min(which(final_quercus_results[,1,sp]>0.95))
+
+# this gives us the minimum sample size across all replicates
 sp<-1; min_samp95<-vector(length = 1000)
 for (r in 1:1000) {
   min_samp95[r]<-min(which(final_quercus_results[,r,sp]>0.95))
-  
 }
 
 min_samp95
 
 #this gives mean across reps of the first individual to cross 95%
 boxplot(min_samp95)
+mean(min_samp95)
 
 # distribution of 95% min sample sizes across replicates for species one
 # not what we quite want however...
@@ -95,24 +97,77 @@ p<-2
 quantile(final_quercus_results[p,,1],.95);
 quantile(final_quercus_results[p,,1],.05)
 
-upper95 <- vector(length = 500)
-lower95 <- vector(length = 500)
-for (n in 1:500) {
-     upper95[n] <- quantile(final_quercus_results[n,,1],0.95)
-     lower95[n] <- quantile(final_quercus_results[n,,1],0.05)
+
+# MSSE = minimum sample size estimate
+# Using mean(min_samp95) ; incorrect (we think)
+# we're plotting the average of the 95% MSSE for each replicate
+
+# Using (min(which(meanRepValues > 0.95))) ; correct (we think)
+# we're plotting the 95% MSEE for the *average* representation values across replicates
+# we do NOT need to specify range in vector
+# also, notice we can the meanRepValues from earlier to the function for efficiency
+# declare vectors
+meanRepValues <- vector()
+upper95 <- vector()
+lower95 <- vector()
+for (n in 1:nrow(final_quercus_results)) {
+  meanRepValues[n] <- mean(final_quercus_results[n,,1])
+  upper95[n] <- quantile(final_quercus_results[n,,1],0.95)
+  lower95[n] <- quantile(final_quercus_results[n,,1],0.05)
  }
 
 # add the lines to the legend, add an asymptote of 0.95 horizontal, and add the line at which sample size reaches the 0.95 benchmark vertically
-plot(xlab = "Sample Size", ylab = "Genetic Diversity", e, ylim = c(0,1))
+plot(xlab = "Sample Size", ylab = "Genetic Diversity", meanRepValues, ylim = c(0,1))
 leg.txt4 = c("Total Mean Genetic Diversity", "95% Upper Limit", "95% Lower Limit")
 lines(upper95, col = "red",lwd = 2, lty = "dashed")
 lines(lower95, col = "green",lwd = 2, lty = "dashed")
 abline(h = 0.95, lty = "dotted", col = "orange")
+abline(v = min(which(meanRepValues > 0.95)), lty = "dotted", col = "orange")
 legend(250, 0.7, legend = leg.txt4,
        fill = c("black", "red", "green"))
-which.min(min_samp95)
-min(min_samp95)
-mean(min_samp95)  
+
+meanRepValues <- vector()
+upper95 <- vector()
+lower95 <- vector()
+for (n in 1:nrow(final_quercus_results)) {
+  meanRepValues[n] <- mean(final_quercus_results[n,,3])
+  upper95[n] <- quantile(final_quercus_results[n,,3],0.95)
+  lower95[n] <- quantile(final_quercus_results[n,,3],0.05)
+}
+# add the lines to the legend, add an asymptote of 0.95 horizontal, and add the line at which sample size reaches the 0.95 benchmark vertically
+plot(xlab = "Sample Size", ylab = "Genetic Diversity", meanRepValues, ylim = c(0,1))
+leg.txt4 = c("Total Mean Genetic Diversity", "95% Upper Limit", "95% Lower Limit")
+lines(upper95, col = "red",lwd = 2, lty = "dashed")
+lines(lower95, col = "green",lwd = 2, lty = "dashed")
+abline(h = 0.95, lty = "dotted", col = "orange")
+abline(v = min(which(meanRepValues > 0.95)), lty = "dotted", col = "orange")
+legend(250, 0.7, legend = leg.txt4,
+       fill = c("black", "red", "green"))
+
+
+
+# now, we want to declare a higher dimension object for the 14 slices (spp.) of the array for the 3 vectors
+resultsArray <- array(dim = 3)
+
+# meansppvalue <- vector()
+# upper95spp <- vector()
+# lower95spp <- vector()
+for (q in 1:14) {
+  for (n in 1:nrow(final_quercus_results)) {
+    resultsArray[,1,q] <- mean(final_quercus_results[n,,q])
+    # meansppvalue[n] <- mean(final_quercus_results[n,,q])
+    upper95spp[n] <- quantile(final_quercus_results[n,,q],0.95)
+    lower95spp[n] <- quantile(final_quercus_results[n,,q],0.05)
+  }
+}
+
+
+meansppvalue
+
+
+
+
+
 mean95 <- list()
 for(a in 1:nrow(final_quercus_results)){
   mean95[[a]] <- mean(final_quercus_results[a,,1])

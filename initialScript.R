@@ -175,12 +175,18 @@ for (q in 1:14) {
     meansppvalue[i] <- mean(final_quercus_results[i,,q])
     upper95spp[i] <- quantile(final_quercus_results[i,,q],0.95)
     lower95spp[i] <- quantile(final_quercus_results[i,,q],0.05)
+    # TO DO: put the calculation of the CI width here!!!
+    # You'll have to change the dimensions of the resultsArray
+    # (4 columns, instead of 3)
   }
   # Bind vectors together into a matrix
   speciesMat <- cbind(meansppvalue, upper95spp, lower95spp)
   # Pass the matrix into a slot of the array
   resultsArray[,,q] <- speciesMat
+  
 }
+
+
 str(resultsArray)
 par(mfrow=c(3,2))
 for (i in 1:14) {
@@ -193,6 +199,30 @@ for (i in 1:14) {
   legend(250, 0.7, legend = leg.txt4,
          fill = c("black", "red", "green"))
 }
+
+# width of CI
+upper95s <-resultsArray[1:500,2,]    
+str(upper95s)
+lower95s <- resultsArray[1:500,3,]
+str(lower95s)
+width <- upper95s - lower95s
+str(width)
+
+par(mfrow=c(2,3))
+meanCI <- vector()
+for (i in 1:14) {
+  plot(x=1:nrow(resultsArray), y = width[,i], pch=16)
+  meanCI[i] <- mean(width[,i])
+}
+meanCI
+matrix(meanCI, nrow=14)
+
+matrix(width[25,1:14])
+matrix(width[50,1:14])
+matrix(width[100,1:14])
+matrix(width[200,1:14])
+
+# plot(x=1:nrow(resultsArray), y=width[,1], pch=16)
 
 # for (i in 1:14) {
 #   plot(resultsArray[,1,i])

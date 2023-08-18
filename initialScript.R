@@ -2,35 +2,54 @@
 # 2023/08/01 Exploring Resampling Dataset#
 ##########################################
 
+# Set work directory by adding path file 
 setwd("C:/Users/gsalas/Documents/resampling_CIs/Code/")
 
+# Load dataset into environment
 load("Datasets/quercus_final_results_orig.Rdata")
 
+# List objects
+ls()
+
+# Examine dimensions of the dataset
 dim(final_quercus_results)
 
+# Amount of genetic diversity from a sample size of random individuals ranging between one to five hundred 
+# for one thousand replicates of species one
 final_quercus_results[,,1]
 
-# This represents samples in a matrix of 1-100 for one replicate of one species.
+# This represents the amount of genetic diversity for a sample size of 
+# random individuals [ranging between one to one hundred, for one replicate, of species one].
 final_quercus_results[1:100,1,1]
 
-# This represents one randomly selected sample replicated one hundred times for one species.
+# This represents the amount of genetic diversity for a sample size of 
+# one random individual replicated one hundred times for species one.
 final_quercus_results[1,1:100,1]
 
-# This represents one hundred randomly selected samples
+2# This represents the amount of genetic diversity for a sample size of 
+# random individuals ranging between one to one hundred replicated one time 
+# for species two
 final_quercus_results[1:100,1,2]
  
-# this plot displays
-plot(final_quercus_results[,1,1],col="blue"); points(final_quercus_results[,1,2],col="red")
+# This plot displays the genetic diversity of samples the size of 
+# one hundred fifty individuals for all the replicates of species two.
+plot(final_quercus_results[150,,2])
 
+# This plot displays genetic diversity of all sample sizes for 
+# one replicate of species one in blue and all sample sizes for one replicate
+# of species two in red.
+plot(final_quercus_results[,1,1],col="blue") 
+points(final_quercus_results[,1,2],col="red")
 
+# This plot displays the genetic diversity of samples the size of 
+# one individual for all the replicates of species two
 plot(final_quercus_results[1,,2])
 
 # this gives us the mean genetic diversity values for a range of sample sizes, 
-# range of replicates, and species' along the rows(lines 30 - 35 show how Kaylee did her work)
+# range of replicates, and species' along the rows
 sp <- 1
 # we made a for loop alternative for the apply() function
 apply(final_quercus_results[,,1],1,mean)
-dim(final_quercus_results)
 plot(final_quercus_results[,1,sp])
 lines(apply(final_quercus_results[,,sp],1,mean),col="red",lwd=2)
 
@@ -46,16 +65,16 @@ for(i in 1:nrow(final_quercus_results)){
 # mean genetic diversity across all replicates for species 1
 meanRepValues
 
-# graph of e 
-plot(xlab = "Sample Size", ylab = "Genetic Diversity", e)
+# graph of meanRepvalues
+plot(xlab = "Sample Size", ylab = "Genetic Diversity", meanRepValues)
 leg.txt1 = c("Total Mean Genetic Diversity")
 legend(250, 0.7, legend = leg.txt1,
        fill = c("black"))
 
 # graph of genetic diversity, replicates 1 - 3 are plotted along with a line showing the tmean gd
-plot(xlab = "Sample size", ylab = "Genetic Diversity", final_quercus_results[,1,1])
-points(final_quercus_results[,2,1], col="blue")
-points(final_quercus_results[,3,1], col="green")
+plot(xlab = "Sample size", ylab = "Genetic Diversity", final_quercus_results[,1,1], pch = 16)
+points(final_quercus_results[,2,1], col="blue", pch = 16)
+points(final_quercus_results[,3,1], col="green", pch = 16)
 # recall this is the average and the above points are the individual replicates plotted on one graph
 lines(meanRepValues, col="red", lwd=2)
 leg.txt2 <- c("Replicate 1", "Replicate 2", "Replicate 3", "Total Mean of Genetic Diversity")
@@ -157,7 +176,7 @@ legend(250, 0.7, legend = leg.txt4,
 
 
 # now, we want to declare a higher dimension object for the 14 slices (spp.) of the array for the 3 vectors
-resultsArray <- array(dim = c(500,3,14))
+resultsArray <- array(dim = c(500,4,14))
 meansppvalue <- vector()
 upper95spp <- vector()
 lower95spp <- vector()
@@ -175,19 +194,22 @@ for (q in 1:14) {
     meansppvalue[i] <- mean(final_quercus_results[i,,q])
     upper95spp[i] <- quantile(final_quercus_results[i,,q],0.95)
     lower95spp[i] <- quantile(final_quercus_results[i,,q],0.05)
+    CIwidth <- upper95spp - lower95spp
     # TO DO: put the calculation of the CI width here!!!
     # You'll have to change the dimensions of the resultsArray
     # (4 columns, instead of 3)
   }
   # Bind vectors together into a matrix
-  speciesMat <- cbind(meansppvalue, upper95spp, lower95spp)
+  speciesMat <- cbind(meansppvalue, upper95spp, lower95spp, CIwidth)
   # Pass the matrix into a slot of the array
   resultsArray[,,q] <- speciesMat
   
 }
 
 
+
 str(resultsArray)
+
 par(mfrow=c(3,2))
 for (i in 1:14) {
   x <- resultsArray[,,i]
@@ -214,6 +236,21 @@ for (i in 1:14) {
   plot(x=1:nrow(resultsArray), y = width[,i], pch=16)
   meanCI[i] <- mean(width[,i])
 }
+
+pdf(file="14plots.pdf", width = 9, height = 7.5)
+for (i in 1:14) {
+  plot(x=1:nrow(resultsArray), y = width[,i], pch=16)
+  meanCI[i] <- mean(width[,i])
+}
+dev.off()
+
+png(file="14plots.png", width = 480, height = 480)
+for (i in 1:14) {
+  plot(x=1:nrow(resultsArray), y = width[,i], pch=16)
+  meanCI[i] <- mean(width[,i])
+}
+dev.off()
+
 meanCI
 matrix(meanCI, nrow=14)
 

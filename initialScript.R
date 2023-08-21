@@ -180,7 +180,6 @@ resultsArray <- array(dim = c(500,4,14))
 meansppvalue <- vector()
 upper95spp <- vector()
 lower95spp <- vector()
-
 # for (n in 1:nrow(final_quercus_results)) {
 #   browser()
 #   meanRepValuess3[n] <- mean(final_quercus_results[n,,3])
@@ -195,47 +194,38 @@ for (q in 1:14) {
     upper95spp[i] <- quantile(final_quercus_results[i,,q],0.95)
     lower95spp[i] <- quantile(final_quercus_results[i,,q],0.05)
     CIwidth <- upper95spp - lower95spp
-    # TO DO: put the calculation of the CI width here!!!
-    # You'll have to change the dimensions of the resultsArray
-    # (4 columns, instead of 3)
   }
   # Bind vectors together into a matrix
   speciesMat <- cbind(meansppvalue, upper95spp, lower95spp, CIwidth)
   # Pass the matrix into a slot of the array
   resultsArray[,,q] <- speciesMat
-  
 }
-
-
-
 str(resultsArray)
 
 par(mfrow=c(3,2))
 for (i in 1:14) {
   x <- resultsArray[,,i]
-  plot(x[,1], ylim = c(0,1))
+  plot(xlab = "Sample Size", ylab = "Genetic Diversity",x[,1], ylim = c(0,1))
   lines(x[,2], col = "red",lwd = 2, lty = "dashed")
   lines(x[,3], col = "green",lwd = 2, lty = "dashed")
   abline(h = 0.95, lty = "dotted", col = "orange")
   abline(v = min(which(x[,1] > 0.95)), lty = "dotted", col = "orange")
+  # legend(x=1, y=-1.7, legend = leg.txt4,lty=1,col=c("black","red"),xpd=NA)
+  # legend(x="topright",inset=c(-0.2,0), legend = leg.txt4,lty=1,col=c("black","red"),cex=1.2, xpd="NA")
   legend(250, 0.7, legend = leg.txt4,
          fill = c("black", "red", "green"))
 }
 
-# width of CI
-upper95s <-resultsArray[1:500,2,]    
-str(upper95s)
-lower95s <- resultsArray[1:500,3,]
-str(lower95s)
-width <- upper95s - lower95s
-str(width)
-
 par(mfrow=c(2,3))
 meanCI <- vector()
 for (i in 1:14) {
-  plot(x=1:nrow(resultsArray), y = width[,i], pch=16)
-  meanCI[i] <- mean(width[,i])
+  x <- resultsArray[,,i]
+  plot(xlab = "Sample Size", ylab = "Genetic Diversity", x[,4], ylim = c(0,0.2), pch=16)
+  meanCI[i] <- mean(x[,4])
 }
+meanCI
+
+
 
 pdf(file="14plots.pdf", width = 9, height = 7.5)
 for (i in 1:14) {
@@ -251,21 +241,7 @@ for (i in 1:14) {
 }
 dev.off()
 
-meanCI
-matrix(meanCI, nrow=14)
 
-matrix(width[25,1:14])
-matrix(width[50,1:14])
-matrix(width[100,1:14])
-matrix(width[200,1:14])
-
-# plot(x=1:nrow(resultsArray), y=width[,1], pch=16)
-
-# for (i in 1:14) {
-#   plot(resultsArray[,1,i])
-#   lines(resultsArray[,2,i])
-#   lines(resultsArray[,3,i])
-# }
 
 
 # for (q in 1:14) {

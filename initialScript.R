@@ -202,19 +202,58 @@ for (q in 1:14) {
 }
 str(resultsArray)
 
-par(mfrow=c(3,2))
+pdf(file="14plots.pdf", width = 8.5, height = 11)
+# par(mfrow=c(3,2))
+par(mfrow=c(3,2), omi=c(0,0.3,0,1.7))
+# par(mfrow=c(3,2), mar=c(0,0.3,0,1.5), xpd =TRUE)
 for (i in 1:14) {
   x <- resultsArray[,,i]
-  plot(xlab = "Sample Size", ylab = "Genetic Diversity",x[,1], ylim = c(0,1))
+  # plot(xlab = "Sample Size", ylab = "Genetic Diversity",x[,1], ylim = c(0,1))
+  plot(xlab = "", ylab = "",x[,1], ylim = c(0,1))
   lines(x[,2], col = "red",lwd = 2, lty = "dashed")
   lines(x[,3], col = "green",lwd = 2, lty = "dashed")
-  abline(h = 0.95, lty = "dotted", col = "orange")
-  abline(v = min(which(x[,1] > 0.95)), lty = "dotted", col = "orange")
+  abline(h = 0.95, lty = "dotted", col = "blue")
+  abline(v = min(which(x[,1] > 0.95)), lty = "dotted", col = "blue")
   # legend(x=1, y=-1.7, legend = leg.txt4,lty=1,col=c("black","red"),xpd=NA)
   # legend(x="topright",inset=c(-0.2,0), legend = leg.txt4,lty=1,col=c("black","red"),cex=1.2, xpd="NA")
-  legend(250, 0.7, legend = leg.txt4,
-         fill = c("black", "red", "green"))
+  # legend(250, 0.7, legend = leg.txt4,
+  #        fill = c("black", "red", "green"))
+  if(i==6){
+    legend(550, 4.27, xpd = NA, legend = leg.txt4, fill = c("black", "red", "green"))
+    # Label for x-axis
+    # mtext("Number of samples", side = 1, line=3, adj=-1.4, cex = 1.5)
+    mtext("Number of samples", side = 1, line=3, adj=-6,  cex = 1.5)
+    # Label for y-axis
+    mtext("Genetic Diversity", side = 2, line=3, adj=7.0, padj = -17.5, cex = 1.5)
+  } else{
+    if(i==12){
+      legend(550, 4.27, xpd = NA, legend = leg.txt4, fill = c("black", "red", "green"))
+      # Label for x-axis
+      # mtext("Number of samples", side = 1, line=3, adj=-1.4, cex = 1.5)
+      mtext("Number of samples", side = 1, line=3, adj=-6, cex = 1.5)
+      # Label for y-axis
+      mtext("Genetic Diversity", side = 2, line=3, adj=7.0, padj = -17.5, cex = 1.5)
+    } else {
+      if(i==14){
+        legend(550, 0.7, xpd = NA, legend = leg.txt4, fill = c("black", "red", "green"))
+        # Label for x-axis
+        # mtext("Number of samples", side = 1, line=3, adj=-1.4, cex = 1.5)
+        mtext("Number of samples", side = 1, line=3, adj=-6, cex = 1.5)
+        # Label for y-axis
+        mtext("Genetic Diversity", side = 2, line=3, adj=1.3, padj = -17.5, cex = 1.5)
+      }
+    }
+  }
 }
+dev.off()
+# Code for legend
+legend(500, 2, xpd = NA, legend = leg.txt4, fill = c("black", "red", "green", inset=c(-0.7,0)))
+# Label for x-axis
+# mtext("Number of samples", side = 1, line=3, adj=-1.4, cex = 1.5)
+mtext("Number of samples", side = 1, line=3, adj=-20, cex = 1.5)
+# Label for y-axis
+mtext("Genetic Diversity", side = 2, line=3, adj=-3.3, padj = -16.5, cex = 1.5)
+
 
 par(mfrow=c(2,3))
 meanCI <- vector()
@@ -225,6 +264,7 @@ for (i in 1:14) {
 }
 meanCI
 
+?par()
 
 
 pdf(file="14plots.pdf", width = 9, height = 7.5)

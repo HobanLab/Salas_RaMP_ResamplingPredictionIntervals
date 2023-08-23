@@ -26,7 +26,7 @@ final_quercus_results[1:100,1,1]
 # one random individual replicated one hundred times for species one.
 final_quercus_results[1,1:100,1]
 
-2# This represents the amount of genetic diversity for a sample size of 
+# This represents the amount of genetic diversity for a sample size of 
 # random individuals ranging between one to one hundred replicated one time 
 # for species two
 final_quercus_results[1:100,1,2]
@@ -40,7 +40,6 @@ plot(final_quercus_results[150,,2])
 # of species two in red.
 plot(final_quercus_results[,1,1],col="blue") 
 points(final_quercus_results[,1,2],col="red")
-
 # This plot displays the genetic diversity of samples the size of 
 # one individual for all the replicates of species two
 plot(final_quercus_results[1,,2])
@@ -67,8 +66,8 @@ meanRepValues
 
 # graph of meanRepvalues
 plot(xlab = "Sample Size", ylab = "Genetic Diversity", meanRepValues)
-leg.txt1 = c("Total Mean Genetic Diversity")
-legend(250, 0.7, legend = leg.txt1,
+leg.txt = c("Total Mean Genetic Diversity")
+legend(250, 0.7, legend = leg.txt,
        fill = c("black"))
 
 # graph of genetic diversity, replicates 1 - 3 are plotted along with a line showing the tmean gd
@@ -77,8 +76,8 @@ points(final_quercus_results[,2,1], col="blue", pch = 16)
 points(final_quercus_results[,3,1], col="green", pch = 16)
 # recall this is the average and the above points are the individual replicates plotted on one graph
 lines(meanRepValues, col="red", lwd=2)
-leg.txt2 <- c("Replicate 1", "Replicate 2", "Replicate 3", "Total Mean of Genetic Diversity")
-legend(200, 0.7, legend = leg.txt2,
+leg.txt <- c("Replicate 1", "Replicate 2", "Replicate 3", "Total Mean of Genetic Diversity")
+legend(200, 0.7, legend = leg.txt,
        fill = c("black","blue","green","red"))
 
 # get the 95% CI of plot, but first go thru these ideas
@@ -101,8 +100,8 @@ mean(min_samp95)
 # distribution of 95% min sample sizes across replicates for species one
 # not what we quite want however...
 plot(xlab = "Replicate number", ylab = "95% minimum sample size", min_samp95)
-leg.txt3 <- "Sample size"
-legend(650, 250, legend = leg.txt3,
+leg.txt <- "Sample size"
+legend(650, 250, legend = leg.txt,
        fill = c("black"))
 
 # IDEA 2
@@ -136,108 +135,67 @@ for (n in 1:nrow(final_quercus_results)) {
  }
 
 # add the lines to the legend, add an asymptote of 0.95 horizontal, and add the line at which sample size reaches the 0.95 benchmark vertically
-plot(xlab = "Sample Size", ylab = "Genetic Diversity", meanRepValues, ylim = c(0,1))
-leg.txt4 = c("Total Mean Genetic Diversity", "95% Upper Limit", "95% Lower Limit")
+plot(xlab = "Sample Size", ylab = "Genetic Diversity", main = "QUAC", meanRepValues, ylim = c(0,1))
+leg.txt = c("Total Mean Genetic Diversity", "95% Upper Limit", "95% Lower Limit")
 lines(upper95, col = "red",lwd = 2, lty = "dashed")
 lines(lower95, col = "green",lwd = 2, lty = "dashed")
 abline(h = 0.95, lty = "dotted", col = "orange")
 abline(v = min(which(meanRepValues > 0.95)), lty = "dotted", col = "orange")
-legend(250, 0.7, legend = leg.txt4,
+legend(250, 0.7, legend = leg.txt,
        fill = c("black", "red", "green"))
 
 
-# testing for species 3
-# meanRepValuess3 <- vector()
-# upper953 <- vector()
-# lower953 <- vector()
-# for (n in 1:nrow(final_quercus_results)) {
-#   meanRepValuess3[n] <- mean(final_quercus_results[n,,3])
-#   upper953[n] <- quantile(final_quercus_results[n,,3],0.95)
-#   lower953[n] <- quantile(final_quercus_results[n,,3],0.05)
-# }
-# 
-# # add the lines to the legend, add an asymptote of 0.95 horizontal, and add the line at which sample size reaches the 0.95 benchmark vertically
-# plot(xlab = "Sample Size", ylab = "Genetic Diversity", meanRepValuess3, ylim = c(0,1))
-# leg.txt4 = c("Total Mean Genetic Diversity", "95% Upper Limit", "95% Lower Limit")
-# lines(upper953, col = "red",lwd = 2, lty = "dashed")
-# lines(lower953, col = "green",lwd = 2, lty = "dashed")
-# abline(h = 0.95, lty = "dotted", col = "orange")
-# abline(v = min(which(meanRepValuess3 > 0.95)), lty = "dotted", col = "orange")
-# legend(250, 0.7, legend = leg.txt4,
-#        fill = c("black", "red", "green"))
-
-# # array1<-array(c(meanRepValues, upper95, lower95), dim =c(500,3,1))
-# matrix1<-cbind(meanRepValues, upper95, lower95),500,3
-# matrix3<-cbind(meanRepValuess3,upper953, lower953),500,3
-# 
-# resultsArray1 <- array(data=c(matrix1, matrix3), dim = c(500, 3, 2),
-#                        dimnames=c("Samples","Stats","Species"))
-# str(resultsArray1)
-
-
 # now, we want to declare a higher dimension object for the 14 slices (spp.) of the array for the 3 vectors
+species_name <- c("QUAC","QUAR","QUAU", "QUBO","QUCA","QUCE","QUEN","QUGE","QUGR","QUHA","QUHI","QUOG","QUPA", "QUTO")
 resultsArray <- array(dim = c(500,4,14))
-meansppvalue <- vector()
-upper95spp <- vector()
-lower95spp <- vector()
-# for (n in 1:nrow(final_quercus_results)) {
-#   browser()
-#   meanRepValuess3[n] <- mean(final_quercus_results[n,,3])
-#   upper953[n] <- quantile(final_quercus_results[n,,3],0.95)
-#   lower953[n] <- quantile(final_quercus_results[n,,3],0.05)
-# }
-
+dimnames(resultsArray)<-list(paste0("sample",1:500),c("meangd","upper95","lower95","ciwidth"), species_name)
+meanRepValues <- vector()
+upper95 <- vector()
+lower95 <- vector()
 for (q in 1:14) {
   for (i in 1:nrow(final_quercus_results)) {
     # 
-    meansppvalue[i] <- mean(final_quercus_results[i,,q])
-    upper95spp[i] <- quantile(final_quercus_results[i,,q],0.95)
-    lower95spp[i] <- quantile(final_quercus_results[i,,q],0.05)
-    CIwidth <- upper95spp - lower95spp
+    meanRepValues[i] <- mean(final_quercus_results[i,,q])
+    upper95[i] <- quantile(final_quercus_results[i,,q],0.95)
+    lower95[i] <- quantile(final_quercus_results[i,,q],0.05)
+    CIwidth <- upper95 - lower95
   }
   # Bind vectors together into a matrix
-  speciesMat <- cbind(meansppvalue, upper95spp, lower95spp, CIwidth)
+  speciesMat <- cbind(meanRepValues, upper95, lower95, CIwidth)
   # Pass the matrix into a slot of the array
   resultsArray[,,q] <- speciesMat
 }
 str(resultsArray)
 
-pdf(file="14plots.pdf", width = 8.5, height = 11)
-# par(mfrow=c(3,2))
+# 
+imagesDirectory <- "C:/Users/gsalas/Documents/resampling_CIs/Code/Images/"
+pdf(file=paste0(imagesDirectory,"14CIPlots.pdf"), width = 8.5, height = 11)
 par(mfrow=c(3,2), omi=c(0,0.3,0,1.7))
-# par(mfrow=c(3,2), mar=c(0,0.3,0,1.5), xpd =TRUE)
 for (i in 1:14) {
   x <- resultsArray[,,i]
   # plot(xlab = "Sample Size", ylab = "Genetic Diversity",x[,1], ylim = c(0,1))
-  plot(xlab = "", ylab = "",x[,1], ylim = c(0,1))
-  lines(x[,2], col = "red",lwd = 2, lty = "dashed")
-  lines(x[,3], col = "green",lwd = 2, lty = "dashed")
+  plot(xlab = "", ylab = "", main = species_name[i], x[,"meangd"], ylim = c(0,1))
+  lines(x[,"upper95"], col = "red",lwd = 2, lty = "dashed")
+  lines(x[,"lower95"], col = "green",lwd = 2, lty = "dashed")
   abline(h = 0.95, lty = "dotted", col = "blue")
   abline(v = min(which(x[,1] > 0.95)), lty = "dotted", col = "blue")
-  # legend(x=1, y=-1.7, legend = leg.txt4,lty=1,col=c("black","red"),xpd=NA)
-  # legend(x="topright",inset=c(-0.2,0), legend = leg.txt4,lty=1,col=c("black","red"),cex=1.2, xpd="NA")
-  # legend(250, 0.7, legend = leg.txt4,
-  #        fill = c("black", "red", "green"))
   if(i==6){
-    legend(550, 4.27, xpd = NA, legend = leg.txt4, fill = c("black", "red", "green"))
+    legend(550, 4.27, xpd = NA, legend = leg.txt, fill = c("black", "red", "green"))
     # Label for x-axis
-    # mtext("Number of samples", side = 1, line=3, adj=-1.4, cex = 1.5)
     mtext("Number of samples", side = 1, line=3, adj=-6,  cex = 1.5)
     # Label for y-axis
     mtext("Genetic Diversity", side = 2, line=3, adj=7.0, padj = -17.5, cex = 1.5)
   } else{
     if(i==12){
-      legend(550, 4.27, xpd = NA, legend = leg.txt4, fill = c("black", "red", "green"))
+      legend(550, 4.27, xpd = NA, legend = leg.txt, fill = c("black", "red", "green"))
       # Label for x-axis
-      # mtext("Number of samples", side = 1, line=3, adj=-1.4, cex = 1.5)
       mtext("Number of samples", side = 1, line=3, adj=-6, cex = 1.5)
       # Label for y-axis
       mtext("Genetic Diversity", side = 2, line=3, adj=7.0, padj = -17.5, cex = 1.5)
     } else {
       if(i==14){
-        legend(550, 0.7, xpd = NA, legend = leg.txt4, fill = c("black", "red", "green"))
+        legend(550, 0.7, xpd = NA, legend = leg.txt, fill = c("black", "red", "green"))
         # Label for x-axis
-        # mtext("Number of samples", side = 1, line=3, adj=-1.4, cex = 1.5)
         mtext("Number of samples", side = 1, line=3, adj=-6, cex = 1.5)
         # Label for y-axis
         mtext("Genetic Diversity", side = 2, line=3, adj=1.3, padj = -17.5, cex = 1.5)
@@ -246,76 +204,23 @@ for (i in 1:14) {
   }
 }
 dev.off()
-# Code for legend
-legend(500, 2, xpd = NA, legend = leg.txt4, fill = c("black", "red", "green", inset=c(-0.7,0)))
-# Label for x-axis
-# mtext("Number of samples", side = 1, line=3, adj=-1.4, cex = 1.5)
-mtext("Number of samples", side = 1, line=3, adj=-20, cex = 1.5)
-# Label for y-axis
-mtext("Genetic Diversity", side = 2, line=3, adj=-3.3, padj = -16.5, cex = 1.5)
 
 
-par(mfrow=c(2,3))
 meanCI <- vector()
+pdf(file = paste0(imagesDirectory, "14CIWidthplots.pdf"), width = 8.51, height = 7.27)
+par(mfrow=c(2,3), omi=c(0,0.3,0,1.7))
 for (i in 1:14) {
   x <- resultsArray[,,i]
-  plot(xlab = "Sample Size", ylab = "Genetic Diversity", x[,4], ylim = c(0,0.2), pch=16)
-  meanCI[i] <- mean(x[,4])
+  plot(xlab = "", ylab = "", main = species_name[i], x[,"ciwidth"], ylim = c(0,0.2), pch=16)
+  meanCI[i] <- mean(x[,"ciwidth"])
+  if(i==6){
+    legend(550, 0.533, xpd = NA, legend = "test", fill = c("black", "red", "green"))
+    # Label for x-axis
+    mtext("Number of samples", side = 1, line=3, adj=2.75,  cex = 1.5)
+    # Label for y-axis
+    mtext("Confidence Interval Width", side = 2, line=3, adj=-3.5, padj = -24, cex = 1.5)
+  }
 }
+dev.off()
 meanCI
 
-?par()
-
-
-pdf(file="14plots.pdf", width = 9, height = 7.5)
-for (i in 1:14) {
-  plot(x=1:nrow(resultsArray), y = width[,i], pch=16)
-  meanCI[i] <- mean(width[,i])
-}
-dev.off()
-
-png(file="14plots.png", width = 480, height = 480)
-for (i in 1:14) {
-  plot(x=1:nrow(resultsArray), y = width[,i], pch=16)
-  meanCI[i] <- mean(width[,i])
-}
-dev.off()
-
-
-
-
-# for (q in 1:14) {
-#   for (n in 1:nrow(final_quercus_results)) {
-#     resultsArray[n,,q] <- c(matrix(cbind(mean(final_quercus_results[n,,q]), 
-#     quantile(final_quercus_results[n,,q],0.95),
-#     quantile(final_quercus_results[n,,q],0.05), dim = c(n,1000,q))))
-#   }
-# }
-
-# for (q in 1:14) {
-#   for (n in 1:nrow(final_quercus_results)) {
-#     matrix[n] <- matrix(cbind(mean(final_quercus_results[n,,q]), 
-#                  quantile(final_quercus_results[n,,q],0.95), 
-#                  quantile(final_quercus_results[n,,q],0.05),500,3))
-#     resultsArray[,,q] <- array(c(matrix[n]), dim = c(500,3,q))
-#   }
-# }
-
-
-# meansppvalue
-# 
-# 
-# resultsArray
-# 
-# mean95 <- list()
-# for(a in 1:nrow(final_quercus_results)){
-#   mean95[[a]] <- mean(final_quercus_results[a,,1])
-# }
-# # creates a vector from the list so we can find min sample size
-# unlist(mean95)
-# # function to more efficiently find min 0.95 value?
-# 
-# abline(v = 191, lty = "dotted", col = "orange")
-# 
-# 
-# abline(v = mean(min_samp95), lty ="dotted", col = "orange")

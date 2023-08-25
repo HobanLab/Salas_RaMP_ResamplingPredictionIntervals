@@ -147,8 +147,8 @@ legend(250, 0.7, legend = leg.txt,
 
 # now, we want to declare a higher dimension object for the 14 slices (spp.) of the array for the 3 vectors
 species_name <- c("QUAC","QUAR","QUAU", "QUBO","QUCA","QUCE","QUEN","QUGE","QUGR","QUHA","QUHI","QUOG","QUPA", "QUTO")
-resultsArray <- array(dim = c(500,4,14))
-dimnames(resultsArray)<-list(paste0("sample",1:500),c("meangd","upper95","lower95","ciwidth"), species_name)
+spp_array_stats <- array(dim = c(500,4,14))
+dimnames(spp_array_stats)<-list(paste0("sample",1:500),c("meangd","upper95","lower95","ciwidth"), species_name)
 meanRepValues <- vector()
 upper95 <- vector()
 lower95 <- vector()
@@ -163,64 +163,172 @@ for (q in 1:14) {
   # Bind vectors together into a matrix
   speciesMat <- cbind(meanRepValues, upper95, lower95, CIwidth)
   # Pass the matrix into a slot of the array
-  resultsArray[,,q] <- speciesMat
+  spp_array_stats[,,q] <- speciesMat
 }
-str(resultsArray)
+str(spp_array_stats)
 
 # 
+# imagesDirectory <- "C:/Users/gsalas/Documents/resampling_CIs/Code/Images/"
+# pdf(file=paste0(imagesDirectory,"14CIPlots.pdf"), width = 8.5, height = 11)
+# par(mfrow=c(3,2), omi=c(0,0.3,0,1.7))
+# for (i in 1:14) {
+#   x <- spp_array_stats[,,i]
+#   # plot(xlab = "Sample Size", ylab = "Genetic Diversity",x[,1], ylim = c(0,1))
+#   plot(xlab = "", ylab = "", main = species_name[i], x[,"meangd"], ylim = c(0,1))
+#   lines(x[,"upper95"], col = "red",lwd = 2, lty = "dashed")
+#   lines(x[,"lower95"], col = "green",lwd = 2, lty = "dashed")
+#   abline(h = 0.95, lty = "dotted", col = "blue")
+#   abline(v = min(which(x[,1] > 0.95)), lty = "dotted", col = "blue")
+#   if(i==6){
+#     legend(550, 4.27, xpd = NA, legend = leg.txt, fill = c("black", "red", "green"))
+#     # Label for x-axis
+#     mtext("Number of samples", side = 1, line=3, adj=-6,  cex = 1.5)
+#     # Label for y-axis
+#     mtext("Genetic Diversity", side = 2, line=3, adj=7.0, padj = -17.5, cex = 1.5)
+#   } else{
+#     if(i==12){
+#       legend(550, 4.27, xpd = NA, legend = leg.txt, fill = c("black", "red", "green"))
+#       # Label for x-axis
+#       mtext("Number of samples", side = 1, line=3, adj=-6, cex = 1.5)
+#       # Label for y-axis
+#       mtext("Genetic Diversity", side = 2, line=3, adj=7.0, padj = -17.5, cex = 1.5)
+#     } else {
+# if(i==14){
+#   legend(550, 0.7, xpd = NA, legend = leg.txt, fill = c("black", "red", "green"))
+#   # Label for x-axis
+#   mtext("Number of samples", side = 1, line=3, adj=-6, cex = 1.5)
+#   # Label for y-axis
+#   mtext("Genetic Diversity", side = 2, line=3, adj=1.3, padj = -17.5, cex = 1.5)
+# }
+#     }
+#   }
+# }
+# dev.off()
+
 imagesDirectory <- "C:/Users/gsalas/Documents/resampling_CIs/Code/Images/"
-pdf(file=paste0(imagesDirectory,"14CIPlots.pdf"), width = 8.5, height = 11)
-par(mfrow=c(3,2), omi=c(0,0.3,0,1.7))
+pdf(file=paste0(imagesDirectory,"14CIPlotscopy.pdf"), width = 8.5, height = 11)
+par(mfrow=c(3,2), omi=c(0.8,0.3,0,0)) 
 for (i in 1:14) {
-  x <- resultsArray[,,i]
+  x <- spp_array_stats[,,i]
   # plot(xlab = "Sample Size", ylab = "Genetic Diversity",x[,1], ylim = c(0,1))
   plot(xlab = "", ylab = "", main = species_name[i], x[,"meangd"], ylim = c(0,1))
   lines(x[,"upper95"], col = "red",lwd = 2, lty = "dashed")
   lines(x[,"lower95"], col = "green",lwd = 2, lty = "dashed")
   abline(h = 0.95, lty = "dotted", col = "blue")
   abline(v = min(which(x[,1] > 0.95)), lty = "dotted", col = "blue")
-  if(i==6){
-    legend(550, 4.27, xpd = NA, legend = leg.txt, fill = c("black", "red", "green"))
+  if(i==6|i==12){
+    legend(-250, -0.4, xpd = NA, legend = leg.txt, fill = c("black", "red", "green"))
     # Label for x-axis
-    mtext("Number of samples", side = 1, line=3, adj=-6,  cex = 1.5)
+    mtext("Number of samples", side = 1, line=3, adj=-1.5,  cex = 1.5)
     # Label for y-axis
-    mtext("Genetic Diversity", side = 2, line=3, adj=7.0, padj = -17.5, cex = 1.5)
+    mtext("Genetic Diversity", side = 2, line=11.0, adj=15.0, padj = -17.5, cex = 1.5)
+  } else {
+    if(i==14){
+    legend(-225, -0.4, xpd = NA, legend = leg.txt, fill = c("black", "red", "green"))
+    # Label for x-axis
+    mtext("Number of samples", side = 1, line=3, adj=-1.5, cex = 1.5)
+    # Label for y-axis
+    mtext("Genetic Diversity", side = 2, line=3, adj=0.4, padj = -22.5, cex = 1.5)
+    }
+  }
+} 
+dev.off()
+
+
+meanCI <- vector()
+pdf(file = paste0(imagesDirectory, "14CIWidthplots.pdf"), width = 8.51, height = 7.27)
+par(mfrow=c(2,3), omi=c(0.8,0.3,0,0))
+for (i in 1:14) {
+  x <- spp_array_stats[,,i]
+  plot(xlab = "", ylab = "", main = species_name[i], x[,"ciwidth"], xlim = c(0,20), ylim = c(0,0.2), pch=16)
+  meanCI[i] <- mean(x[,"ciwidth"])
+  if(i==6|i==12){
+    legend(-550, -0.08, xpd = NA, legend = "test", fill = c("black", "red", "green"))
+    # Label for x-axis
+    mtext("Number of samples", side = 1, line=3, adj=11.5,  cex = 1.5)
+    # Label for y-axis
+    mtext("Confidence Interval Width", side = 2, line=12.0, adj=-1.0, padj = -24, cex = 1.5)
   } else{
-    if(i==12){
-      legend(550, 4.27, xpd = NA, legend = leg.txt, fill = c("black", "red", "green"))
+    if(i==14){
+      legend(-200, -0.08, xpd = NA, legend = "test", fill = c("black", "red", "green"))
       # Label for x-axis
-      mtext("Number of samples", side = 1, line=3, adj=-6, cex = 1.5)
+      mtext("Number of samples", side = 1, line=3, adj=11.5,  cex = 1.5)
       # Label for y-axis
-      mtext("Genetic Diversity", side = 2, line=3, adj=7.0, padj = -17.5, cex = 1.5)
-    } else {
-      if(i==14){
-        legend(550, 0.7, xpd = NA, legend = leg.txt, fill = c("black", "red", "green"))
-        # Label for x-axis
-        mtext("Number of samples", side = 1, line=3, adj=-6, cex = 1.5)
-        # Label for y-axis
-        mtext("Genetic Diversity", side = 2, line=3, adj=1.3, padj = -17.5, cex = 1.5)
-      }
+      mtext("Confidence Interval Width", side = 2, line=12.0, adj=-1.0, padj = -24, cex = 1.5)
+    }
+  }
+}
+dev.off()
+meanCI
+
+# pdf(file = paste0(imagesDirectory, "14CIWidthplots.pdf"), width = 11, height = )
+# par(mfrow=c(2,3), omi=c(0.8,0.3,0,0))
+# for (i in 1:14) {
+#   x <- spp_array_stats[,,i]
+#   plot(xlab = "", ylab = "", main = species_name[i], x[,"ciwidth"], ylim = c(0,0.2), pch=16)
+#   meanCI[i] <- mean(x[,"ciwidth"])
+#   if(i==6|i==12){
+#     legend(550, 0.533, xpd = NA, legend = "test", fill = c("black", "red", "green"))
+#     # Label for x-axis
+#     mtext("Number of samples", side = 1, line=3, adj=11.5,  cex = 1.5)
+#     # Label for y-axis
+#     mtext("Confidence Interval Width", side = 2, line=12.0, adj=-1.0, padj = -24, cex = 1.5)
+#   }
+# }
+# dev.off()
+
+
+pdf(file = paste0(imagesDirectory, "14CIWidthplotshigh.pdf"), width = 8.51, height = 7.27)
+par(mfrow=c(2,3), omi=c(0.8,0.3,0,0))
+for (i in 1:14) {
+  x <- spp_array_stats[,,i]
+  plot(xlab = "", ylab = "", main = species_name[i], x[,"ciwidth"], xlim = c(0,50), ylim = c(0,0.2), pch=16)
+  meanCI[i] <- mean(x[,"ciwidth"])
+  if(i==6|i==12){
+    legend(-250, -0.08, xpd = NA, legend = "test", fill = c("black", "red", "green"))
+    # Label for x-axis
+    mtext("Number of samples", side = 1, line=3, adj=11.5,  cex = 1.5)
+    # Label for y-axis
+    mtext("Confidence Interval Width", side = 2, line=12.0, adj=-1.0, padj = -24, cex = 1.5)
+  }else{
+    if(i==14){
+      legend(-200, -0.08, xpd = NA, legend = "test", fill = c("black", "red", "green"))
+      # Label for x-axis
+      mtext("Number of samples", side = 1, line=3, adj=11.5,  cex = 1.5)
+      # Label for y-axis
+      mtext("Confidence Interval Width", side = 2, line=12.0, adj=-1.0, padj = -24, cex = 1.5)
     }
   }
 }
 dev.off()
 
 
-meanCI <- vector()
-pdf(file = paste0(imagesDirectory, "14CIWidthplots.pdf"), width = 8.51, height = 7.27)
-par(mfrow=c(2,3), omi=c(0,0.3,0,1.7))
+pdf(file = paste0(imagesDirectory, "14CIWidthplotslow.pdf"), width = 8.51, height = 7.27)
+par(mfrow=c(2,3), omi=c(0.8,0.3,0,0))
 for (i in 1:14) {
-  x <- resultsArray[,,i]
-  plot(xlab = "", ylab = "", main = species_name[i], x[,"ciwidth"], ylim = c(0,0.2), pch=16)
+  x <- spp_array_stats[,,i]
+  plot(xlab = "", ylab = "", main = species_name[i], x[,"ciwidth"], xlim = c(400,500), ylim = c(0,0.2), pch=16)
   meanCI[i] <- mean(x[,"ciwidth"])
-  if(i==6){
-    legend(550, 0.533, xpd = NA, legend = "test", fill = c("black", "red", "green"))
+  if(i==6|i==12){
+    legend(-250, -0.08, xpd = NA, legend = "test", fill = c("black", "red", "green"))
     # Label for x-axis
-    mtext("Number of samples", side = 1, line=3, adj=2.75,  cex = 1.5)
+    mtext("Number of samples", side = 1, line=3, adj=11.5,  cex = 1.5)
     # Label for y-axis
-    mtext("Confidence Interval Width", side = 2, line=3, adj=-3.5, padj = -24, cex = 1.5)
+    mtext("Confidence Interval Width", side = 2, line=12.0, adj=-1.0, padj = -24, cex = 1.5)
+  }else{
+    if(i==14){
+      legend(-200, -0.08, xpd = NA, legend = "test", fill = c("black", "red", "green"))
+      # Label for x-axis
+      mtext("Number of samples", side = 1, line=3, adj=11.5,  cex = 1.5)
+      # Label for y-axis
+      mtext("Confidence Interval Width", side = 2, line=12.0, adj=-1.0, padj = -24, cex = 1.5)
+    }
   }
 }
 dev.off()
-meanCI
 
+
+y <- spp_array_stats[,,14]
+y[,"ciwidth"]
+quantile(y[,"ciwidth"],0.95)
+quantile(y[,"ciwidth"],0.05)

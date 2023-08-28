@@ -12,22 +12,17 @@ QUAC_MSAT_Complete_resampArr[10,1:5,1]
 # this represents the allelic representation % for each allele category of sample 10 replicate two
 QUAC_MSAT_Complete_resampArr[10,1:5,2]
 
-totalallelecatmean <- vector()
-for (i in 1:nrow(QUAC_MSAT_Complete_resampArr)) {
-  totalallelecatmean[i] <- mean(QUAC_MSAT_Complete_resampArr[i,1,])
-  
-}
-totalallelecatmean
-
 apply(QUAC_MSAT_Complete_resampArr[,1,],1,mean)
 
+totalallelecatmean <- vector()
 totalallelecat95upper <- vector()
 totalallelecat95lower <- vector()
 for(i in 1:nrow(QUAC_MSAT_Complete_resampArr)) {
+  totalallelecatmean[i] <- mean(QUAC_MSAT_Complete_resampArr[i,1,])
   totalallelecat95upper[i] <- quantile(QUAC_MSAT_Complete_resampArr[i,1,], 0.95)
   totalallelecat95lower[i] <- quantile(QUAC_MSAT_Complete_resampArr[i,1,], 0.05)
 }
-
+totalallelecatmean
 totalallelecat95upper   
 totalallelecat95lower
 

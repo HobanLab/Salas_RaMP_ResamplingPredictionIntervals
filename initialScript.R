@@ -148,7 +148,7 @@ legend(250, 0.7, legend = leg.txt,
 # now, we want to declare a higher dimension object for the 14 slices (spp.) of the array for the 3 vectors
 species_name <- c("QUAC","QUAR","QUAU", "QUBO","QUCA","QUCE","QUEN","QUGE","QUGR","QUHA","QUHI","QUOG","QUPA", "QUTO")
 spp_array_stats <- array(dim = c(500,4,14))
-dimnames(spp_array_stats)<-list(paste0("sample",1:500),c("meangd","upper95","lower95","ciwidth"), species_name)
+dimnames(spp_array_stats)<-list(paste0("sample",1:500),c("meanRepValues","upper95","lower95","ciwidth"), species_name)
 meanRepValues <- vector()
 upper95 <- vector()
 lower95 <- vector()
@@ -211,7 +211,7 @@ par(mfrow=c(3,2), omi=c(0.8,0.3,0,0))
 for (i in 1:14) {
   x <- spp_array_stats[,,i]
   # plot(xlab = "Sample Size", ylab = "Genetic Diversity",x[,1], ylim = c(0,1))
-  plot(xlab = "", ylab = "", main = species_name[i], x[,"meangd"], ylim = c(0,1))
+  plot(xlab = "", ylab = "", main = species_name[i], x[,"meanRepValues"], ylim = c(0,1))
   lines(x[,"upper95"], col = "red",lwd = 2, lty = "dashed")
   lines(x[,"lower95"], col = "green",lwd = 2, lty = "dashed")
   abline(h = 0.95, lty = "dotted", col = "blue")
@@ -332,3 +332,5 @@ y <- spp_array_stats[,,14]
 y[,"ciwidth"]
 quantile(y[,"ciwidth"],0.95)
 quantile(y[,"ciwidth"],0.05)
+
+ciwidth

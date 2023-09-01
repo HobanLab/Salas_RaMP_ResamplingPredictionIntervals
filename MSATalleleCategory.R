@@ -82,6 +82,12 @@ legend("right",
        fill = c("black","blue", "green", "red", "pink", "orange"))
 dev.off()
 
+CIwidth <- totalallelecat95upper - totalallelecat95lower
+avgCI <- mean(CIwidth)
+cbind(CIwidth[15], CIwidth[30], CIwidth[45], CIwidth[60], CIwidth[75], CIwidth[90], CIwidth[105],CIwidth[120], CIwidth[135], CIwidth[150], avgCI)
+
+ciWidthTable <- cbind(CIwidth[15], CIwidth[30], CIwidth[45], CIwidth[60], CIwidth[75], CIwidth[90], CIwidth[105],CIwidth[120], CIwidth[135], CIwidth[150], avgCI)
+write.csv2(ciWidthTable, file="ciWidth.csv")
 # allelecatmean <- vector()
 # for (q in 1:5) {
 #   for (i in 1:nrow(QUAC_MSAT_Complete_resampArr)){

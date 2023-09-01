@@ -58,6 +58,10 @@ abline(v = min_95totavg, col = "black")
 leg.txt = c("Total allele", "Very common allele", "Common allele", "Low frequency allele", "Rare allele")
 legend("right", 
        legend = leg.txt, cex = 0.75,
-       title = (sub = paste("95% point estimation is ", x)),
+       title = (sub = paste("95% point estimation is ", min_95totavg)),
        fill = c("black","blue", "green", "red", "pink", "orange"))
 dev.off()
+
+CIwidth <- totalallelecat95upper - totalallelecat95lower
+avgCIwidth <- mean(CIwidth)
+cbind(CIwidth[15], CIwidth[30], CIwidth[45], CIwidth[60], CIwidth[75], CIwidth[90], avgCIwidth)

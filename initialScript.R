@@ -240,7 +240,7 @@ pdf(file = paste0(imagesDirectory, "14CIWidthplots.pdf"), width = 8.51, height =
 par(mfrow=c(2,3), omi=c(0.8,0.3,0,0))
 for (i in 1:14) {
   x <- spp_array_stats[,,i]
-  plot(xlab = "", ylab = "", main = species_name[i], x[,"ciwidth"], xlim = c(0,20), ylim = c(0,0.2), pch=16)
+  plot(xlab = "", ylab = "", main = species_name[i], x[,"ciwidth"], ylim = c(0,0.2), pch=16)
   meanCI[i] <- mean(x[,"ciwidth"])
   if(i==6|i==12){
     legend(-550, -0.08, xpd = NA, legend = "test", fill = c("black", "red", "green"))
@@ -260,6 +260,8 @@ for (i in 1:14) {
 }
 dev.off()
 meanCI
+#table of all the values at given points
+cbind(spp_array_stats[25,4,1:14], spp_array_stats[50,4,1:14], spp_array_stats[100,4,1:14], meanCI)
 
 # pdf(file = paste0(imagesDirectory, "14CIWidthplots.pdf"), width = 11, height = )
 # par(mfrow=c(2,3), omi=c(0.8,0.3,0,0))
@@ -285,16 +287,16 @@ for (i in 1:14) {
   plot(xlab = "", ylab = "", main = species_name[i], x[,"ciwidth"], xlim = c(0,50), ylim = c(0,0.2), pch=16)
   meanCI[i] <- mean(x[,"ciwidth"])
   if(i==6|i==12){
-    legend(-250, -0.08, xpd = NA, legend = "test", fill = c("black", "red", "green"))
+    legend(-250, -0.08, xpd = NA, legend = "Calculated CI width", fill = c("black", "red", "green"))
     # Label for x-axis
     mtext("Number of samples", side = 1, line=3, adj=11.5,  cex = 1.5)
     # Label for y-axis
-    mtext("Confidence Interval Width", side = 2, line=12.0, adj=-1.0, padj = -24, cex = 1.5)
+    mtext("Confidence Interval Width", side = 2, line=11.0, adj=-1.0, padj = -24, cex = 1.5)
   }else{
     if(i==14){
-      legend(-200, -0.08, xpd = NA, legend = "test", fill = c("black", "red", "green"))
+      legend(-25, -0.08, xpd = NA, legend = "Calculated CI width", fill = c("black", "red", "green"))
       # Label for x-axis
-      mtext("Number of samples", side = 1, line=3, adj=11.5,  cex = 1.5)
+      mtext("Number of samples", side = 1, line=3, adj=6.0,  cex = 1.5)
       # Label for y-axis
       mtext("Confidence Interval Width", side = 2, line=12.0, adj=-1.0, padj = -24, cex = 1.5)
     }
@@ -327,10 +329,54 @@ for (i in 1:14) {
 }
 dev.off()
 
+y<-spp_array_stats[,,14]
+matrix(y[,"ciwidth"])
+meanCI <- vector()
+for (i in 1:14) {
+  plot(x=1:nrow(resultsArray), y = width[,i], pch=16)
+  meanCI[i] <- mean(width[,i])
+}
 
-y <- spp_array_stats[,,14]
-y[,"ciwidth"]
+meanCI
+
+
+
+
+
+
+
+
+matrix(meanCI, nrow=14)
+
+matrix(CIwidth[25,1:14])
+matrix(width[50,1:14])
+matrix(width[100,1:14])
+matrix(width[200,1:14])
+       
+
+str(width)
+great <- vector()
+for (i in 1:14) {
+  great[i] <- spp_array_stats[,,i]
+  matrix(great[,"ciwidth"][74])
+}
+
+
+for (i in 1:500) {
+  if(i==15|i==30){tableforCIwidths[i] <- spp_array_stats[i,"ciwidth",1:14]
+  }else{
+    
+  }
+  
+}
+
+y <- 
+
+y
 quantile(y[,"ciwidth"],0.95)
 quantile(y[,"ciwidth"],0.05)
-
-ciwidth
+matrix(y[,"ciwidth"])
+CIwidth
+mean(CIwidth)
+y<-spp_array_stats[,,14]
+y[,"ciwidth"]

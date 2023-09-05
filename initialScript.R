@@ -146,8 +146,11 @@ legend(250, 0.7, legend = leg.txt,
 
 
 # now, we want to declare a higher dimension object for the 14 slices (spp.) of the array for the 3 vectors
+# create a vector of the 14 species names abbreviated
 species_name <- c("QUAC","QUAR","QUAU", "QUBO","QUCA","QUCE","QUEN","QUGE","QUGR","QUHA","QUHI","QUOG","QUPA", "QUTO")
+# create an array to store the outputs for each species
 spp_array_stats <- array(dim = c(500,4,14))
+# dimnames will create descriptions you can use instead of numbers when subsetting spp_array_stats 
 dimnames(spp_array_stats)<-list(paste0("sample",1:500),c("meanRepValues","upper95","lower95","ciwidth"), species_name)
 meanRepValues <- vector()
 upper95 <- vector()
@@ -162,7 +165,7 @@ for (q in 1:14) {
   }
   # Bind vectors together into a matrix
   speciesMat <- cbind(meanRepValues, upper95, lower95, CIwidth)
-  # Pass the matrix into a slot of the array
+  # Pass the matrices into a slot of the array
   spp_array_stats[,,q] <- speciesMat
 }
 str(spp_array_stats)
@@ -205,12 +208,14 @@ str(spp_array_stats)
 # }
 # dev.off()
 
+# imagesDirectory is an object that is a designated file path you use to paste images of plots
 imagesDirectory <- "C:/Users/gsalas/Documents/resampling_CIs/Code/Images/"
+# create pdf using pdf(), specify the file path by pasting images directory with the .pdf title of your plot and specify dimensions
 pdf(file=paste0(imagesDirectory,"14CIPlotscopy.pdf"), width = 8.5, height = 11)
+# par() specifies the format you want the grid layout of the species plots, omi() declares how many inches you want for the outer margins
 par(mfrow=c(3,2), omi=c(0.8,0.3,0,0)) 
 for (i in 1:14) {
   x <- spp_array_stats[,,i]
-  # plot(xlab = "Sample Size", ylab = "Genetic Diversity",x[,1], ylim = c(0,1))
   plot(xlab = "", ylab = "", main = species_name[i], x[,"meanRepValues"], ylim = c(0,1))
   lines(x[,"upper95"], col = "red",lwd = 2, lty = "dashed")
   lines(x[,"lower95"], col = "green",lwd = 2, lty = "dashed")
@@ -234,7 +239,7 @@ for (i in 1:14) {
 } 
 dev.off()
 
-
+# creating a vector to store the average confidence interval width for each species 
 meanCI <- vector()
 pdf(file = paste0(imagesDirectory, "14CIWidthplots.pdf"), width = 8.51, height = 7.27)
 par(mfrow=c(2,3), omi=c(0.8,0.3,0,0))
@@ -261,7 +266,10 @@ for (i in 1:14) {
 dev.off()
 meanCI
 #table of all the values at given points
-cbind(spp_array_stats[25,4,1:14], spp_array_stats[50,4,1:14], spp_array_stats[100,4,1:14], meanCI)
+sample25 <- spp_array_stats[25,4,1:14]
+sample50 <- spp_array_stats[50,4,1:14]
+sample100 <- spp_array_stats[100,4,1:14]
+write.csv(cbind(sample25, sample50, sample100, meanCI), file = "14CIWidths.csv")
 
 # pdf(file = paste0(imagesDirectory, "14CIWidthplots.pdf"), width = 11, height = )
 # par(mfrow=c(2,3), omi=c(0.8,0.3,0,0))

@@ -28,6 +28,7 @@ totalallelecatmean
 totalallelecat95upper   
 totalallelecat95lower
 
+# this displays the total allele category and its confidence intervals
 imagesDirectory <- "C:/Users/gsalas/Documents/resampling_CIs/Code/Images/"
 pdf(file = paste0(imagesDirectory, "MSATtotalAllelecatPlot.pdf"))
 plot(xlab = "Sample", ylab = "Frequency%", main = "MSAT Total Category Confidence Interval",
@@ -67,7 +68,7 @@ rareallelecatmean <- vector()
   }
 
 min_95totavg<-(min(which(totalallelecatmean > 95)))
-pdf(file = paste0(imagesDirectory, "MSATallelecatmeanplot.pdf"))
+png(file = paste0(imagesDirectory, "MSATallelecatmeanplot.png"))
 plot(xlab = "Sample", ylab = "Frequency %", main = "MSAT Allele Category Averages", totalallelecatmean, pch = 16, ylim = c(0,100))
 points(verycomallelecatmean, col="blue", pch = 16)
 points(comallelecatmean, col="green", pch = 16)

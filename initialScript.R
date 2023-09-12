@@ -173,7 +173,7 @@ str(spp_array_stats)
 # imagesDirectory is an object that is a designated file path you use to paste images of plots
 imagesDirectory <- "C:/Users/gsalas/Documents/resampling_CIs/Code/Images/"
 # create pdf using pdf(), specify the file path by pasting images directory with the .pdf title of your plot and specify dimensions
-pdf(file=paste0(imagesDirectory,"14CIPlots.pdf"), width = 8.5, height = 11)
+pdf(file=paste0(imagesDirectory, "14CIPlots.pdf"), width = 8.5, height = 11)
 # create pdf using pdf(), specify the file path by pasting images directory with the .pdf title o
 par(mfrow=c(3,2), omi=c(0.8,0.3,0,0))
 for (i in 1:14) {
@@ -217,47 +217,36 @@ pdf(file = paste0(imagesDirectory, "14CIWidthplots.pdf"), width = 8.51, height =
 par(mfrow=c(2,3), omi=c(0.8,0.3,0,0))
 for (i in 1:14) {
   x <- spp_array_stats[,,i]
-  plot(xlab = "", ylab = "", main = species_name[i], x[,"ciwidth"], ylim = c(0,0.2), pch=16)
   meanCI[i] <- mean(x[,"ciwidth"])
-  if(i==6|i==12){
-    legend(-550, -0.08, xpd = NA, legend = "test", fill = c("black", "red", "green"))
-    # Label for x-axis
-    mtext("Number of samples", side = 1, line=3, adj=11.5,  cex = 1.5)
-    # Label for y-axis
-    mtext("Confidence Interval Width", side = 2, line=12.0, adj=-1.0, padj = -24, cex = 1.5)
+  if(i==9|i==11){
+    plot(xlab = "", ylab = "", main = species_name[i], x[,"ciwidth"][c(1:length(x[-which(x[,"ciwidth"]==0),1]))], xlim = c(0,525), ylim = c(0,0.2), pch=16)
   } else{
-    if(i==14){
-      legend(-200, -0.08, xpd = NA, legend = "test", fill = c("black", "red", "green"))
+    plot(xlab = "", ylab = "", main = species_name[i], x[,"ciwidth"], xlim = c(0,525), ylim = c(0,0.2), pch=16)
+    if(i==6|i==12){
+      legend(-750, -0.09, xpd = NA, legend = "Calculated CI width", fill = c("black", "red", "green"))
       # Label for x-axis
       mtext("Number of samples", side = 1, line=3, adj=11.5,  cex = 1.5)
       # Label for y-axis
       mtext("Confidence Interval Width", side = 2, line=12.0, adj=-1.0, padj = -24, cex = 1.5)
+    } else{
+      if(i==14){
+        legend(-300, -0.08, xpd = NA, legend = "Calculated CI width", fill = c("black", "red", "green"))
+        # Label for x-axis
+        mtext("Number of samples", side = 1, line=3, adj=11.5,  cex = 1.5)
+        # Label for y-axis
+        mtext("Confidence Interval Width", side = 2, line=0, adj=0.5, padj = -17, cex = 1.5)
+      }
     }
   }
 }
 dev.off()
 meanCI
+
 #table of all the values at given points
 sample25 <- spp_array_stats[25,4,1:14]
 sample50 <- spp_array_stats[50,4,1:14]
 sample100 <- spp_array_stats[100,4,1:14]
 write.csv(cbind(sample25, sample50, sample100, meanCI), file = "14CIWidths.csv")
-
-# pdf(file = paste0(imagesDirectory, "14CIWidthplots.pdf"), width = 11, height = )
-# par(mfrow=c(2,3), omi=c(0.8,0.3,0,0))
-# for (i in 1:14) {
-#   x <- spp_array_stats[,,i]
-#   plot(xlab = "", ylab = "", main = species_name[i], x[,"ciwidth"], ylim = c(0,0.2), pch=16)
-#   meanCI[i] <- mean(x[,"ciwidth"])
-#   if(i==6|i==12){
-#     legend(550, 0.533, xpd = NA, legend = "test", fill = c("black", "red", "green"))
-#     # Label for x-axis
-#     mtext("Number of samples", side = 1, line=3, adj=11.5,  cex = 1.5)
-#     # Label for y-axis
-#     mtext("Confidence Interval Width", side = 2, line=12.0, adj=-1.0, padj = -24, cex = 1.5)
-#   }
-# }
-# dev.off()
 
 
 pdf(file = paste0(imagesDirectory, "14CIWidthplotshigh.pdf"), width = 8.51, height = 7.27)
@@ -265,20 +254,27 @@ par(mfrow=c(2,3), omi=c(0.8,0.3,0,0))
 for (i in 1:14) {
   x <- spp_array_stats[,,i]
   plot(xlab = "", ylab = "", main = species_name[i], x[,"ciwidth"], xlim = c(0,50), ylim = c(0,0.2), pch=16)
+  box(col="black",
+      which = "figure")
   meanCI[i] <- mean(x[,"ciwidth"])
   if(i==6|i==12){
-    legend(-250, -0.08, xpd = NA, legend = "Calculated CI width", fill = c("black", "red", "green"))
+    legend(-70, -0.08, xpd = NA, legend = "Calculated CI width", fill = c("black", "red", "green"))
     # Label for x-axis
     mtext("Number of samples", side = 1, line=3, adj=11.5,  cex = 1.5)
     # Label for y-axis
     mtext("Confidence Interval Width", side = 2, line=11.0, adj=-1.0, padj = -24, cex = 1.5)
   }else{
     if(i==14){
-      legend(-25, -0.08, xpd = NA, legend = "Calculated CI width", fill = c("black", "red", "green"))
+      # legend(-300, -0.08, xpd = NA, legend = "Calculated CI width", fill = c("black", "red", "green"))
+      #   # Label for x-axis
+      #   mtext("Number of samples", side = 1, line=3, adj=11.5,  cex = 1.5)
+      #   # Label for y-axis
+      #   mtext("Confidence Interval Width", side = 2, line=0, adj=0.5, padj = -17, cex = 1.5)
+      legend(-30, -0.08, xpd = NA, legend = "Calculated CI width", fill = c("black", "red", "green"))
       # Label for x-axis
-      mtext("Number of samples", side = 1, line=3, adj=6.0,  cex = 1.5)
+      mtext("Number of samples", side = 1, line=3, adj=5,  cex = 1.5)
       # Label for y-axis
-      mtext("Confidence Interval Width", side = 2, line=12.0, adj=-1.0, padj = -24, cex = 1.5)
+      mtext("Confidence Interval Width", side = 2, line=0, adj=0.5, padj = -17, cex = 1.5)
     }
   }
 }
@@ -308,48 +304,3 @@ for (i in 1:14) {
   }
 }
 dev.off()
-
-y<-spp_array_stats[,,14]
-matrix(y[,"ciwidth"])
-meanCI <- vector()
-for (i in 1:14) {
-  plot(x=1:nrow(resultsArray), y = width[,i], pch=16)
-  meanCI[i] <- mean(width[,i])
-}
-
-meanCI
-
-# matrix(meanCI, nrow=14)
-# 
-# matrix(CIwidth[25,1:14])
-# matrix(width[50,1:14])
-# matrix(width[100,1:14])
-# matrix(width[200,1:14])
-#        
-# 
-# str(width)
-# great <- vector()
-# for (i in 1:14) {
-#   great[i] <- spp_array_stats[,,i]
-#   matrix(great[,"ciwidth"][74])
-# }
-# 
-# 
-# for (i in 1:500) {
-#   if(i==15|i==30){tableforCIwidths[i] <- spp_array_stats[i,"ciwidth",1:14]
-#   }else{
-#     
-#   }
-#   
-# }
-# 
-# y <- 
-# 
-# y
-# quantile(y[,"ciwidth"],0.95)
-# quantile(y[,"ciwidth"],0.05)
-# matrix(y[,"ciwidth"])
-# CIwidth
-# mean(CIwidth)
-# y<-spp_array_stats[,,14]
-# y[,"ciwidth"]

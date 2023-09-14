@@ -68,7 +68,7 @@ rareallelecatmean <- vector()
   }
 
 min_95totavg<-(min(which(totalallelecatmean > 95)))
-png(file = paste0(imagesDirectory, "MSATallelecatmeanplot.png"))
+png(file = paste0(imagesDirectory, "MSATallelecatmeanplot.png",))
 plot(xlab = "Sample", ylab = "Frequency %", main = "MSAT Allele Category Averages", totalallelecatmean, pch = 16, ylim = c(0,100))
 points(verycomallelecatmean, col="blue", pch = 16)
 points(comallelecatmean, col="green", pch = 16)
@@ -96,3 +96,5 @@ write.csv2(ciWidthTable, file="ciWidth.csv")
 #   }
 # }
 # allelecatmean
+
+

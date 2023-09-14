@@ -47,7 +47,7 @@ for (i in 1:nrow(QUAC_SNP_DN_Complete_resampArr)) {
 }
 
 min_95totavg<-(min(which(totalallelecatmean > 95)))
-pdf(file = paste0(imagesDirectory, "CompleteSNPallelecatmeanplot.pdf"))
+png(file = paste0(imagesDirectory, width = 8, height = 11, units="in", "CompleteSNPallelecatmeanplot.png"))
 plot(xlab = "Sample", ylab = "Frequency %", main = "SNP Complete Allele Category Averages", totalallelecatmean, pch = 16, ylim = c(0,100))
 points(verycomallelecatmean, col="blue", pch = 16)
 points(comallelecatmean, col="green", pch = 16)

@@ -17,7 +17,7 @@ QUAC_data_type_name <- c("MSAT", "SNP Subset (R0)", "SNP Subset (R80)")
 allele_cat_calcs <- array(dim = c(90,4,3))
 dimnames(allele_cat_calcs)<-list(paste0("sample ",1:90),c("meanTotal","upper95","lower95","ciWidth"), QUAC_data_type_name)
 
-# imagesDirectory <- "C:/Users/gsalas/Documents/resampling_CIs/Code/Images/"
+imagesDirectory <- "C:/Users/gsalas/Documents/resampling_CIs/Code/Images/"
 # pdf(file = paste0(imagesDirectory, "MSATtotalAllelecatPlot.pdf"))
 for (i in 1:length(data)) {
   meanTotalcat<-vector()
@@ -48,29 +48,51 @@ for (i in 1:length(data)) {
   sample60 <- vector()
   sample75 <- vector()
   sample90 <- vector()
-  for (i in 1:3) {
-    meanCI[i]<-mean(allele_cat_calcs[,"ciWidth",i])
-    sample15[i]<-allele_cat_calcs[15,"ciWidth",i]
-    sample30[i]<-allele_cat_calcs[30,"ciWidth",i]
-    sample45[i]<-allele_cat_calcs[45,"ciWidth",i]
-    sample60[i]<-allele_cat_calcs[60,"ciWidth",i]
-    sample75[i]<-allele_cat_calcs[75,"ciWidth",i]
-    sample90[i]<-allele_cat_calcs[90,"ciWidth",i]
+  for (j in 1:3) {
+    meanCI[j]<-mean(allele_cat_calcs[,"ciWidth",j])
+    sample15[j]<-allele_cat_calcs[15,"ciWidth",j]
+    sample30[j]<-allele_cat_calcs[30,"ciWidth",j]
+    sample45[j]<-allele_cat_calcs[45,"ciWidth",j]
+    sample60[j]<-allele_cat_calcs[60,"ciWidth",j]
+    sample75[j]<-allele_cat_calcs[75,"ciWidth",j]
+    sample90[j]<-allele_cat_calcs[90,"ciWidth",j]
+    # plot(meanTotalcat, xlab = "Sample", ylab = "Frequency%", main=QUAC_data_type_name[j],
+    #      col="black", pch = 16)
+    # lines(upper95, col = "red", lwd = 2, lty = "dashed")
+    # lines(lower95, col = "blue", lwd = 2, lty = "dashed")
+    # leg.txt = c("total freq average", "upper 95% confidence interval", "lower 95% confidence interval")
+    # legend("bottomright", 
+    #        legend = leg.txt, cex = 0.75,
+    #        fill = c("black","red","blue"))
+    # plot(meanTotalcat,col="black",main=QUAC_data_type_name[j])
+    # points(meanVerycat,col="blue")
   }
+  min_95totavg<-(min(which(meanTotalcat > 95)))
+  png(file = paste0(imagesDirectory, QUAC_data_type_name[i], "total category mean plots.png"),width=930, height=438)
   plot(meanTotalcat, xlab = "Sample", ylab = "Frequency%", main=QUAC_data_type_name[i],
        col="black", pch = 16)
   lines(upper95, col = "red", lwd = 2, lty = "dashed")
   lines(lower95, col = "blue", lwd = 2, lty = "dashed")
   leg.txt = c("total freq average", "upper 95% confidence interval", "lower 95% confidence interval")
-  legend("bottomright", 
+  legend("right",
          legend = leg.txt, cex = 0.75,
          fill = c("black","red","blue"))
-  plot(meanTotalcat,col="black",main=QUAC_data_type_name[i])
-  points(meanVerycat,col="blue")
-  write.csv(cbind(sample15,sample30,sample45,sample60,sample75,sample90,meanCI),file = "datasetCIwidths.csv")
+  dev.off( )
+  png(file = paste0(imagesDirectory, QUAC_data_type_name[i],"category mean plots.png"), width=930, height=438)
+  plot(xlab = "Sample", ylab = "Frequency %", meanTotalcat, col="black",main=QUAC_data_type_name[i], pch=16)
+  points(meanVerycat,col="blue", pch=16)
+  points(meanComcat, col="green", pch = 16)
+  points(meanLowcat, col="red", pch = 16)
+  points(meanRarecat, col="pink", pch = 16)
+  abline(h = 95, lty = "dotted", col = "orange")
+  abline(v = min_95totavg, col = "black")
+  leg.txt = c("Total allele", "Very common allele", "Common allele", "Low frequency allele", "Rare allele")
+  legend("right", 
+       legend = leg.txt, cex = 0.75,
+       title = (sub = paste("95% point estimation is ", min_95totavg)),
+       fill = c("black","blue", "green", "red", "pink", "orange")
+       )
+  dev.off( )
+  write.csv(cbind(QUAC_data_type_name,sample15,sample30,sample45,sample60,sample75,sample90,meanCI),file = "datasetCIwidths.csv")
 }
-
-meanCI
-write.csv(cbind(sample15,meanCI),file = "datasetCIwidths.csv")
-sample15
 str(allele_cat_calcs)

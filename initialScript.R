@@ -1,6 +1,6 @@
-##########################################
-# 2023/08/01 Exploring Resampling Dataset#
-##########################################
+###########################################
+# 2023/08/01 Exploring Resampling Dataset #
+###########################################
 
 # Set work directory by adding path file 
 setwd("C:/Users/gsalas/Documents/resampling_CIs/Code/")

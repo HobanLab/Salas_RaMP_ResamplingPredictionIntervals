@@ -149,9 +149,9 @@ legend(250, 0.7, legend = leg.txt,
 # create a vector of the 14 species names abbreviated
 species_name <- c("QUAC","QUAR","QUAU", "QUBO","QUCA","QUCE","QUEN","QUGE","QUGR","QUHA","QUHI","QUOG","QUPA", "QUTO")
 # create an array to store the outputs for each species
-spp_array_stats <- array(dim = c(500,4,14))
-# dimnames will create descriptions you can use instead of numbers when subsetting spp_array_stats 
-dimnames(spp_array_stats)<-list(paste0("sample",1:500),c("meanRepValues","upper95","lower95","ciwidth"), species_name)
+calcs_for_quercus14 <- array(dim = c(500,4,14))
+# dimnames will create descriptions you can use instead of numbers when subsetting calcs_for_quercus14
+dimnames(calcs_for_quercus14)<-list(paste0("sample",1:500),c("meanRepValues","upper95","lower95","ciwidth"), species_name)
 meanRepValues <- vector()
 upper95 <- vector()
 lower95 <- vector()
@@ -166,9 +166,9 @@ for (q in 1:14) {
   # Bind vectors together into a matrix
   speciesMat <- cbind(meanRepValues, upper95, lower95, CIwidth)
   # Pass the matrices into a slot of the array
-  spp_array_stats[,,q] <- speciesMat
+  calcs_for_quercus14[,,q] <- speciesMat
 }
-str(spp_array_stats)
+str(calcs_for_quercus14)
 
 # imagesDirectory is an object that is a designated file path you use to paste images of plots
 imagesDirectory <- "C:/Users/gsalas/Documents/resampling_CIs/Code/Images/"
@@ -177,7 +177,7 @@ pdf(file=paste0(imagesDirectory, "14CIPlots.pdf"), width = 8.5, height = 11)
 # create pdf using pdf(), specify the file path by pasting images directory with the .pdf title o
 par(mfrow=c(3,2), omi=c(0.8,0.3,0,0))
 for (i in 1:14) {
-  x <- spp_array_stats[,,i]
+  x <- calcs_for_quercus14[,,i]
   # species 9 and species 11 are passed through an ifelse() function
   # to be subset by 
   if(i==9 | i==11){
@@ -216,7 +216,7 @@ meanCI <- vector()
 pdf(file = paste0(imagesDirectory, "14CIWidthplots.pdf"), width = 8.51, height = 7.27)
 par(mfrow=c(2,3), omi=c(0.8,0.3,0,0))
 for (i in 1:14) {
-  x <- spp_array_stats[,,i]
+  x <- calcs_for_quercus14[,,i]
   meanCI[i] <- mean(x[,"ciwidth"])
   if(i==9|i==11){
     plot(xlab = "", ylab = "", main = species_name[i], x[,"ciwidth"][c(1:length(x[-which(x[,"ciwidth"]==0),1]))], xlim = c(0,525), ylim = c(0,0.2), pch=16)
@@ -243,16 +243,16 @@ dev.off()
 meanCI
 
 #table of all the values at given points
-sample25 <- spp_array_stats[25,4,1:14]
-sample50 <- spp_array_stats[50,4,1:14]
-sample100 <- spp_array_stats[100,4,1:14]
+sample25 <- calcs_for_quercus14[25,4,1:14]
+sample50 <- calcs_for_quercus14[50,4,1:14]
+sample100 <- calcs_for_quercus14[100,4,1:14]
 write.csv(cbind(sample25, sample50, sample100, meanCI), file = "14CIWidths.csv")
 
 
 pdf(file = paste0(imagesDirectory, "14CIWidthplotshigh.pdf"), width = 8.51, height = 7.27)
 par(mfrow=c(2,3), omi=c(0.8,0.3,0,0))
 for (i in 1:14) {
-  x <- spp_array_stats[,,i]
+  x <- calcs_for_quercus14[,,i]
   plot(xlab = "", ylab = "", main = species_name[i], x[,"ciwidth"], xlim = c(0,50), ylim = c(0,0.2), pch=16)
   box(col="black",
       which = "figure")
@@ -284,7 +284,7 @@ dev.off()
 pdf(file = paste0(imagesDirectory, "14CIWidthplotslow.pdf"), width = 8.51, height = 7.27)
 par(mfrow=c(2,3), omi=c(0.8,0.3,0,0))
 for (i in 1:14) {
-  x <- spp_array_stats[,,i]
+  x <- calcs_for_quercus14[,,i]
   plot(xlab = "", ylab = "", main = species_name[i], x[,"ciwidth"], xlim = c(400,500), ylim = c(0,0.2), pch=16)
   meanCI[i] <- mean(x[,"ciwidth"])
   if(i==6|i==12){

@@ -68,17 +68,17 @@ for (i in 1:length(data)) {
     # points(meanVerycat,col="blue")
   }
   min_95totavg<-(min(which(meanTotalcat > 95)))
-  png(file = paste0(imagesDirectory, QUAC_data_type_name[i], "total category mean plots.png"),width=930, height=438)
-  plot(meanTotalcat, xlab = "Sample", ylab = "Frequency%", main=QUAC_data_type_name[i],
+  # png(file = paste0(imagesDirectory, QUAC_data_type_name[i], "total category mean plots.png"),width=930, height=438)
+  plot(meanTotalcat, xlab = "Sample", ylab = "Genetic Diversity %", main=QUAC_data_type_name[i],
        col="black", pch = 16)
   lines(upper95, col = "red", lwd = 2, lty = "dashed")
   lines(lower95, col = "blue", lwd = 2, lty = "dashed")
-  leg.txt = c("total freq average", "upper 95% confidence interval", "lower 95% confidence interval")
-  legend("right",
-         legend = leg.txt, cex = 0.75,
-         fill = c("black","red","blue"))
-  dev.off( )
-  png(file = paste0(imagesDirectory, QUAC_data_type_name[i],"category mean plots.png"), width=930, height=438)
+  #leg.txt = c("total freq average", "upper 95% confidence interval", "lower 95% confidence interval")
+  #legend("right",
+  #       legend = leg.txt, cex = 0.75,
+  #       fill = c("black","red","blue"))
+  # dev.off( )
+  # png(file = paste0(imagesDirectory, QUAC_data_type_name[i],"category mean plots.png"), width=930, height=438)
   plot(xlab = "Sample", ylab = "Frequency %", meanTotalcat, col="black",main=QUAC_data_type_name[i], pch=16)
   points(meanVerycat,col="blue", pch=16)
   points(meanComcat, col="green", pch = 16)
@@ -92,7 +92,7 @@ for (i in 1:length(data)) {
        title = (sub = paste("95% point estimation is ", min_95totavg)),
        fill = c("black","blue", "green", "red", "pink", "orange")
        )
-  dev.off( )
-  write.csv(cbind(QUAC_data_type_name,sample15,sample30,sample45,sample60,sample75,sample90,meanCI),file = "datasetCIwidths.csv")
+  # dev.off( )
+  # write.csv(cbind(QUAC_data_type_name,sample15,sample30,sample45,sample60,sample75,sample90,meanCI),file = "datasetCIwidths.csv")
 }
 str(allele_cat_calcs)

@@ -189,15 +189,15 @@ for (i in 1:14) {
   } else{
     plot(xlab = "", ylab = "", main = species_name[i], x[,"meanRepValues"], xlim = c(0,525), ylim = c(0,1), pch=16)
     lines(x[,"upper95"], col = "red",lwd = 2, lty = "dashed")
-    lines(x[,"lower95"], col = "green",lwd = 2, lty = "dashed")
+    lines(x[,"lower95"], col = "blue",lwd = 2, lty = "dashed")
     abline(h = 0.95, lty = "dotted", col = "blue")
-    abline(v = min(which(x[,1] > 0.95)), lty = "dotted", col = "orange")
+    abline(v = min(which(x[,1] > 0.95)), lty = "dotted", col = "brown")
     if (i==6|i==12){
       legend(-250, -0.4, xpd = NA, legend = leg.txt, fill = c("black", "red", "green"))
       # Label for x-axis
       mtext("Number of samples", side = 1, line=3, adj=-1.5,  cex = 1.5)
-      # Label for y-axis
-      mtext("Genetic Diversity", side = 2, line=11.0, adj=15.0, padj = -17.5, cex = 1.5)
+      # Label for y-axis (adj adjusts the vertical position of text)
+      mtext("Genetic Diversity", side = 2, line=11.0, adj=11.75, padj = -17.5, cex = 1.5)
     } else{
       if(i==14){
         legend(-225, -0.4, xpd = NA, legend = leg.txt, fill = c("black", "red", "green"))

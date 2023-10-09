@@ -1,0 +1,367 @@
+---
+title: "Hoban lab ggplot2 walk-through"
+author: "Ash Hamilton"
+output: html_document
+---
+To reproduce the code throughout this tutorial you only need to load the `ggplot2` package
+
+```{r, eval=TRUE}
+library(ggplot2)
+```
+
+Ggplot2 also comes with a number of built-in data sets! This tutorial will (mostly) use the ggplot2 provided Midwest dataset, which is a data frame that contains demographic information of Midwest counties from 2000 US census.
+
+## Grammar of Graphics:
+****
+
+The philosophy of ggplot2 is based on the Grammar of Graphics, which adapted by Hadley Wickham to describe the components of a plot. In this framework, a plot at its most basic must be composed of:
+
+* the data being plotted
+* the geometric objects (circles, lines, etc.) that appear on the plot
+* a set of mappings from variables in the data to the aesthetics (appearance) of the geometric objects
+
+The Grammar of Graphics also describes more complex (optional) plot components such as: 
+
+* a position adjustment for locating each geometric object on the plot
+* a scale (e.g., range of values) for each aesthetic mapping used
+* a coordinate system used to organize the geometric objects
+* the facets or groups of data shown in different plots
+* a statistical transformation used to calculate the data values used in the plot
+
+Each of these components can be controlled with unique commands in ggplot2. 
+
+<br><br>
+
+## A basic plot: 
+
+***
+
+In order to create a plot, you:
+
+ 1) Call the `ggplot()` function which creates a blank canvas
+
+```{r, eval=TRUE, fig.align='center', fig.height=3, fig.width=3}
+ggplot(data = midwest)
+```
+
+ 2) Specify aesthetic mappings, which specifies how you want to map variables to visual aspects. In this case we are simply mapping the `percbelowpoverty` (percent of residents of the county below the poverty line) and `perchsd` (percent of residents of the county with a highschool diploma) variables to the x- and y-axes respectively. 
+
+```{r, eval=TRUE, fig.align='center', fig.height=3, fig.width=3}
+ggplot(data = midwest, aes(x = percbelowpoverty, y = perchsd))
+```
+
+Note that despite specifying the data and the axes, the plot itself is empty. 
+
+3) Add a layer that specifies which type of geometric object will show up on the plot
+
+```{r, eval=TRUE, fig.align='center', fig.height=3, fig.width=3}
+ggplot(data = midwest, aes(x = percbelowpoverty, y = perchsd)) +
+  geom_point()
+```
+
+Notice the `+` in the above code block. You will always use the `+` operator to add new layers onto your visualization.
+
+<br><br>
+
+## Aesthetics:
+
+****
+
+Aesthetic mappings (arguments within the `aes()` function) take properties of the data and use them to influence visual characteristics of the plotted data, such as `position`, `color`, `size`, `shape`, or transparency value (`alpha`)
+ 
+ 
+For example, we can add a mapping from the state of the counties to a color characteristic:
+
+
+```{r, eval=TRUE, fig.align='center', fig.height=3, fig.width=3}
+ggplot(data = midwest, aes(x = percbelowpoverty, y = perchsd)) +
+  geom_point(aes(color = state))
+```
+<br>
+  
+If you wish to apply an aesthetic property to an entire geometry (instead of mapping a characteristic of the data with the aesthetic), you can set that property as an argument to the geom method, outside of the `aes()` call
+
+
+```{r, eval=TRUE, fig.align='center', fig.height=3, fig.width=3}
+ggplot(data = midwest, aes(x = percbelowpoverty, y = perchsd)) +
+  geom_point(color = "blue")
+```
+
+<br> 
+
+All geometry types will leverage the aesthetic mappings supplied but the specific visual properties that the data of a specific geometry type will map to will vary. For example, you can map data to the shape of a `geom_point` (e.g., if they should be circles or squares)
+```{r, eval=TRUE, fig.align='center', fig.height=3, fig.width=3}
+ggplot(data = midwest, aes(x = percbelowpoverty, y = perchsd)) +
+  geom_point(aes(shape = state), color = "blue") # Note the use of an aesthetic call that maps data to the shape is within the aes() call, while another aesthetic which regardless of the data, makes all points blue, is called outside of the aes() call 
+```
+<br>  
+
+or you can map data to the `linetype` of a `geom_line` or `geom_smooth` (e.g., if it is solid or dotted)
+
+```{r, eval=TRUE, fig.align='center', fig.height=3, fig.width=3}
+ggplot(data = midwest, aes(x = percbelowpoverty, y = perchsd)) +
+  geom_smooth(aes(linetype = state), color = "black", alpha = .3) # Note like above, the specification of the lintype is based on the data and is therefore within the aes() call while the color and transparency value (alpha) is outside of the aes() call
+```
+<br>  
+
+but not vice versa (as you can see below, ggplot will ouput a warning when you try to apply an impossible aesthetic to a geometry type) 
+
+```{r, eval=TRUE, fig.align='center', fig.height=3, fig.width=3}
+ggplot(data = midwest, aes(x = percbelowpoverty, y = perchsd)) +
+  geom_point(aes(linetype = state)) 
+```
+
+<br> 
+
+Most geoms require specifying an x and y mapping within `aes()` at the bare minimum, but some geoms (like `geom_histogram`, `geom_density`, and `geom_bar`) require either an x or a y 
+
+```{r, eval=TRUE, fig.align='center', fig.height=3, fig.width=3}
+ggplot(data = midwest, aes(x = percbelowpoverty)) + #No y specified!
+  geom_histogram() 
+```
+
+<br>  
+  
+You can also easily add multiple geometries to a plot, allowing you to create complex graphics showing multiple aspects of your data at once!
+
+```{r, eval=TRUE, fig.align='center', fig.height=3, fig.width=3}
+ggplot(midwest, aes(x = percbelowpoverty, y = perchsd)) + 
+  geom_point() + 
+  geom_smooth() #geom_smooth is a function that calculates and then plots a simple linear model of your data
+```
+
+<br> 
+
+The aesthetics for each geom can be different, so you could show multiple lines on the same plot (or with different colors, styles, etc). It’s also possible to give each geom a different data argument, so that you can show multiple data sets in the same plot.
+
+For example, we can plot both points and a smoothed line for the same x and y variable but specify unique `color` and `alpha` values within each geom:
+
+```{r, eval=TRUE, fig.align='center', fig.height=3, fig.width=3}
+ggplot(data = midwest, aes(x = percbelowpoverty, y = perchsd)) +
+  geom_point(color = "blue") +
+    geom_smooth(color = "black", alpha = .3)
+```
+  
+  
+<br> 
+
+If we specify an aesthetic within `ggplot` it will be passed on to each geom that follows. 
+
+```{r, eval=TRUE, fig.align='center', fig.height=3, fig.width=3}
+ggplot(data = midwest, aes(x = percbelowpoverty, y = perchsd, color = state)) +
+  geom_point() +
+  geom_smooth() 
+```
+<br> 
+
+Or we can specify certain aes within each geom, which allows us to only show certain characteristics for that specific layer (i.e. geom_point).
+
+```{r, eval=TRUE, fig.align='center', fig.height=3, fig.width=3}
+ggplot(data = midwest, aes(x = percbelowpoverty, y = perchsd)) +
+  geom_point(aes(color = state)) +
+  geom_smooth() 
+```
+
+## Other arguments:
+
+***
+
+These are all components of the grammar of graphics but will only be covered in brief. Extended discussions of them can be found online; see for example the [Visualization chapter](https://r4ds.had.co.nz/data-visualisation.html) of Hadley’s R for Data Science book.
+
+<br>
+
+#### Scales
+Whenever you specify an aesthetic mapping, ggplot uses a particular scale to determine the range of values that the data should map to. Thus when you specify:
+
+```{r, eval=TRUE, fig.align='center', fig.height=3, fig.width=3}
+ggplot(data = midwest, aes(x = percbelowpoverty, y = perchsd)) +
+  geom_point(aes(color = state))
+```
+
+<br>
+
+`ggplot` automatically adds a scale for each mapped aesthetic (percbelowpoverty, percbelowpoverty, state) to the plot
+
+Each scale can be explicitly represented by a function with the following name: scale_, followed by the name of the aesthetic property, followed by an _ and the name of the scale. 
+
+A continuous scale will handle things like numeric data (where there is a continuous set of numbers), whereas a discrete scale will handle things like colors (since there is a small list of distinct colors).
+
+For example, the scale `ggplot` automatically applied to the above graph can be explicitly called and the same plot will be created:
+```{r, eval=TRUE, fig.align='center', fig.height=3, fig.width=3}
+# same as above, with explicit scales
+ggplot(data = midwest, aes(x = percbelowpoverty, y = perchsd)) +
+  geom_point(aes(color = state)) +
+  scale_x_continuous() + # x is mapped from the percbelowpoverty variable which is continuous
+  scale_y_continuous() + # y is mapped from the perchsd variable which is continuous
+  scale_colour_discrete() # color is mapped from the state variable which is discrete
+```
+
+
+While the default scales will generally work fine, it is possible to explicitly add different scales to replace the defaults. For example, you can use a scale to change the direction of an axis:
+
+```{r, eval=TRUE, fig.align='center', fig.height=3, fig.width=3}
+ggplot(data = midwest, aes(x = percbelowpoverty, y = perchsd)) +
+  geom_point(aes(color = state)) +
+  scale_x_reverse() +
+  scale_y_reverse()
+```
+  
+Similarly, you can use `scale_x_log10()` and `scale_x_sqrt()` to transform your scale or you can use the `trans=` argument within `scale_x_continuous` and `scale_y_continuous` to do the same thing:
+```{r, eval=TRUE, fig.align='center', fig.height=3, fig.width=3}
+# initial plot, non-transformed axis
+ggplot(data = midwest, aes(x = poptotal, y = perchsd)) +
+  geom_point()
+
+# transform x axis using scale_x_log10
+ggplot(data = midwest, aes(x = poptotal, y = perchsd)) +
+  geom_point() +
+  scale_x_log10()
+
+# transform x axis using scale_x_continuous
+ggplot(data = midwest, aes(x = poptotal, y = perchsd)) +
+  geom_point() +
+  scale_x_continuous(trans = "log10")
+```
+
+A common parameter to change is which set of colors to use in a plot. While you can use the default coloring, a more common option is to leverage the pre-defined palettes from viridis. These color sets have been carefully designed to look good and to be viewable to people with certain forms of color blindness. We can leverage these palettes by specifying the `scale_color_viridis()` function.
+
+Note that you can get the possible palette names from this [viridis website](https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html).
+
+Also note that viridis has their own package and functions within that package that can be used within `ggplot`
+
+```{r, eval=TRUE, fig.align='center', fig.height=3, fig.width=3}
+#default color palette
+ggplot(data = midwest, aes(x = percbelowpoverty, y = perchsd)) +
+  geom_point(aes(color = percollege)) 
+
+#the default viridis color palette
+ggplot(data = midwest, aes(x = percbelowpoverty, y = perchsd)) +
+  geom_point(aes(color = percollege)) +
+  scale_color_viridis_c() # call scale_color_viridis command from the viridis package
+
+#calling viridis color palette from the viridis package
+ggplot(data = midwest, aes(x = percbelowpoverty, y = perchsd)) +
+  geom_point(aes(color = percollege)) +
+  viridis::scale_color_viridis(discrete = F) # call scale_color_viridis command from the viridis package
+
+```
+
+You can also manually specify the colors you want to use as a named vector (typically done for discrete data):
+
+```{r, eval=TRUE, fig.align='center', fig.height=3, fig.width=3}
+#default color palette
+ggplot(data = midwest, aes(x = percbelowpoverty, y = perchsd)) +
+  geom_point(aes(color = state)) 
+
+#the default viridis color palette
+ggplot(data = midwest, aes(x = percbelowpoverty, y = perchsd)) +
+  geom_point(aes(color = state)) +
+  scale_color_manual(values = c("red", "orange", "green", "blue", "purple")) # assign a vector of colors for the plot, order of colors will match the order of the variable being mapped (typically alphabetical)
+
+```
+
+Here is a helpful image that I constantly refer to when trying to customize my colors:
+
+```{r, echo=F, fig.align='center', fig.height=7, fig.width=5}
+knitr::include_graphics("../R_colorbynames.png")
+```
+
+<br> 
+
+#### Coordinate systems
+
+The next term from the Grammar of Graphics that can be specified is the coordinate system. As with scales, coordinate systems are specified with functions that all start with coord_ and are added as a layer. There are a number of different possible coordinate systems to use, including:
+
+* `coord_cartesian` the default cartesian coordinate system, where you specify x and y values (e.g. allows you to zoom in or out).
+* `coord_flip` a cartesian system with the x and y flipped
+* `coord_fixed` a cartesian system with a “fixed” aspect ratio (e.g., 1.78 for a “widescreen” plot)
+* `coord_polar` a plot using polar coordinates
+* `coord_quickmap` a coordinate system that approximates a good aspect ratio for maps. See documentation for more details.
+
+Some examples:
+
+Zoom in with `coord_cartesian`
+```{r, eval=TRUE, fig.align='center', fig.height=3, fig.width=3}
+ggplot(data = midwest, aes(x = percbelowpoverty, y = perchsd)) +
+  geom_point(aes(color = state)) +
+  coord_cartesian(xlim = c(0, 10)) # only show the x axis from value of 0 to value of 10 (but all points are still plotted, so some will show up cut off)
+```
+
+Flip x and y axis with `coord_flip`
+```{r, eval=TRUE, fig.align='center', fig.height=3, fig.width=3}
+ggplot(data = midwest, aes(x = percbelowpoverty, y = perchsd)) +
+  geom_point(aes(color = state)) +
+  coord_flip()
+```
+
+  
+#### Facets
+
+Facets are ways of grouping a data plot into multiple different pieces (subplots). This allows you to view a separate plot for each value in a categorical variable.
+
+Similar to scales and coordinate systems, different types of faceting are available and following the naming patter  facet_ followed by the type of facet.
+
+Within the argument of the facet_ function, you need to specify what variable to facet around with the tilde `~` followed by the variable name. 
+
+One of the possible functions to facet data is the `facet_wrap()` function. This will produce rows of subplots, one subplot for each categorical variable (the number of rows can be specified with the `nrow` argument:
+
+```{r, eval=TRUE, fig.align='center', fig.height=3, fig.width=3}
+ggplot(data = midwest, aes(x = percbelowpoverty, y = perchsd)) +
+  geom_point(aes(color = state)) +
+  facet_wrap(~state, nrow = 3)
+```
+  
+  You can use `facet_grid` to facet your data into a grid rather than a row. This is most common when you want to facet by more than one categorical variable. With `facet_grid` the variable to the left of the tilde ("~") will be represented in the rows and the variable to the right will be represented across the columns.
+
+```{r, eval=TRUE, fig.align='center', fig.height=3, fig.width=3}
+ggplot(mpg) + 
+  geom_histogram(aes(x = hwy)) + 
+  facet_grid(class ~ cyl)
+```
+
+#### Position
+
+Position
+The position argument is used to tweak how certain aspects of the plots are displayed. Its use depends heavily on the type of plot. For each geom, some positions will work, some will do nothing, and some will produce nonsense. They are most commonly used when trying to create grouped plots.
+
+For example, we can look at a histogram of car mpg (hwy).
+```{r, eval=TRUE, fig.align='center', fig.height=3, fig.width=3}
+ggplot(mpg, aes(x = hwy, fill = class)) +
+  geom_histogram()
+```
+If we add `fill = class`, it will group by class. The default is `position = "stack"`; let’s see what each does.
+
+```{r, eval=TRUE, fig.align='center', fig.height=3, fig.width=3}
+ggplot(mpg, aes(x = hwy, fill = class)) +
+  geom_histogram(position = "stack")
+
+
+ggplot(mpg, aes(x = hwy, fill = class)) +
+  geom_histogram(position = "identity")
+
+
+ggplot(mpg, aes(x = hwy, fill = class)) +
+  geom_histogram(position = "dodge")
+
+
+ggplot(mpg, aes(x = hwy, fill = class)) +
+  geom_histogram(position = "fill")
+
+```
+
+
+In general:
+
+* identity is useful when you want to plot things exactly as they are.
+* stack is useful when you want to look both at overall values and per-group values.
+* dodge is useful for group comparisons.
+* fill is useful for considering percentages instead of counts.
+* jitter is useful for scatter plots (and similar) when multiple values may be placed at the same point.
+
+
+Positions are generally a trial-and-error procedure. If the default isn’t sufficient, see if the others look/work better.
+
+#### Stat
+
+We can work through this another day if you're interested!
+

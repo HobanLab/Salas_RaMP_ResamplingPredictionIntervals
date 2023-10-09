@@ -13,12 +13,12 @@ data<-list(
 # this represents the allelic representation % for the total allele category, samples 1 through 10, replicate one
 data[[3]][1:10,1,1]
 
-QUAC_data_type_name <- c("Q. acerifoloa genetic diversity: Microsatellites", "SNP Subset (R0)", "SNP Subset (R80)")
+QUAC_data_type_name <- c("Q. acerifolia genetic diversity: Microsatellites", "SNP Subset (R0)", "SNP Subset (R80)")
 allele_cat_calcs <- array(dim = c(90,4,3))
 dimnames(allele_cat_calcs)<-list(paste0("sample ",1:90),c("meanTotal","upper95","lower95","ciWidth"), QUAC_data_type_name)
 
-imagesDirectory <- "C:/Users/gsalas/Documents/resampling_CIs/Code/Images/"
-pdf(file = paste0(imagesDirectory, "MSATtotalAllelecatPlot.pdf"))
+# imagesDirectory <- "C:/Users/gsalas/Documents/resampling_CIs/Code/Images/"
+# pdf(file = paste0(imagesDirectory, "MSATtotalAllelecatPlot.pdf"))
 for (i in 1:length(data)) {
   meanTotalcat<-vector()
   upper95<-vector()
@@ -30,7 +30,7 @@ for (i in 1:length(data)) {
   meanRarecat <- vector()
   # nested for loop is soft coded to identify all populations sample sizes 
   # across replicates for each dataset and is assigned to the variable q
-  # main calculations will be assigned an object name and iterate across each                   population sample size for each dataset
+  # main calculations will be assigned an object name and iterate across each population sample size for each dataset
   # object names with categories are hard coded with their appropriate column number
   for (q in 1:nrow(data[[i]][,1,])) {
     meanTotalcat[q]<-mean(data[[i]][q,1,])
@@ -68,8 +68,8 @@ for (i in 1:length(data)) {
   # set the file path of where the plots will be saved to and specify the file type
   # standard plotting and formatting 
   min_95totavg<-(min(which(meanTotalcat > 95)))
-  png(file = paste0(imagesDirectory, QUAC_data_type_name[i], "total category mean plots.png"),width=930, height=438)
-  plot(meanTotalcat, xlab = "Sample", ylab = "Genetic Diversity %", main=QUAC_data_type_name[i],
+  # png(file = paste0(imagesDirectory, QUAC_data_type_name[i], "total category mean plots.png"),width=930, height=438)
+  plot(meanTotalcat, xlab = "Population Sample Size", ylab = "Genetic Diversity %", main=QUAC_data_type_name[i],
        col="black", pch = 16)
   lines(upper95, col = "red", lwd = 2, lty = "dashed")
   lines(lower95, col = "blue", lwd = 2, lty = "dashed")
@@ -77,8 +77,8 @@ for (i in 1:length(data)) {
   legend("right",
          legend = leg.txt, cex = 0.75,
          fill = c("black","red","blue"))
-  dev.off( )
-  png(file = paste0(imagesDirectory, QUAC_data_type_name[i],"category mean plots.png"), width=930, height=438)
+  # dev.off( )
+  # png(file = paste0(imagesDirectory, QUAC_data_type_name[i],"category mean plots.png"), width=930, height=438)
   plot(xlab = "Sample", ylab = "Frequency %", meanTotalcat, col="black",main=QUAC_data_type_name[i], pch=16)
   points(meanVerycat,col="blue", pch=16)
   points(meanComcat, col="green", pch = 16)
@@ -92,7 +92,7 @@ for (i in 1:length(data)) {
          title = (sub = paste("95% point estimation is ", min_95totavg)),
          fill = c("black","blue", "green", "red", "pink", "orange")
   )
-  dev.off( )
+  # dev.off( )
   # create a .csv and bind the columns together, specify file name 
   write.csv(cbind(QUAC_data_type_name,sample15,sample30,sample45,sample60,sample75,sample90,meanCI),file = "datasetCIwidths.csv")
 }

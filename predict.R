@@ -44,10 +44,11 @@ setwd("C:/Users/gsalas/Documents/resampling_CIs/Code/")
 # Load dataset into environment
 load("Datasets/quercus_final_results_orig.Rdata")
 # 
-quercus14_genDiv <- vector(length = (nrow(final_quercus_results[,,q])))
+quercus14_genDiv <- vector(length = (nrow(final_quercus_results)))
 # quercus14_DF_list <- list()
 quercus14_predict_Matrix <- matrix(ncol = 3, nrow = 14)
 for (q in 1:(dim(final_quercus_results)[3])) {
+  browser()
   # Capture Total resampling values
   quercus14_genDiv <- vector(length = (nrow(final_quercus_results[,,q])) * (dim(final_quercus_results)[2]))
   quercus14_genDiv <- c(final_quercus_results[,,q])
@@ -66,4 +67,3 @@ for (q in 1:(dim(final_quercus_results)[3])) {
   quercus14_predict_Matrix[q,] <- quercus14_95MSSEprediction
 }
 quercus14_predict_Matrix
-calcs_for_quercus14

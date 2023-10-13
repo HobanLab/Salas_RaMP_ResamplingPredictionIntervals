@@ -33,8 +33,9 @@ for(i in 1:length(gm_listArray)) {
 }
 genetic_marker_predict_matrix
 colnames(genetic_marker_predict_matrix) <- c("fit", "lwr", "upr")
+rownames(genetic_marker_predict_matrix) <- c("MSAT", "SNP Subset (R0)", "SNP Subset (R80)")
 write.csv(genetic_marker_predict_matrix, file = "C:/Users/gsalas/Documents/resampling_CIs/Code/gm_predict.csv", 
-          row.names = FALSE)
+          row.names = TRUE)
 
 # Set work directory by adding path file 
 setwd("C:/Users/gsalas/Documents/resampling_CIs/Code/")
@@ -64,5 +65,6 @@ for (q in 1:(dim(final_quercus_results)[3])) {
 }
 quercus14_predict_Matrix
 colnames(quercus14_predict_Matrix) <- c("fit", "lwr", "upr")
+rownames(quercus14_predict_Matrix) <- c("QUAC","QUAR","QUAU", "QUBO","QUCA","QUCE","QUEN","QUGE","QUGR","QUHA","QUHI","QUOG","QUPA", "QUTO")
 write.csv(quercus14_predict_Matrix, file = "C:/Users/gsalas/Documents/resampling_CIs/Code/q14_predict.csv", 
-          row.names = FALSE)
+          row.names = TRUE)

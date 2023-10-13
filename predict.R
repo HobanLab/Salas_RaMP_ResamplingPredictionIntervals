@@ -30,18 +30,22 @@ for(i in 1:length(gm_listArray)) {
   # Pass the gm_95MSSEprediction to the object storing our results by iterating
   # storing them in the rows index of predict_matrix
   genetic_marker_predict_matrix[i,] <- gm_95MSSEprediction
+  ciWidth <- vector()
+  for (j in 1:(nrow(genetic_marker_predict_matrix))) {
+    ciWidth[j] <- genetic_marker_predict_matrix[j,3] - genetic_marker_predict_matrix[j,2]
+  }
 }
-genetic_marker_predict_matrix
 colnames(genetic_marker_predict_matrix) <- c("fit", "lwr", "upr")
 rownames(genetic_marker_predict_matrix) <- c("MSAT", "SNP Subset (R0)", "SNP Subset (R80)")
-write.csv(genetic_marker_predict_matrix, file = "C:/Users/gsalas/Documents/resampling_CIs/Code/gm_predict.csv", 
+gmMatrix <- cbind(genetic_marker_predict_matrix, ciWidth)
+write.csv(gmMatrix, file = "C:/Users/gsalas/Documents/resampling_CIs/Code/gm_predict.csv", 
           row.names = TRUE)
 
 # Set work directory by adding path file 
 setwd("C:/Users/gsalas/Documents/resampling_CIs/Code/")
 # Load dataset into environment
 load("Datasets/quercus_final_results_orig.Rdata")
-# 
+#
 quercus14_genDiv <- vector(length = (nrow(final_quercus_results)))
 quercus14_predict_Matrix <- matrix(ncol = 3, nrow = 14)
 for (q in 1:(dim(final_quercus_results)[3])) {
@@ -53,7 +57,6 @@ for (q in 1:(dim(final_quercus_results)[3])) {
   quercus14_sampleNumbers <- rep(quercus14_sampleNumbers, dim(final_quercus_results[,,q])[2])
   # Create data.frame from resampling array values
   quercus14_DF <- data.frame(sampleNumbers=quercus14_sampleNumbers, totalValues=quercus14_genDiv)
-  # quercus14_DF_list[[q]] <- quercus14_DF
   # Build and analyze linear models
   quercus14_Model <- lm(sampleNumbers ~ I((totalValues)^3), data = quercus14_DF)
   # ensure then value being predicted is 0.95
@@ -62,9 +65,13 @@ for (q in 1:(dim(final_quercus_results)[3])) {
   # Pass the gm_95MSSEprediction to the object storing our results by iterating
   # storing them in the rows index of predict_matrix
   quercus14_predict_Matrix[q,] <- quercus14_95MSSEprediction
+  ciWidth <- vector()
+  for (z in 1:(nrow(quercus14_predict_Matrix))) {
+    ciWidth[z] <- quercus14_predict_Matrix[z,3] - quercus14_predict_Matrix[z,2]
+  } 
 }
-quercus14_predict_Matrix
 colnames(quercus14_predict_Matrix) <- c("fit", "lwr", "upr")
 rownames(quercus14_predict_Matrix) <- c("QUAC","QUAR","QUAU", "QUBO","QUCA","QUCE","QUEN","QUGE","QUGR","QUHA","QUHI","QUOG","QUPA", "QUTO")
-write.csv(quercus14_predict_Matrix, file = "C:/Users/gsalas/Documents/resampling_CIs/Code/q14_predict.csv", 
+q14Matrix <- cbind(quercus14_predict_Matrix, ciWidth)
+write.csv(q14Matrix, file = "C:/Users/gsalas/Documents/resampling_CIs/Code/q14_predict.csv", 
           row.names = TRUE)

@@ -95,20 +95,21 @@ wildComplete <- colSums(wildSamples, na.rm = TRUE)/(nrow(wildSamples)*2)
 wildSubsetA2 <- wildComplete[wildComplete > 0]
 # QUESTION 10: How many alleles are there which have frequencies greater than 10% in the wild?
   # 42 alleles have frequencies greater than 10%
-length(which(wildSubsetA2>0.1))
+length(which(wildSubsetA1>0.1))
 
 ## EX SITU REPRESENTATION ##
 
 # All alleles
 # QUESTION 11: Which alleles have frequencies greater than 0% in the wild?
-which(wildSubsetA1 > 0)
+  # 
+names(which(wildSubsetA1 > 0))
 
 # QUESTION 12: Which alleles have frequencies greater than 0% in the garden?
-gardenComplete <- (colSums(gardenSamples, na.rm = TRUE)/(nrow(gardenSamples)*2))
-gardenComplete[wildComplete==0] <- NA
-gardenSubset <- na.omit(gardenComplete)
-gardenSubset <- c(gardenSubset)
-which(gardenSubset > 0)
+  # names of alleles with frequencies greater than 0% are found using the following code:
+  # code can then be 
+gardenComplete <- colSums(gardenSamples, na.rm = TRUE)/(nrow(gardenSamples)*2) 
+gardenSubset <- gardenComplete[gardenComplete > 0]
+names(which(gardenSubset > 0))
 
 # length(which(colSums(wildSamples, na.rm = TRUE) > 0))
 # length(which((colSums(wildSamples, na.rm = TRUE)/(nrow(wildSamples)*2)) > 0.1)) 
@@ -116,8 +117,8 @@ which(gardenSubset > 0)
 
 # QUESTION 13: Which alleles with wild frequencies greater than 0% are also found in the garden?
   # 0 alleles with wild frequencies greater than 0% are also found in the garden
-which(wildSubsetA1 %in% gardenSubset)
+names(which((wildSubsetA1 > 0) %in% (gardenSubset > 0)))
 
 # Question 14: How many alleles with wild frequencies greater than 0% are also found in the garden?
-  # 
 
+length(which(names(wildSubsetA1 > 0) %in% names(gardenSubset > 0)))

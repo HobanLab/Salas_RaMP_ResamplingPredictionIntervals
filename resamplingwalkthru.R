@@ -101,7 +101,7 @@ length(which(wildSubsetA1>0.1))
 
 # All alleles
 # QUESTION 11: Which alleles have frequencies greater than 0% in the wild?
-  # 
+  # 133
 names(which(wildSubsetA1 > 0))
 
 # QUESTION 12: Which alleles have frequencies greater than 0% in the garden?
@@ -116,9 +116,61 @@ names(which(gardenSubset > 0))
 
 
 # QUESTION 13: Which alleles with wild frequencies greater than 0% are also found in the garden?
-  # 0 alleles with wild frequencies greater than 0% are also found in the garden
-names(which((wildSubsetA1 > 0) %in% (gardenSubset > 0)))
+  # 
+names(wildSubsetA1[which(names(wildSubsetA1 > 0) %in% names(gardenSubset > 0))])
 
-# Question 14: How many alleles with wild frequencies greater than 0% are also found in the garden?
-
+# QUESTION 14: How many alleles with wild frequencies greater than 0% are also found in the garden?
+  # which() function will output the position number in the vector for alleles in the wild > 0% when specified using a logical condition. 
+  # names() function will extract the wild allele names associated with the vector position 
+  # %in% identifies rare alleles in the wild that are also found in the garden. in order to do that,
+  # names() also has to be applied to gardenSubset. if we were to call 
+  # names(which(wildSubsetA1 > 0%)) %in% names(gardenSubset) the output is logical statements (TRUE or FALSE)
+  # the which() function from earlier that identified rare alleles at vector position in the wild population 
+  # can be subset to only extract named numerics where the conditional statement is TRUE
+which(wildSubsetA1 > 0)[names(which(wildSubsetA1 > 0)) %in% names(gardenSubset)]
+  # names() function can be used again to extract the allele names.
+names(which(wildSubsetA1 > 0)[names(which(wildSubsetA1 > 0)) %in% names(gardenSubset)])
+  # if we want to check whether the alleles from the wild also identified in the 
+  # garden extracted are indeed greater than 0%, we can subset wildSubsetA1
+length(wildSubsetA1[which(wildSubsetA1 > 0)[names(which(wildSubsetA1 > 0)) %in% names(gardenSubset)]])
+  # this approach is NOT correct
 length(which(names(wildSubsetA1 > 0) %in% names(gardenSubset > 0)))
+
+
+# QUESTION 15: What proportion of alleles with frequencies in the wild greater than 0% are found in gardens?
+  # The proportion of alleles with frequencies in the wild greater than 0% found in gardens is 0.7314286
+
+length(wildSubsetA1[which(wildSubsetA1 > 0)[names(which(wildSubsetA1 > 0)) %in% names(gardenSubset)]])/length(which(wildSubsetA1 > 0))
+
+##  ALLELES OF DIFFERENT CATEGORIES ##
+# QUESTION 16: Which alleles have frequencies less than 1% in the wild?
+  #
+names(which(wildSubsetA1 < 0.01))
+
+# QUESTION 17: Which alleles with wild frequencies less than 1% are also found in the garden?
+  # this approach is layered and slightly more complex. 
+  # which() function will output the position number in the vector for alleles in the wild < 1% when specified using a logical condition. 
+  # names() function will extract the wild allele names associated with the vector position 
+  # %in% identifies rare alleles in the wild that are also found in the garden. in order to do that,
+  # names() also has to be applied to gardenSubset. if we were to call 
+  # names(which(wildSubsetA1 < 0.01)) %in% names(gardenSubset) the output is logical statements (TRUE or FALSE)
+  # the which() function from earlier that identified rare alleles at vector position in the wild population 
+  # can be subset to only extract named numerics where the conditional statement is TRUE
+which(wildSubsetA1 < 0.01)[names(which(wildSubsetA1 < 0.01)) %in% names(gardenSubset)]
+  # names() function can be used again to extract the allele names.
+names(which(wildSubsetA1 < 0.01)[names(which(wildSubsetA1 < 0.01)) %in% names(gardenSubset)])
+  # if we want to check whether the alleles from the wild also identified in the 
+  # garden extracted are indeed less than 1%, we can subset wildSubsetA1
+wildSubsetA1[which(wildSubsetA1 < 0.01)[names(which(wildSubsetA1 < 0.01)) %in% names(gardenSubset)]]
+
+# QUESTION 18: How many alleles with wild frequencies less than 1! are also found in the garden?
+  # 19 
+length(which(wildSubsetA1 < 0.01)[names(which(wildSubsetA1 < 0.01)) %in% names(gardenSubset)])
+
+# QUESTION 19: What proportion of alleles with frequencies of less than 1% in the wild are found in gardens?
+  # 0.1085714
+length(wildSubsetA1[which(wildSubsetA1 < 0.01)[names(which(wildSubsetA1 < 0.01)) %in% names(gardenSubset)]])/length(which(wildSubsetA1 < 0.01))
+
+## RESAMPLING ##
+
+

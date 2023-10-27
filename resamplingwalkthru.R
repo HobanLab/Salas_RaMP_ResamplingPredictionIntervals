@@ -89,7 +89,7 @@ sum(wildSamples[,"PIE125.154"], na.rm = TRUE)
 wildComplete <- (colSums(wildSamples, na.rm = TRUE)/(nrow(wildSamples)*2))
 wildComplete[wildComplete == 0] <- NA
 wildSubset  <- na.omit(wildComplete)
-wildSubsetA1 <- c(wildSubset)
+wildSubsetA1 <- wildSubset
   # APPROACH 2: Subset using logical condition 
 wildComplete <- colSums(wildSamples, na.rm = TRUE)/(nrow(wildSamples)*2) 
 wildSubsetA2 <- wildComplete[wildComplete > 0]
@@ -173,4 +173,38 @@ length(wildSubsetA1[which(wildSubsetA1 < 0.01)[names(which(wildSubsetA1 < 0.01))
 
 ## RESAMPLING ##
 
+# All alleles, 2 specific samples
+# instead of asking you to look at all garden samples, you need to provide answers to the same questions for the 2 wild samples listed below
+sampleTest_2 <- QUAC.MSAT.genind@tab[c("QAc-W-0011", "QAc-W-0091"),]
+# QUESTION 20: How many alleles in the wild are also found in Samples 11 and 91?
+length(which(sampleTest_2[1,] > 0))
+length(which(sampleTest_2[2,] > 0))
 
+# QUESTION 21: 
+length(which(sampleTest_2[1,] > 0))/length(wildSubset)
+length(which(sampleTest_2[2,] > 0))/length(wildSubset)
+
+# All alleles, 3 specific samples
+QUAC.MSAT.genind@tab[c("QAc-W-0011",  "QAc-W-0051", "QAc-W-0091"),]
+sampleTest_3 <- QUAC.MSAT.genind@tab[c("QAc-W-0011",  "QAc-W-0051", "QAc-W-0091"),]
+# QUESTION 22:
+length(which(sampleTest_3[1,] > 0))
+length(which(sampleTest_3[2,] > 0))
+length(which(sampleTest_3[3,] > 0))
+
+# QUESTION 23: What proportion of alleles found in the wild are found in Samples 11, 51 and 91?
+length(which(sampleTest_3[1,] > 0))/length(wildSubset)
+length(which(sampleTest_3[2,] > 0))/length(wildSubset)
+length(which(sampleTest_3[3,] > 0))/length(wildSubset)
+
+# All alleles, 3 random samples
+# SAMPLE DEMO
+# Declare a vector of numbers (1--164)
+numbers <- 1:164
+# `sample` randomly selects items from that vector. The number of items selected is "size"; "replace" specifies whether or not you can select the same item more than once. 
+
+# You can test it out by running the line below multiple times.
+sample(numbers, size=4, replace=FALSE)
+
+# QUESTION 24: Using sample, how can you randomly select 3 individuals (rows) from a matrix of wild individuals?
+sample(wildSubsetA1, size = 3, replace = FALSE)

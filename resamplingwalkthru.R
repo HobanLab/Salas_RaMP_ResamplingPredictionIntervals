@@ -254,9 +254,25 @@ for(i in 1:nrow(wildSamples)){
   samp <- sample(nrow(wildSamples), size = i, replace = FALSE)
   # samp <- sample(wildSamples[!is.na(wildSamples)], size = i, replace = FALSE)
   # Now, measure the proportion of allelic representation in that sample
-  resampValues[i] <- length(which(wildSamples[samp,]>0))/ncol(wildSamples)
+ if (i==1) resampValues[i] <- length(which(wildSamples[samp,]>0))/ncol(wildSamples)
+  if (i>1) resampValues[i] <- length(which(colSums(wildSamples[samp,],na.rm=T)>0))/ncol(wildSamples)
+
   }
 print(resampValues)
+# resampValues <- vector(length = nrow(wildSamples))
+# 
+# for(i in 1:nrow(wildSamples)){
+#   # browser()
+#   # Use sample to randomly subsample the matrix of wild individuals
+#   samp <- sample(nrow(wildSamples), size = i, replace = FALSE)
+#   # samp <- sample(wildSamples[!is.na(wildSamples)], size = i, replace = FALSE)
+#   # Now, measure the proportion of allelic representation in that sample
+#   if (i==1) resampValues[i] <- length(which(wildSamples[samp,]>0))/ncol(wildSamples)
+#   if (i>1) resampValues[i] <- length(which(rowSums(wildSamples[samp,],na.rm=T)>0))/ncol(wildSamples)
+#   
+# }
+# print(resampValues)
+
 
 # Rare alleles, 3 random samples
 # QUESTION 28: Again using sample, randomly select 3 individuals (rows) from a matrix of wild individuals.

@@ -168,7 +168,7 @@ wildSubsetA1[which(wildSubsetA1 < 0.01)[names(which(wildSubsetA1 < 0.01)) %in% n
 length(which(wildSubsetA1 < 0.01)[names(which(wildSubsetA1 < 0.01)) %in% names(gardenSubset)])
 
 # QUESTION 19: What proportion of alleles with frequencies of less than 1% in the wild are found in gardens?
-  # 0.1085714
+  # 0.826087
 length(wildSubsetA1[which(wildSubsetA1 < 0.01)[names(which(wildSubsetA1 < 0.01)) %in% names(gardenSubset)]])/length(which(wildSubsetA1 < 0.01))
 
 ## RESAMPLING ##
@@ -177,31 +177,38 @@ length(wildSubsetA1[which(wildSubsetA1 < 0.01)[names(which(wildSubsetA1 < 0.01))
 # instead of asking you to look at all garden samples, you need to provide answers to the same questions for the 2 wild samples listed below
 sampleTest_2 <- QUAC.MSAT.genind@tab[c("QAc-W-0011", "QAc-W-0091"),]
 # QUESTION 20: How many alleles in the wild are also found in Samples 11 and 91?
-length(which(sampleTest_2[1,] > 0))
-length(which(sampleTest_2[2,] > 0))
+  # 37 alleles in the wild are also found in Samples 11 and 91
+  # colSums is a function that calculates the sum of the values in each column. in our case, we are calculating
+  # the sum of copies (value) at every allele (column) for our two individuals.
+colSums(sampleTest_2, na.rm = TRUE) 
+  # filtering only for values greater than zero will output a logical T/F statement at every index in the matrix
+colSums(sampleTest_2, na.rm = TRUE) > 0  
+  # calling the which function tells us at which index position in the matrix we will find it
+which(colSums(sampleTest_2, na.rm = TRUE) > 0)
+names(which(colSums(sampleTest_2, na.rm = TRUE) > 0))
+  # counting the names will help find the 
+length(names(which(colSums(sampleTest_2, na.rm = TRUE) > 0)))
+
+names(wildSubsetA1) %in% names(which(colSums(sampleTest_2, na.rm=TRUE) > 0))
+
+length(names(wildSubsetA1)[which(names(wildSubsetA1) %in% names(which(colSums(sampleTest_2, na.rm=TRUE) > 0)))])
 
 # QUESTION 21: What proportion of alleles in the wild are found in Samples 11 and 91?
   # the proportion of alleles in the wild found in individual 1 is 0.1388889
   # the proportion of alleles in the wild found in individual 2 is 0.1222222
-length(which(sampleTest_2[1,] > 0))/ncol(wildSamples)
-length(which(sampleTest_2[2,] > 0))/ncol(wildSamples)
+length(names(wildSubsetA1)[which(names(wildSubsetA1) %in% names(which(colSums(sampleTest_2, na.rm=TRUE) > 0)))])/length(names(wildSubsetA1))
 
 # All alleles, 3 specific samples
 QUAC.MSAT.genind@tab[c("QAc-W-0011",  "QAc-W-0051", "QAc-W-0091"),]
 sampleTest_3 <- QUAC.MSAT.genind@tab[c("QAc-W-0011",  "QAc-W-0051", "QAc-W-0091"),]
 
 # QUESTION 22: How many alleles in the wild are also found in Samples 11, 51 and 91?
-length(which(sampleTest_3[1,] > 0))
-length(which(sampleTest_3[2,] > 0))
-length(which(sampleTest_3[3,] > 0))
+  # 47 alleles in the wild are also found in Samples 11, 51, and 91
+length(names(wildSubsetA1)[which(names(wildSubsetA1) %in% names(which(colSums(sampleTest_3, na.rm=TRUE) > 0)))])
 
 # QUESTION 23: What proportion of alleles found in the wild are found in Samples 11, 51 and 91?
-  # the proportion of alleles in the wild found in sample 11 is 0.1388889
-  # the proportion of alleles in the wild found in sample 51 is 0.1333333
-  # the proportion of alleles in the wild found in sample 91 is 0.1222222
-length(which(sampleTest_3[1,] > 0))/ncol(wildSamples)
-length(which(sampleTest_3[2,] > 0))/ncol(wildSamples)
-length(which(sampleTest_3[3,] > 0))/ncol(wildSamples)
+  # the proportion of alleles in the wild found in sample 11, 51, and 91 is 0.3533835
+length(names(wildSubsetA1)[which(names(wildSubsetA1) %in% names(which(colSums(sampleTest_3, na.rm=TRUE) > 0)))])/length(names(wildSubsetA1))
 
 # All alleles, 3 random samples
 # SAMPLE DEMO
@@ -213,23 +220,18 @@ numbers <- 1:164
 sample(numbers, size=4, replace=FALSE)
 
 # QUESTION 24: Using sample, how can you randomly select 3 individuals (rows) from a matrix of wild individuals?
-  # the samples are 71; 152; 79
+  # the samples are 113, 89, 59
 sample(nrow(wildSamples), size = 3, replace = FALSE)
+randomSample_3 <- QUAC.MSAT.genind@tab[c(113, 89, 59),]
 
 # QUESTION 25: How many alleles in the wild are also found in the 3 random samples from above?
-  # for each sample, wildSamples is showing all the alleles greater than 0.
-  # this is done by the subsetting the object wildSamples for the indvidual and  
-length(which(wildSamples[71,] > 0))
-length(which(wildSamples[152,] > 0))
-length(which(wildSamples[79,] > 0))
+  # 49 alleles in the wild are also found in the 3 random samples from above  
+length(names(wildSubsetA1)[which(names(wildSubsetA1) %in% names(which(colSums(randomSample_3, na.rm=TRUE) > 0)))])
 
 # QUESTION 26: What proportion of alleles found in the wild are found in the 3 random samples from above
-  # the proportion of alleles in the wild found in sample 71 is 0.1111111
-  # the proportion of alleles in the wild found in sample 152 is 0.1277778
-  # the proportion of alleles in the wild found in sample 79 is 0.1111111
-length(which(wildSamples[71,] > 0))/ncol(wildSamples)
-length(which(wildSamples[152,] > 0))/ncol(wildSamples)
-length(which(wildSamples[79,] > 0))/ncol(wildSamples)
+  # 
+length(names(wildSubsetA1)[which(names(wildSubsetA1) %in% names(which(colSums(randomSample_3, na.rm=TRUE) > 0)))])/length(names(wildSubsetA1))
+
 
 # All alleles, all sample sizes
 # QUESTION 27: Fill out the sections of the loop below, which calculates ex situ representation values for samples of multiple sizes.

@@ -163,7 +163,7 @@ names(which(wildSubsetA1 < 0.01)[names(which(wildSubsetA1 < 0.01)) %in% names(ga
   # garden extracted are indeed less than 1%, we can subset wildSubsetA1
 wildSubsetA1[which(wildSubsetA1 < 0.01)[names(which(wildSubsetA1 < 0.01)) %in% names(gardenSubset)]]
 
-# QUESTION 18: How many alleles with wild frequencies less than 1! are also found in the garden?
+# QUESTION 18: How many alleles with wild frequencies less than 1% are also found in the garden?
   # 19 
 length(which(wildSubsetA1 < 0.01)[names(which(wildSubsetA1 < 0.01)) %in% names(gardenSubset)])
 
@@ -194,8 +194,7 @@ names(wildSubsetA1) %in% names(which(colSums(sampleTest_2, na.rm=TRUE) > 0))
 length(names(wildSubsetA1)[which(names(wildSubsetA1) %in% names(which(colSums(sampleTest_2, na.rm=TRUE) > 0)))])
 
 # QUESTION 21: What proportion of alleles in the wild are found in Samples 11 and 91?
-  # the proportion of alleles in the wild found in individual 1 is 0.1388889
-  # the proportion of alleles in the wild found in individual 2 is 0.1222222
+  # the proportion of alleles in the wild found in samples 11 and 91 is 0.2781955
 length(names(wildSubsetA1)[which(names(wildSubsetA1) %in% names(which(colSums(sampleTest_2, na.rm=TRUE) > 0)))])/length(names(wildSubsetA1))
 
 # All alleles, 3 specific samples
@@ -222,14 +221,14 @@ sample(numbers, size=4, replace=FALSE)
 # QUESTION 24: Using sample, how can you randomly select 3 individuals (rows) from a matrix of wild individuals?
   # the samples are 113, 89, 59
 sample(nrow(wildSamples), size = 3, replace = FALSE)
-randomSample_3 <- QUAC.MSAT.genind@tab[c(113, 89, 59),]
+randomSample_3 <- QUAC.MSAT.genind@tab[sample(nrow(wildSamples), size = 3, replace = FALSE),]
 
 # QUESTION 25: How many alleles in the wild are also found in the 3 random samples from above?
   # 49 alleles in the wild are also found in the 3 random samples from above  
 length(names(wildSubsetA1)[which(names(wildSubsetA1) %in% names(which(colSums(randomSample_3, na.rm=TRUE) > 0)))])
 
 # QUESTION 26: What proportion of alleles found in the wild are found in the 3 random samples from above
-  # 
+  # the proportion is 0.3383459
 length(names(wildSubsetA1)[which(names(wildSubsetA1) %in% names(which(colSums(randomSample_3, na.rm=TRUE) > 0)))])/length(names(wildSubsetA1))
 
 
@@ -250,27 +249,32 @@ length(names(wildSubsetA1)[which(names(wildSubsetA1) %in% names(which(colSums(ra
 # Start by declaring a vector to capture values
 resampValues <- vector(length = nrow(wildSamples))
 
+wildSamples <- wildSamples[,which(colSums(wildSamples, na.rm = TRUE)!= 0)]
+
 for(i in 1:nrow(wildSamples)){
   # browser()
   # Use sample to randomly subsample the matrix of wild individuals
   samp <- sample(nrow(wildSamples), size = i, replace = FALSE)
   # samp <- sample(wildSamples[!is.na(wildSamples)], size = i, replace = FALSE)
   # Now, measure the proportion of allelic representation in that sample
- if (i==1) resampValues[i] <- length(which(wildSamples[samp,]>0))/ncol(wildSamples)
-  if (i>1) resampValues[i] <- length(which(colSums(wildSamples[samp,],na.rm=T)>0))/ncol(wildSamples)
+ if (i==1) resampValues[i] <- length(names(wildSubsetA1)[which(names(wildSubsetA1) %in% names(which((wildSamples[samp,]) > 0)))])/length(names(wildSubsetA1))
+  if (i>1) resampValues[i] <- length(names(wildSubsetA1)[which(names(wildSubsetA1) %in% names(which(colSums(wildSamples[samp,], na.rm=TRUE) > 0)))])/length(names(wildSubsetA1))
 
   }
 print(resampValues)
+
+
 # resampValues <- vector(length = nrow(wildSamples))
 # 
+# wildSamples <- wildSamples[,which(colSums(wildSamples, na.rm = TRUE)!= 0)]
 # for(i in 1:nrow(wildSamples)){
 #   # browser()
 #   # Use sample to randomly subsample the matrix of wild individuals
 #   samp <- sample(nrow(wildSamples), size = i, replace = FALSE)
 #   # samp <- sample(wildSamples[!is.na(wildSamples)], size = i, replace = FALSE)
 #   # Now, measure the proportion of allelic representation in that sample
-#   if (i==1) resampValues[i] <- length(which(wildSamples[samp,]>0))/ncol(wildSamples)
-#   if (i>1) resampValues[i] <- length(which(rowSums(wildSamples[samp,],na.rm=T)>0))/ncol(wildSamples)
+#   if (i==1) resampValues[i] <- length(which(wildSamples[samp,]>0))/length(names(wildSubsetA1))
+#   if (i>1) resampValues[i] <- length(which(colSums(wildSamples[samp,],na.rm=T)>0))/length(names(wildSubsetA1))
 #   
 # }
 # print(resampValues)
@@ -282,24 +286,13 @@ print(resampValues)
 sample(nrow(wildSamples), size = 3, replace = FALSE)
 
 # QUESTION 29: How many Rare alleles in the wild are also found in the 3 random samples from above?
-  # 1 rare allele in the wild was also found in sample 98
-  # 0 rare allele's in the wild were also found in sample 128
-  # 0 rare allele's in the wild were also found in sample 146
-length(which(names(which(wildSamples[98,]>0)) %in% names(which(wildSubsetA1 < 0.01))))
-length(which(names(which(wildSamples[128,]>0)) %in% names(which(wildSubsetA1 < 0.01))))
-length(which(names(which(wildSamples[146,]>0)) %in% names(which(wildSubsetA1 < 0.01))))
-  # method to find the name of which rare allele is found in the wild also foud in a given sample 
-names(which(wildSubsetA1 < 0.01))[which(names(which(wildSamples[98,]>0)) %in% names(which(wildSubsetA1 < 0.01)))]
-names(which(names(which(wildSamples[128,]>0)) %in% names(which(wildSubsetA1 < 0.01))))
-names(which(names(which(wildSamples[146,]>0)) %in% names(which(wildSubsetA1 < 0.01))))
+  # 2
+randomSample_3 <- QUAC.MSAT.genind@tab[sample(nrow(wildSamples), size = 3, replace = FALSE),]
+length(which(names(which(wildSubsetA1 < 0.01)) %in% names(which(colSums(randomSample_3, na.rm=TRUE) > 0)) != FALSE))
 
 # QUESTION 30: What proportion of Rare alleles found in the wild are found in the 3 random samples from above?
-  # the proportion of rare alleles found in the wild also found in sample 98 is 0.04347826
-  # the proportion of rare alleles found in the wild also found in sample 128 is 0
-  # the proportion of rare alleles found in the wild also found in sample 146 is 0
-length(which(names(which(wildSamples[98,]>0)) %in% names(which(wildSubsetA1 < 0.01))))/length(which(wildSubsetA1 < 0.01))
-length(names(which(names(which(wildSamples[128,]>0)) %in% names(which(wildSubsetA1 < 0.01)))))/length(which(wildSubsetA1 < 0.01))
-length(names(which(names(which(wildSamples[146,]>0)) %in% names(which(wildSubsetA1 < 0.01)))))/length(which(wildSubsetA1 < 0.01))
+  # the proportion of rare alleles found in the wild also found in sample the 3 random samples is 0.08695652
+length(which(names(which(wildSubsetA1 < 0.01)) %in% names(which(colSums(randomSample_3, na.rm=TRUE) > 0)) != FALSE))/length(which(wildSubsetA1 < 0.01))
 
 # QUESTION 31:
   # 

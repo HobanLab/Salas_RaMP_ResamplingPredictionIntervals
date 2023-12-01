@@ -282,17 +282,94 @@ print(resampValues)
 
 # Rare alleles, 3 random samples
 # QUESTION 28: Again using sample, randomly select 3 individuals (rows) from a matrix of wild individuals.
-  # the 3 individuals sampled are 98, 128, 146
 sample(nrow(wildSamples), size = 3, replace = FALSE)
 
 # QUESTION 29: How many Rare alleles in the wild are also found in the 3 random samples from above?
-  # 2
-randomSample_3 <- QUAC.MSAT.genind@tab[sample(nrow(wildSamples), size = 3, replace = FALSE),]
-length(which(names(which(wildSubsetA1 < 0.01)) %in% names(which(colSums(randomSample_3, na.rm=TRUE) > 0)) != FALSE))
+  # 1
+randomSample_3 <- wildSamples[sample(nrow(wildSamples), size =3, replace = FALSE),]
+
+length(which(names(which(wildSubsetA1 < 0.01)) %in% names(which(colSums(randomSample_3, na.rm=TRUE) > 0))))
 
 # QUESTION 30: What proportion of Rare alleles found in the wild are found in the 3 random samples from above?
-  # the proportion of rare alleles found in the wild also found in sample the 3 random samples is 0.08695652
-length(which(names(which(wildSubsetA1 < 0.01)) %in% names(which(colSums(randomSample_3, na.rm=TRUE) > 0)) != FALSE))/length(which(wildSubsetA1 < 0.01))
+  # the proportion of rare alleles found in the wild also found in sample the 3 random samples is 0.04347826
+length(which(names(which(wildSubsetA1 < 0.01)) %in% names(which(colSums(randomSample_3, na.rm=TRUE) > 0))))/length(which(wildSubsetA1<0.01))
 
+# ALL ALLELE CATEGORIES, ALL SAMPLE SIZES #
 # QUESTION 31:
   # 
+total <- vector(length = nrow(wildSamples))
+common <- vector(length = nrow(wildSamples))
+lowfreq <- vector(length = nrow(wildSamples))
+rare <- vector(length = nrow(wildSamples))
+# wildSamples <- wildSamples[,which(colSums(wildSamples, na.rm = TRUE)!= 0)]
+
+for(i in 1:nrow(wildSamples)){
+  # browser()
+  # Use sample to randomly subsample the matrix of wild individuals
+  wildSamples <- wildSamples[,which(colSums(wildSamples, na.rm = TRUE)!= 0)]
+  samp <- sample(nrow(wildSamples), size = i, replace = FALSE)
+  # samp <- sample(wildSamples[!is.na(wildSamples)], size = i, replace = FALSE)
+  # Now, measure the proportion of allelic representation in that sample
+  if (i==1) {
+    total[i] <- length(names(wildSubsetA1)[which(names(wildSubsetA1) %in% names(which((wildSamples[samp,]) > 0)))])/length(names(wildSubsetA1))
+    common[i] <- length(which(names(which(wildSubsetA1 < 0.1)) %in% names(which(wildSamples[samp,] > 0))))/length(which(wildSubsetA1 < 0.1))
+    lowfreq[i] <- length(which(names(which(wildSubsetA1 < 0.01:0.1)) %in% names(which(wildSamples[samp,] > 0))))/length(which(wildSubsetA1 < 0.01:0.1))
+    rare[i] <- length(which(names(which(wildSubsetA1 < 0.01)) %in% names(which(wildSamples[samp,] > 0))))/length(which(wildSubsetA1 < 0.01))
+  } else{
+    total[i] <- length(names(wildSubsetA1)[which(names(wildSubsetA1) %in% names(which(colSums(wildSamples[samp,], na.rm=TRUE) > 0)))])/length(names(wildSubsetA1))
+    common[i] <- length(which(names(which(wildSubsetA1 < 0.1)) %in% names(which(colSums(wildSamples[samp,], na.rm=TRUE) > 0))))/length(which(wildSubsetA1 < 0.1))
+    lowfreq[i] <- length(which(names(which(wildSubsetA1 < 0.01:0.1)) %in% names(which(colSums(wildSamples[samp,], na.rm=TRUE) > 0))))/length(which(wildSubsetA1 < 0.01:0.1))
+    rare[i] <- length(which(names(which(wildSubsetA1 < 0.01)) %in% names(which(colSums(wildSamples[samp,], na.rm=TRUE) > 0))))/length(which(wildSubsetA1<0.01))
+    
+  }
+  categorymat <- cbind(total,common,lowfreq,rare)
+}
+print(categorymat)
+
+# Declare an object used to capture values
+# resampValues <- FILL_IN_BLANK
+# # Optional: give the object storing resampling results informative names
+# 
+# for(i in 1:nrow(FILL_IN_BLANK)){
+#   # Use sample to randomly subsample the matrix of wild individuals
+#   samp <- FILL_IN_BLANK
+#   # First: measure the proportion of Total allelic representation in that sample
+#   resampValues[FILL_IN_BLANK] <- 
+#     FILL_IN_BLANK # <-- Answer to Question 26
+#   # Second: measure the proportion of Common allelic representation (<10% frequency) in that sample
+#   resampValues[FILL_IN_BLANK] <- 
+#     FILL_IN_BLANK
+#   # Third: measure the proportion of Low frequency allelic representation (1%--10% frequency) in       that sample
+#   resampValues[FILL_IN_BLANK] <- 
+#     FILL_IN_BLANK
+#   # Fourth: measure the proportion of Rare allelic representation (<1% frequency) in that sample
+#   resampValues[FILL_IN_BLANK] <- 
+#     FILL_IN_BLANK # <-- Answer to Question 30
+# }
+# print(resampValues)
+
+# Declare an object used to capture values
+# total <- vector(length = nrow(wildSamples))
+# wildSamples <- wildSamples[,which(colSums(wildSamples, na.rm = TRUE)!= 0)]
+# # Optional: give the object storing resampling results informative names
+# for(i in 1:nrow(wildSamples)){
+#   # Use sample to randomly subsample the matrix of wild individuals
+#   samp <- sample(nrow(wildSamples), size = i, replace = FALSE)
+#   samp <- wildSamples[samp,]
+#   # total <- vector()
+#   # common <- vector()
+#   # lowFrequency <- vector()
+#   # rare <- vector()
+#   # First: measure the proportion of Total allelic representation in that sample
+#   total[i] <- length(names(wildSubsetA1)[which(names(wildSubsetA1) %in% names(which(colSums(samp, na.rm = TRUE) > 0)))])/length(names(wildSubsetA1))
+#   # Second: measure the proportion of Common allelic representation (<10% frequency) in that sample
+#   # resampValues[i] <- length(which(names(which(wildSubsetA1 < 0.1)) %in% names(which(colSums(samp, na.rm=TRUE) > 0))))/length(which(wildSubsetA1<0.1))
+#   #   FILL_IN_BLANK
+#   # # Third: measure the proportion of Low frequency allelic representation (1%--10% frequency) in       that sample
+#   # # resampValues[i] <- 
+#   # #   FILL_IN_BLANK
+#   # # Fourth: measure the proportion of Rare allelic representation (<1% frequency) in that sample
+#   # resampValues[i] <- length(which(names(which(wildSubsetA1 < 0.01)) %in% names(which(colSums(samp, na.rm=TRUE) > 0))))/length(which(wildSubsetA1<0.01))
+# 
+# }
+# print(total)

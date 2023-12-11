@@ -355,3 +355,6 @@ for (q in 1:j){
   resamp_category[,,q] <- categorymat
 }
 resamp_category
+
+setwd("C:/Users/gsalas/Documents/resampling_CIs/Code/Datasets")
+saveRDS(resamp_category, file = "resamp_category.RDS")

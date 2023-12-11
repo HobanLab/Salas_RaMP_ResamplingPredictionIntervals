@@ -6,30 +6,6 @@ library(adegenet)
 
 test <- readRDS("resamp_category.RDS")
 
-# totalallelecatmean <- vector()
-# comallelecatmean <- vector()
-# lowfreqallelecatmean <- vector()
-# rareallelecatmean <- vector()
-# totalallelecat95upper <- vector()
-# totalallelecat95lower <- vector()
-# 
-# j <- length(dimnames(test)[[2]])
-# 
-# for(i in 1:nrow(test)) {
-#   totalallelecatmean[i] <- mean(test[i,"total",])
-#   totalallelecat95upper[i] <- quantile(test[i,"total",], 0.95)
-#   totalallelecat95lower[i] <- quantile(test[i,"total",], 0.05)
-# }
-# 
-# for (i in 1:nrow(test)) {
-#     totalallelecatmean[i] <- mean(test[i,"total",])
-#     comallelecatmean[i] <- mean(test[i,"common",])
-#     lowfreqallelecatmean[i] <- mean(test[i,"lowfreq",])
-#     rareallelecatmean[i] <- mean(test[i,"rare",])
-# }
-# 
-# mat <- cbind(totalallelecatmean,comallelecatmean,lowfreqallelecatmean,rareallelecatmean)
-
 # linear model of resampling array
 totalsVector <- c(test[,"total",])
 # Specify sample numbers column
@@ -75,8 +51,9 @@ wildRows <- which(QUAC.MSAT.genind@pop == "wild")
 # ANSWER:
 QUAC.MSAT.Wild.genind <- QUAC.MSAT.genind[1,]
 locNames(QUAC.MSAT.genind)
-loc_samp <- sample(length(locNames(QUAC.MSAT.genind)), size = 3, replace = FALSE)
+# loc_samp <- sample(length(locNames(QUAC.MSAT.genind)), size = 3, replace = FALSE)
 loc_samp <- sample(locNames(QUAC.MSAT.genind), size = 3, replace = FALSE)
 QUAC.MSAT.3loc.genind <- QUAC.MSAT.genind[,loc=loc_samp]
-wildSamp_3loc <- QUAC.MSAT.3loc.genind@tab[wildRows,]
 locNames(QUAC.MSAT.3loc.genind)
+wildSamp_3loc <- QUAC.MSAT.3loc.genind@tab[wildRows,]
+

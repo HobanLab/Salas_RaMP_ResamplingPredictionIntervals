@@ -4,13 +4,13 @@
 setwd("C:/Users/gsalas/Documents/resampling_CIs/Code/Datasets")
 library(adegenet)
 
-test <- readRDS("resamp_category.RDS")
+resamp_category <- readRDS("resamp_category.RDS")
 
 # linear model of resampling array
-totalsVector <- c(test[,"total",])
+totalsVector <- c(resamp_category[,"total",])
 # Specify sample numbers column
-gm_sampleNumbers <- 1:(nrow(test[,"total",]))
-gm_sampleNumbers <- rep(gm_sampleNumbers, dim(test)[[3]])
+gm_sampleNumbers <- 1:(nrow(resamp_category[,"total",]))
+gm_sampleNumbers <- rep(gm_sampleNumbers, dim(resamp_category)[[3]])
 # Create data.frame from resampling array values
 gm_DF <- data.frame(sampleNumbers=gm_sampleNumbers, totalValues=totalsVector)
 # Build and analyze linear models
@@ -57,3 +57,151 @@ QUAC.MSAT.3loc.genind <- QUAC.MSAT.genind[,loc=loc_samp]
 locNames(QUAC.MSAT.3loc.genind)
 wildSamp_3loc <- QUAC.MSAT.3loc.genind@tab[wildRows,]
 
+##########################################
+samp_10loc <- sample(locNames(QUAC.MSAT.genind), size = 10, replace = FALSE)
+QUAC.MSAT.10loc.genind <- QUAC.MSAT.genind[,loc=samp_10loc]
+locNames(QUAC.MSAT.10loc.genind)
+wildSamp_10loc <- QUAC.MSAT.10loc.genind@tab[wildRows,]
+# ALL ALLELE CATEGORIES, ALL SAMPLE SIZES #
+# QUESTION 31:
+# 
+wildComplete <- colSums(wildSamp_10loc, na.rm = TRUE)/(nrow(wildSamp_10loc)*2) 
+wildSubset <- wildComplete[wildComplete > 0]
+total <- vector(length = nrow(wildSamp_10loc))
+common <- vector(length = nrow(wildSamp_10loc))
+lowfreq <- vector(length = nrow(wildSamp_10loc))
+rare <- vector(length = nrow(wildSamp_10loc))
+wildSamp_10loc <- wildSamp_10loc[,which(colSums(wildSamp_10loc, na.rm = TRUE)!= 0)]
+
+for(i in 1:nrow(wildSamp_10loc)){
+  # browser()
+  # Use sample to randomly subsample the matrix of wild individuals
+  samp <- sample(nrow(wildSamp_10loc), size = i, replace = FALSE)
+  samp <- wildSamp_10loc[samp,]
+  # samp <- sample(wildSamples[!is.na(wildSamples)], size = i, replace = FALSE)
+  # Now, measure the proportion of allelic representation in that sample
+  if (i==1) {
+    total[i] <- length(names(wildSubset)[which(names(wildSubset) %in% names(which(samp > 0)))])/length(names(wildSubset))
+    common[i] <- length(which(names(which(wildSubset > 0.1)) %in% names(which(samp > 0))))/length(which(wildSubset > 0.1))
+    lowfreq[i] <- length(which(names(which(wildSubset > 0.01 & wildSubset < 0.1)) %in% names(which(samp > 0))))/length(which(wildSubset > 0.01 & wildSubset < 0.1))
+    rare[i] <- length(which(names(which(wildSubset < 0.01)) %in% names(which(samp > 0))))/length(which(wildSubset < 0.01))
+  } else{
+    total[i] <- length(names(wildSubset)[which(names(wildSubset) %in% names(which(colSums(samp, na.rm=TRUE) > 0)))])/length(names(wildSubset))
+    common[i] <- length(which(names(which(wildSubset > 0.1)) %in% names(which(colSums(samp, na.rm=TRUE) > 0))))/length(which(wildSubset > 0.1))
+    lowfreq[i] <- length(which(names(which(wildSubset > 0.01 & wildSubset < 0.1)) %in% names(which(colSums(samp, na.rm=TRUE) > 0))))/length(which(wildSubset > 0.01 & wildSubset < 0.1))
+    rare[i] <- length(which(names(which(wildSubset < 0.01)) %in% names(which(colSums(samp, na.rm=TRUE) > 0))))/length(which(wildSubset < 0.01))
+    
+  }
+  categorymat_10loc <- cbind(total,common,lowfreq,rare)
+}
+print(categorymat_10loc)
+
+# Resampling in replicate: all allele categories, all sample sizes #
+# QUESTION 32: Repeat Question 31, but store the values across 5 resampling replicates
+resamp_category10loc <- array(dim = c(164,4,5))
+category <- colnames(categorymat_10loc)
+dimnames(resamp_category10loc) <- list(paste0("sample ", 1:nrow(categorymat_10loc)), category, paste0("replicate ",1:5))
+j <- length((dimnames(resamp_category10loc)[[3]]))
+for (q in 1:j){
+  for(i in 1:nrow(wildSamp_10loc)){
+    # browser()
+    samp <- sample(nrow(wildSamp_10loc), size = i, replace = FALSE)
+    samp <- wildSamp_10loc[samp,]
+    # Use sample to randomly subsample the matrix of wild individuals
+    # Now, measure the proportion of allelic representation in that sample
+    if (i==1) {
+      total[i] <- length(names(wildSubset)[which(names(wildSubset) %in% names(which(samp > 0)))])/length(names(wildSubset))
+      common[i] <- length(which(names(which(wildSubset > 0.1)) %in% names(which(samp > 0))))/length(which(wildSubset > 0.1))
+      lowfreq[i] <- length(which(names(which(wildSubset > 0.01 & wildSubset < 0.1)) %in% names(which(samp > 0))))/length(which(wildSubset > 0.01 & wildSubset < 0.1))
+      rare[i] <- length(which(names(which(wildSubset < 0.01)) %in% names(which(samp > 0))))/length(which(wildSubset < 0.01))
+    } else{
+      total[i] <- length(names(wildSubset)[which(names(wildSubset) %in% names(which(colSums(samp, na.rm=TRUE) > 0)))])/length(names(wildSubset))
+      common[i] <- length(which(names(which(wildSubset > 0.1)) %in% names(which(colSums(samp, na.rm=TRUE) > 0))))/length(which(wildSubset > 0.1))
+      lowfreq[i] <- length(which(names(which(wildSubset > 0.01 & wildSubset < 0.1)) %in% names(which(colSums(samp, na.rm=TRUE) > 0))))/length(which(wildSubset > 0.01 & wildSubset < 0.1))
+      rare[i] <- length(which(names(which(wildSubset < 0.01)) %in% names(which(colSums(samp, na.rm=TRUE) > 0))))/length(which(wildSubset < 0.01))
+    }
+  }
+  categorymat_10loc <- cbind(total,common,lowfreq,rare)
+  resamp_category10loc[,,q] <- categorymat_10loc
+}
+resamp_category10loc
+########################################
+
+samp_5loc <- sample(locNames(QUAC.MSAT.genind), size = 5, replace = FALSE)
+QUAC.MSAT.5loc.genind <- QUAC.MSAT.genind[,loc=samp_5loc]
+locNames(QUAC.MSAT.5loc.genind)
+wildSamp_5loc <- QUAC.MSAT.5loc.genind@tab[wildRows,]
+# ALL ALLELE CATEGORIES, ALL SAMPLE SIZES #
+# QUESTION 31:
+# 
+wildComplete <- colSums(wildSamp_5loc, na.rm = TRUE)/(nrow(wildSamp_5loc)*2) 
+wildSubset <- wildComplete[wildComplete > 0]
+total <- vector(length = nrow(wildSamp_5loc))
+common <- vector(length = nrow(wildSamp_5loc))
+lowfreq <- vector(length = nrow(wildSamp_5loc))
+rare <- vector(length = nrow(wildSamp_5loc))
+wildSamp_5loc <- wildSamp_5loc[,which(colSums(wildSamp_5loc, na.rm = TRUE)!= 0)]
+
+for(i in 1:nrow(wildSamp_5loc)){
+  # browser()
+  # Use sample to randomly subsample the matrix of wild individuals
+  samp <- sample(nrow(wildSamp_5loc), size = i, replace = FALSE)
+  samp <- wildSamp_5loc[samp,]
+  # samp <- sample(wildSamples[!is.na(wildSamples)], size = i, replace = FALSE)
+  # Now, measure the proportion of allelic representation in that sample
+  if (i==1) {
+    total[i] <- length(names(wildSubset)[which(names(wildSubset) %in% names(which(samp > 0)))])/length(names(wildSubset))
+    common[i] <- length(which(names(which(wildSubset > 0.1)) %in% names(which(samp > 0))))/length(which(wildSubset > 0.1))
+    lowfreq[i] <- length(which(names(which(wildSubset > 0.01 & wildSubset < 0.1)) %in% names(which(samp > 0))))/length(which(wildSubset > 0.01 & wildSubset < 0.1))
+    rare[i] <- length(which(names(which(wildSubset < 0.01)) %in% names(which(samp > 0))))/length(which(wildSubset < 0.01))
+  } else{
+    total[i] <- length(names(wildSubset)[which(names(wildSubset) %in% names(which(colSums(samp, na.rm=TRUE) > 0)))])/length(names(wildSubset))
+    common[i] <- length(which(names(which(wildSubset > 0.1)) %in% names(which(colSums(samp, na.rm=TRUE) > 0))))/length(which(wildSubset > 0.1))
+    lowfreq[i] <- length(which(names(which(wildSubset > 0.01 & wildSubset < 0.1)) %in% names(which(colSums(samp, na.rm=TRUE) > 0))))/length(which(wildSubset > 0.01 & wildSubset < 0.1))
+    rare[i] <- length(which(names(which(wildSubset < 0.01)) %in% names(which(colSums(samp, na.rm=TRUE) > 0))))/length(which(wildSubset < 0.01))
+    
+  }
+  categorymat_5loc <- cbind(total,common,lowfreq,rare)
+}
+print(categorymat_5loc)
+
+# Resampling in replicate: all allele categories, all sample sizes #
+# QUESTION 32: Repeat Question 31, but store the values across 5 resampling replicates
+resamp_category5loc <- array(dim = c(164,4,5))
+category <- colnames(categorymat_5loc)
+dimnames(resamp_category5loc) <- list(paste0("sample ", 1:nrow(categorymat_5loc)), category, paste0("replicate ",1:5))
+j <- length((dimnames(resamp_category5loc)[[3]]))
+for (q in 1:j){
+  for(i in 1:nrow(wildSamp_10loc)){
+    # browser()
+    samp <- sample(nrow(wildSamp_10loc), size = i, replace = FALSE)
+    samp <- wildSamp_10loc[samp,]
+    # Use sample to randomly subsample the matrix of wild individuals
+    # Now, measure the proportion of allelic representation in that sample
+    if (i==1) {
+      total[i] <- length(names(wildSubset)[which(names(wildSubset) %in% names(which(samp > 0)))])/length(names(wildSubset))
+      common[i] <- length(which(names(which(wildSubset > 0.1)) %in% names(which(samp > 0))))/length(which(wildSubset > 0.1))
+      lowfreq[i] <- length(which(names(which(wildSubset > 0.01 & wildSubset < 0.1)) %in% names(which(samp > 0))))/length(which(wildSubset > 0.01 & wildSubset < 0.1))
+      rare[i] <- length(which(names(which(wildSubset < 0.01)) %in% names(which(samp > 0))))/length(which(wildSubset < 0.01))
+    } else{
+      total[i] <- length(names(wildSubset)[which(names(wildSubset) %in% names(which(colSums(samp, na.rm=TRUE) > 0)))])/length(names(wildSubset))
+      common[i] <- length(which(names(which(wildSubset > 0.1)) %in% names(which(colSums(samp, na.rm=TRUE) > 0))))/length(which(wildSubset > 0.1))
+      lowfreq[i] <- length(which(names(which(wildSubset > 0.01 & wildSubset < 0.1)) %in% names(which(colSums(samp, na.rm=TRUE) > 0))))/length(which(wildSubset > 0.01 & wildSubset < 0.1))
+      rare[i] <- length(which(names(which(wildSubset < 0.01)) %in% names(which(colSums(samp, na.rm=TRUE) > 0))))/length(which(wildSubset < 0.01))
+    }
+  }
+  categorymat_5loc <- cbind(total,common,lowfreq,rare)
+  resamp_category5loc[,,q] <- categorymat_5loc
+}
+resamp_category5loc
+
+
+# three resampling arrays
+resamp_category
+resamp_category10loc
+resamp_category5loc
+
+# test <-  function(DATA, x, y){}
+# for (variable in vector) {
+#   
+# }

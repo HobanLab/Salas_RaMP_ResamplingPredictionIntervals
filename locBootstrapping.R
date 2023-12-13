@@ -47,21 +47,22 @@ QUAC.MSAT.genind@pop
 gardenRows <- which(QUAC.MSAT.genind@pop == "garden")
 wildRows <- which(QUAC.MSAT.genind@pop == "wild")
 
+# SEPARATE BY POPULATION
+populations <- seppop(QUAC.MSAT.genind)
+QUAC.MSAT.WILD.genind <- populations$wild
+QUAC.MSAT.GARDEN.genind <- populations$garden
+
 # Randomly sample a subset of loci
-# ANSWER:
-QUAC.MSAT.Wild.genind <- QUAC.MSAT.genind[1,]
-locNames(QUAC.MSAT.genind)
-# loc_samp <- sample(length(locNames(QUAC.MSAT.genind)), size = 3, replace = FALSE)
-loc_samp <- sample(locNames(QUAC.MSAT.genind), size = 3, replace = FALSE)
-QUAC.MSAT.3loc.genind <- QUAC.MSAT.genind[,loc=loc_samp]
-locNames(QUAC.MSAT.3loc.genind)
-wildSamp_3loc <- QUAC.MSAT.3loc.genind@tab[wildRows,]
+loc_samp <- sample(locNames(QUAC.MSAT.WILD.genind), size = 3, replace = FALSE)
+QUAC.MSAT.3loc.WILD.genind <- QUAC.MSAT.WILD.genind[,loc=loc_samp]
+locNames(QUAC.MSAT.3loc.WILD.genind)
+wildSamp_3loc <- QUAC.MSAT.3loc.WILD.genind@tab
 
 ##########################################
-samp_10loc <- sample(locNames(QUAC.MSAT.genind), size = 10, replace = FALSE)
-QUAC.MSAT.10loc.genind <- QUAC.MSAT.genind[,loc=samp_10loc]
-locNames(QUAC.MSAT.10loc.genind)
-wildSamp_10loc <- QUAC.MSAT.10loc.genind@tab[wildRows,]
+samp_10loc <- sample(locNames(QUAC.MSAT.WILD.genind), size = 10, replace = FALSE)
+QUAC.MSAT.10loc.WILD.genind <- QUAC.MSAT.WILD.genind[,loc=samp_10loc]
+locNames(QUAC.MSAT.10loc.WILD.genind)
+wildSamp_10loc <- QUAC.MSAT.10loc.WILD.genind@tab
 # ALL ALLELE CATEGORIES, ALL SAMPLE SIZES #
 # QUESTION 31:
 # 
@@ -125,12 +126,13 @@ for (q in 1:j){
   resamp_category10loc[,,q] <- categorymat_10loc
 }
 resamp_category10loc
+
 ########################################
 
-samp_5loc <- sample(locNames(QUAC.MSAT.genind), size = 5, replace = FALSE)
-QUAC.MSAT.5loc.genind <- QUAC.MSAT.genind[,loc=samp_5loc]
-locNames(QUAC.MSAT.5loc.genind)
-wildSamp_5loc <- QUAC.MSAT.5loc.genind@tab[wildRows,]
+samp_5loc <- sample(locNames(QUAC.MSAT.WILD.genind), size = 5, replace = FALSE)
+QUAC.MSAT.5loc.WILD.genind <- QUAC.MSAT.WILD.genind[,loc=samp_5loc]
+locNames(QUAC.MSAT.5loc.WILD.genind)
+wildSamp_5loc <- QUAC.MSAT.5loc.WILD.genind@tab
 # ALL ALLELE CATEGORIES, ALL SAMPLE SIZES #
 # QUESTION 31:
 # 
@@ -172,10 +174,10 @@ category <- colnames(categorymat_5loc)
 dimnames(resamp_category5loc) <- list(paste0("sample ", 1:nrow(categorymat_5loc)), category, paste0("replicate ",1:5))
 j <- length((dimnames(resamp_category5loc)[[3]]))
 for (q in 1:j){
-  for(i in 1:nrow(wildSamp_10loc)){
+  for(i in 1:nrow(wildSamp_5loc)){
     # browser()
-    samp <- sample(nrow(wildSamp_10loc), size = i, replace = FALSE)
-    samp <- wildSamp_10loc[samp,]
+    samp <- sample(nrow(wildSamp_5loc), size = i, replace = FALSE)
+    samp <- wildSamp_5loc[samp,]
     # Use sample to randomly subsample the matrix of wild individuals
     # Now, measure the proportion of allelic representation in that sample
     if (i==1) {
@@ -202,6 +204,8 @@ resamp_category10loc
 resamp_category5loc
 
 # test <-  function(DATA, x, y){}
-# for (variable in vector) {
-#   
+# for (i in 1:()) {
+#   output[i] <- test(data, x, y)
 # }
+
+

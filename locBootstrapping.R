@@ -306,7 +306,7 @@ analyze_resampling_array <- function(data_array) {
   gm_sampleNumbers <- 1:(nrow(data_array[,"total",]))
   gm_sampleNumbers <- rep(gm_sampleNumbers, dim(data_array)[[3]])
   
-  # Create data.frame from resampling array values
+  # Create data frame from resampling array values
   gm_DF <- data.frame(sampleNumbers=gm_sampleNumbers, totalValues=totalsVector)
   
   # Build and analyze linear models
@@ -314,13 +314,12 @@ analyze_resampling_array <- function(data_array) {
   gm_newData <- data.frame(totalValues=0.95)
   gm_95MSSEprediction <- predict(gm_Model, gm_newData, interval = "prediction")
   
-  # Pass the gm_95MSSEprediction to the object storing our results by iterating
-  # storing them in the rows index of predict_matrix
+  # Pass the gm_95MSSEprediction to the object storing our results 
   result <- gm_95MSSEprediction
   
   ciWidth <- gm_95MSSEprediction[3] - gm_95MSSEprediction[2]
   
-  return(list(result = result, ciWidth = ciWidth))
+  list(result = result, ciWidth = ciWidth)
 }
 
 # resamp_category10loc
@@ -332,11 +331,12 @@ results_matrix <- matrix(nrow = length(array_list), ncol = 4)
 colnames(results_matrix) <- c("fit", "lower", "upper", "ciWidth")
 rownames(results_matrix) <- c("resamp_category10loc", "resamp_category5loc")
 # Iterate through the arrays and store results in the matrix
-for (i in seq_along(array_list)) {
-  result <- analyze_resampling_array(array_list[[i]])
-  
+for (i in 1:length(array_list)) {
+  # result <- analyze_resampling_array(array_list[[i]])
+  analyze_resampling_array(array_list[[i]])
   # Store results in the matrix
-  results_matrix[i, ] <- c(result$result, result$ciWidth)
+  results_matrix[i, ] <- c(analyze_resampling_array(array_list[[i]])$result, 
+                           analyze_resampling_array(array_list[[i]])$ciWidth)
   
 }
 print(results_matrix)

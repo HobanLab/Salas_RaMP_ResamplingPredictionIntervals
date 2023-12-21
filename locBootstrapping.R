@@ -296,7 +296,49 @@ for (i in 1:25) {
 resamp_category10loc[,,]
 
 # total loci
-
+resamp_categorytotloc <- array(dim = c(164, 4, 25))
+# Loop 25 times for 25 sets (5 loci in one set) of randomly selected loci
+for (i in 1:25) {
+  # browser()
+  # Randomly sample 5 loci names
+  samp_totloc <- sample(locNames(QUAC.MSAT.WILD.genind), size = 15, replace = FALSE)
+  
+  # Subset the genind object based on the sampled loci names
+  QUAC.MSAT.totloc.WILD.genind <- QUAC.MSAT.WILD.genind[, loc = samp_totloc]
+  
+  # objects
+  wildSamp_totloc <- QUAC.MSAT.totloc.WILD.genind@tab
+  wildSamp_totloc <- wildSamp_totloc[, which(colSums(wildSamp_totloc, na.rm = TRUE) != 0)]
+  wildComplete <- colSums(wildSamp_totloc, na.rm = TRUE) / (nrow(wildSamp_totloc) * 2)
+  wildSubset <- wildComplete[wildComplete > 0]
+  total <- vector(length = nrow(wildSamp_totloc))
+  common <- vector(length = nrow(wildSamp_totloc))
+  lowfreq <- vector(length = nrow(wildSamp_totloc))
+  rare <- vector(length = nrow(wildSamp_totloc))
+  # Loop for each sample size
+  for (j in 1:nrow(wildSamp_totloc)) {
+    samp <- sample(nrow(wildSamp_totloc), size = j, replace = FALSE)
+    samp <- wildSamp_totloc[samp,]
+    # Measure the proportion of allelic representation in that sample
+    if (j == 1) {
+      total[j] <- length(names(wildSubset)[which(names(wildSubset) %in% names(which(samp > 0)))]) / length(names(wildSubset))
+      common[j] <- length(which(names(which(wildSubset > 0.1)) %in% names(which(samp > 0)))) / length(which(wildSubset > 0.1))
+      lowfreq[j] <- length(which(names(which(wildSubset > 0.01 & wildSubset < 0.1)) %in% names(which(samp > 0)))) / length(which(wildSubset > 0.01 & wildSubset < 0.1))
+      rare[j] <- length(which(names(which(wildSubset < 0.01)) %in% names(which(samp > 0)))) / length(which(wildSubset < 0.01))
+    } else {
+      total[j] <- length(names(wildSubset)[which(names(wildSubset) %in% names(which(colSums(samp, na.rm = TRUE) > 0)))]) / length(names(wildSubset))
+      common[j] <- length(which(names(which(wildSubset > 0.1)) %in% names(which(colSums(samp, na.rm = TRUE) > 0)))) / length(which(wildSubset > 0.1))
+      lowfreq[j] <- length(which(names(which(wildSubset > 0.01 & wildSubset < 0.1)) %in% names(which(colSums(samp, na.rm = TRUE) > 0)))) / length(which(wildSubset > 0.01 & wildSubset < 0.1))
+      rare[j] <- length(which(names(which(wildSubset < 0.01)) %in% names(which(colSums(samp, na.rm = TRUE) > 0)))) / length(which(wildSubset < 0.01))
+    }
+    categorymat_totloc <- cbind(total, common, lowfreq, rare)
+    category <- colnames(categorymat_totloc)
+    dimnames(resamp_categorytotloc) <- list(paste0("sample ", 1:nrow(categorymat_totloc)), category, paste0("replicate ", 1:25))
+    # Store the results for the current replicate in resamp_category10loc
+    resamp_categorytotloc[, , i] <- categorymat_totloc
+  }
+}
+resamp_categorytotloc
 # pass both arrays to a dataframe
 analyze_resampling_array <- function(data_array) {
   # linear model of resampling array
@@ -322,14 +364,14 @@ analyze_resampling_array <- function(data_array) {
   list(result = result, ciWidth = ciWidth)
 }
 
-# resamp_category10loc
-array_list <- list(resamp_category10loc, resamp_category5loc)
+
+array_list <- list(resamp_categorytotloc, resamp_category10loc, resamp_category5loc)
 
 # Create an empty matrix to store the results
 results_matrix <- matrix(nrow = length(array_list), ncol = 4)
 
 colnames(results_matrix) <- c("fit", "lower", "upper", "ciWidth")
-rownames(results_matrix) <- c("resamp_category10loc", "resamp_category5loc")
+rownames(results_matrix) <- c("resamp_categorytotloc","resamp_category10loc", "resamp_category5loc")
 # Iterate through the arrays and store results in the matrix
 for (i in 1:length(array_list)) {
   # result <- analyze_resampling_array(array_list[[i]])
@@ -341,17 +383,12 @@ for (i in 1:length(array_list)) {
 }
 print(results_matrix)
 
-
-
-analyze_resampling_array(resamp_category10loc)$result
-analyze_resampling_array(resamp_category10loc)$ciWidth
-cbind(analyze_resampling_array(resamp_category10loc)$result
-,analyze_resampling_array(resamp_category10loc)$ciWidth
-)
-#resamp_category5loc
-analyze_resampling_array(resamp_category5loc)$result
-analyze_resampling_array(resamp_category5loc)$ciWidth
-
-resamp_category_predictMatrix <- matrix(ncol = , nrow = )
-# create a function to pass the dataframe elements into a linear model  
-# create a table of 95% MSSE values, and PI values (upper, lower, width) for 10 loci array, 5 loci array, and complete loci dataset confidence intervals
+write.csv(results_matrix, file = "C:/Users/gsalas/Documents/resampling_CIs/Code/resamp_lociMatrix.csv", 
+          row.names = TRUE)
+# 
+# analyze_resampling_array(resamp_category10loc)$result
+# analyze_resampling_array(resamp_category10loc)$ciWidth
+# 
+# #resamp_category5loc
+# analyze_resampling_array(resamp_category5loc)$result
+# analyze_resampling_array(resamp_category5loc)$ciWidth

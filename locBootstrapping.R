@@ -3,10 +3,19 @@
 #####################################
 setwd("C:/Users/gsalas/Documents/resampling_CIs/Code/Datasets")
 library(adegenet)
-
+# This resampling array was created in the resampling walkthrough titled 
+# resamplingwalkthru.R using the Q. Acerifolia MSAT genetic marker dataset. 
+# resamp_category consists of 5 resampling replicates, each with unique allelic
+# representation values based on random sampling # of individuals across allele frequency categories.
+# resamp_category was saved as an .rds file and uploaded to this R script to ensure repeatability.
 resamp_category <- readRDS("resamp_category.RDS")
 
-# linear model of resampling array
+# one of the goals of this R script is to pass resampling arrays through a 
+# linear model and calculate the prediction interval values and the prediction 
+# interval widths. we can copy over the code from the predict.R script and make 
+# the changes neccesary to do this
+
+# linear model of resamp_category.
 totalsVector <- c(resamp_category[,"total",])
 # Specify sample numbers column
 gm_sampleNumbers <- 1:(nrow(resamp_category[,"total",]))
@@ -15,13 +24,12 @@ gm_sampleNumbers <- rep(gm_sampleNumbers, dim(resamp_category)[[3]])
 gm_DF <- data.frame(sampleNumbers=gm_sampleNumbers, totalValues=totalsVector)
 # Build and analyze linear models
 gm_Model <- lm(sampleNumbers ~ I((totalValues)^3), data = gm_DF)
+# ensure that the 95% value being predicted is typed as a proportion
 gm_newData <- data.frame(totalValues=0.95)
 gm_95MSSEprediction <- predict(gm_Model, gm_newData, interval = "prediction")
-# Pass the gm_95MSSEprediction to the object storing our results by iterating
-# storing them in the rows index of predict_matrix
 gm_95MSSEprediction
-
-ciWidth <- gm_95MSSEprediction[3] - gm_95MSSEprediction[2]
+# calculate the prediction interval widths
+piWidth <- gm_95MSSEprediction[3] - gm_95MSSEprediction[2]
 
 ## READING IN THE GENIND FILE ## 
 # Change the filepath below to the filepath for your particular system
@@ -75,7 +83,6 @@ rare <- vector(length = nrow(wildSamp_10loc))
 wildSamp_10loc <- wildSamp_10loc[,which(colSums(wildSamp_10loc, na.rm = TRUE)!= 0)]
 
 for(i in 1:nrow(wildSamp_10loc)){
-  # browser()
   # Use sample to randomly subsample the matrix of wild individuals
   samp <- sample(nrow(wildSamp_10loc), size = i, replace = FALSE)
   samp <- wildSamp_10loc[samp,]
@@ -105,7 +112,6 @@ dimnames(resamp_category10loc) <- list(paste0("sample ", 1:nrow(categorymat_10lo
 j <- length((dimnames(resamp_category10loc)[[3]]))
 for (q in 1:j){
   for(i in 1:nrow(wildSamp_10loc)){
-    # browser()
     samp <- sample(nrow(wildSamp_10loc), size = i, replace = FALSE)
     samp <- wildSamp_10loc[samp,]
     # Use sample to randomly subsample the matrix of wild individuals
@@ -145,7 +151,6 @@ rare <- vector(length = nrow(wildSamp_5loc))
 wildSamp_5loc <- wildSamp_5loc[,which(colSums(wildSamp_5loc, na.rm = TRUE)!= 0)]
 
 for(i in 1:nrow(wildSamp_5loc)){
-  # browser()
   # Use sample to randomly subsample the matrix of wild individuals
   samp <- sample(nrow(wildSamp_5loc), size = i, replace = FALSE)
   samp <- wildSamp_5loc[samp,]
@@ -175,7 +180,6 @@ dimnames(resamp_category5loc) <- list(paste0("sample ", 1:nrow(categorymat_5loc)
 j <- length((dimnames(resamp_category5loc)[[3]]))
 for (q in 1:j){
   for(i in 1:nrow(wildSamp_5loc)){
-    # browser()
     samp <- sample(nrow(wildSamp_5loc), size = i, replace = FALSE)
     samp <- wildSamp_5loc[samp,]
     # Use sample to randomly subsample the matrix of wild individuals
@@ -208,13 +212,10 @@ resamp_category5loc
 resamp_category5loc <- array(dim = c(164, 4, 25))
 # Loop 25 times for 25 sets (5 loci in one set) of randomly selected loci
 for (i in 1:25) {
-  # browser()
   # Randomly sample 5 loci names
   samp_5loc <- sample(locNames(QUAC.MSAT.WILD.genind), size = 5, replace = FALSE)
-  
   # Subset the genind object based on the sampled loci names
   QUAC.MSAT.5loc.WILD.genind <- QUAC.MSAT.WILD.genind[, loc = samp_5loc]
-  
   # objects
   wildSamp_5loc <- QUAC.MSAT.5loc.WILD.genind@tab
   wildSamp_5loc <- wildSamp_5loc[, which(colSums(wildSamp_5loc, na.rm = TRUE) != 0)]
@@ -249,18 +250,16 @@ for (i in 1:25) {
 }
 resamp_category5loc[,,]
 
-#########
+############
 # 10 loci
 resamp_category10loc <- array(dim = c(164, 4, 25))
 # Loop 25 times for 25 sets (5 loci in one set) of randomly selected loci
 for (i in 1:25) {
-  # browser()
   # Randomly sample 5 loci names
   samp_10loc <- sample(locNames(QUAC.MSAT.WILD.genind), size = 10, replace = FALSE)
   
   # Subset the genind object based on the sampled loci names
   QUAC.MSAT.10loc.WILD.genind <- QUAC.MSAT.WILD.genind[, loc = samp_10loc]
-  
   # objects
   wildSamp_10loc <- QUAC.MSAT.10loc.WILD.genind@tab
   wildSamp_10loc <- wildSamp_10loc[, which(colSums(wildSamp_10loc, na.rm = TRUE) != 0)]
@@ -294,12 +293,11 @@ for (i in 1:25) {
   }
 }
 resamp_category10loc[,,]
-
+###############
 # total loci
 resamp_categorytotloc <- array(dim = c(164, 4, 25))
 # Loop 25 times for 25 sets (5 loci in one set) of randomly selected loci
 for (i in 1:25) {
-  # browser()
   # Randomly sample 5 loci names
   samp_totloc <- sample(locNames(QUAC.MSAT.WILD.genind), size = 15, replace = FALSE)
   
@@ -339,10 +337,11 @@ for (i in 1:25) {
   }
 }
 resamp_categorytotloc
+
 # pass both arrays to a dataframe
 analyze_resampling_array <- function(data_array) {
   # linear model of resampling array
-  totalsVector <- c(data_array[,"total",])
+  totalsVector <- c(data_array[,"total",]) 
   
   # Specify sample numbers column
   gm_sampleNumbers <- 1:(nrow(data_array[,"total",]))
@@ -359,9 +358,9 @@ analyze_resampling_array <- function(data_array) {
   # Pass the gm_95MSSEprediction to the object storing our results 
   result <- gm_95MSSEprediction
   
-  ciWidth <- gm_95MSSEprediction[3] - gm_95MSSEprediction[2]
+  piWidth <- gm_95MSSEprediction[3] - gm_95MSSEprediction[2]
   
-  list(result = result, ciWidth = ciWidth)
+  return(list(result = result, piWidth = piWidth))
 }
 
 
@@ -370,25 +369,17 @@ array_list <- list(resamp_categorytotloc, resamp_category10loc, resamp_category5
 # Create an empty matrix to store the results
 results_matrix <- matrix(nrow = length(array_list), ncol = 4)
 
-colnames(results_matrix) <- c("fit", "lower", "upper", "ciWidth")
+colnames(results_matrix) <- c("fit", "lower", "upper", "piWidth")
 rownames(results_matrix) <- c("resamp_categorytotloc","resamp_category10loc", "resamp_category5loc")
 # Iterate through the arrays and store results in the matrix
 for (i in 1:length(array_list)) {
-  # result <- analyze_resampling_array(array_list[[i]])
   analyze_resampling_array(array_list[[i]])
   # Store results in the matrix
   results_matrix[i, ] <- c(analyze_resampling_array(array_list[[i]])$result, 
-                           analyze_resampling_array(array_list[[i]])$ciWidth)
+                           analyze_resampling_array(array_list[[i]])$piWidth)
   
 }
 print(results_matrix)
 
 write.csv(results_matrix, file = "C:/Users/gsalas/Documents/resampling_CIs/Code/resamp_lociMatrix.csv", 
           row.names = TRUE)
-# 
-# analyze_resampling_array(resamp_category10loc)$result
-# analyze_resampling_array(resamp_category10loc)$ciWidth
-# 
-# #resamp_category5loc
-# analyze_resampling_array(resamp_category5loc)$result
-# analyze_resampling_array(resamp_category5loc)$ciWidth

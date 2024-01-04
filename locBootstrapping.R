@@ -6,14 +6,14 @@ library(adegenet)
 # This resampling array was created in the resampling walkthrough titled 
 # resamplingwalkthru.R using the Q. Acerifolia MSAT genetic marker dataset. 
 # resamp_category consists of 5 resampling replicates, each with unique allelic
-# representation values based on random sampling # of individuals across allele frequency categories.
-# resamp_category was saved as an .rds file and uploaded to this R script to ensure repeatability.
+# representation values based on random sampling amount of individuals across allele frequency categories.
+# resamp_category was saved as a .rds file and uploaded to this R script to ensure repeatability.
 resamp_category <- readRDS("resamp_category.RDS")
 
-# one of the goals of this R script is to pass resampling arrays through a 
+# One of the goals of this R script was to pass resampling arrays (of different loci amounts) through a 
 # linear model and calculate the prediction interval values and the prediction 
-# interval widths. we can copy over the code from the predict.R script and make 
-# the changes neccesary to do this
+# interval widths. we copied over the code from the predict.R script and made 
+# the changes necessary to do this
 
 # linear model of resamp_category.
 totalsVector <- c(resamp_category[,"total",])
@@ -31,12 +31,15 @@ gm_95MSSEprediction
 # calculate the prediction interval widths
 piWidth <- gm_95MSSEprediction[3] - gm_95MSSEprediction[2]
 
-## READING IN THE GENIND FILE ## 
+# We used the Q. Acerifolia MSAT file to create resampling arrays of 
+# different loci quantities. We followed all the same steps to read in a genind file
+# from the resampling walkthrough, however, we create two genind objects that are
+# separated by the garden and wild populations.
+
 # Change the filepath below to the filepath for your particular system
 QUAC.MSAT.filepath <- "C:/Users/gsalas/Documents/resampling_CIs/Code/Datasets/QUAC_woK_allpop_clean.gen"
 
-# QUESTION 1: What does the ncode argument signify? How can you find out?
-# Number of characters used to code an allele. Information on ncode can be found on the help tab by typing ?read.genepop
+# Number of characters used to code an allele. 
 QUAC.MSAT.genind <- read.genepop(QUAC.MSAT.filepath, ncode = 3)
 
 # "G" means garden, and the "W" means wild
@@ -56,156 +59,15 @@ gardenRows <- which(QUAC.MSAT.genind@pop == "garden")
 wildRows <- which(QUAC.MSAT.genind@pop == "wild")
 
 # SEPARATE BY POPULATION
+# Creating a genind object specifically isolating wild indivudal alleles will 
+# ensure we are not including garden individuals when subsampling loci. 
 populations <- seppop(QUAC.MSAT.genind)
 QUAC.MSAT.WILD.genind <- populations$wild
 QUAC.MSAT.GARDEN.genind <- populations$garden
 
-# Randomly sample a subset of loci
-loc_samp <- sample(locNames(QUAC.MSAT.WILD.genind), size = 3, replace = FALSE)
-QUAC.MSAT.3loc.WILD.genind <- QUAC.MSAT.WILD.genind[,loc=loc_samp]
-locNames(QUAC.MSAT.3loc.WILD.genind)
-wildSamp_3loc <- QUAC.MSAT.3loc.WILD.genind@tab
-
-##########################################
-samp_10loc <- sample(locNames(QUAC.MSAT.WILD.genind), size = 10, replace = FALSE)
-QUAC.MSAT.10loc.WILD.genind <- QUAC.MSAT.WILD.genind[,loc=samp_10loc]
-locNames(QUAC.MSAT.10loc.WILD.genind)
-wildSamp_10loc <- QUAC.MSAT.10loc.WILD.genind@tab
-# ALL ALLELE CATEGORIES, ALL SAMPLE SIZES #
-# QUESTION 31:
-# 
-wildComplete <- colSums(wildSamp_10loc, na.rm = TRUE)/(nrow(wildSamp_10loc)*2) 
-wildSubset <- wildComplete[wildComplete > 0]
-total <- vector(length = nrow(wildSamp_10loc))
-common <- vector(length = nrow(wildSamp_10loc))
-lowfreq <- vector(length = nrow(wildSamp_10loc))
-rare <- vector(length = nrow(wildSamp_10loc))
-wildSamp_10loc <- wildSamp_10loc[,which(colSums(wildSamp_10loc, na.rm = TRUE)!= 0)]
-
-for(i in 1:nrow(wildSamp_10loc)){
-  # Use sample to randomly subsample the matrix of wild individuals
-  samp <- sample(nrow(wildSamp_10loc), size = i, replace = FALSE)
-  samp <- wildSamp_10loc[samp,]
-  # samp <- sample(wildSamples[!is.na(wildSamples)], size = i, replace = FALSE)
-  # Now, measure the proportion of allelic representation in that sample
-  if (i==1) {
-    total[i] <- length(names(wildSubset)[which(names(wildSubset) %in% names(which(samp > 0)))])/length(names(wildSubset))
-    common[i] <- length(which(names(which(wildSubset > 0.1)) %in% names(which(samp > 0))))/length(which(wildSubset > 0.1))
-    lowfreq[i] <- length(which(names(which(wildSubset > 0.01 & wildSubset < 0.1)) %in% names(which(samp > 0))))/length(which(wildSubset > 0.01 & wildSubset < 0.1))
-    rare[i] <- length(which(names(which(wildSubset < 0.01)) %in% names(which(samp > 0))))/length(which(wildSubset < 0.01))
-  } else{
-    total[i] <- length(names(wildSubset)[which(names(wildSubset) %in% names(which(colSums(samp, na.rm=TRUE) > 0)))])/length(names(wildSubset))
-    common[i] <- length(which(names(which(wildSubset > 0.1)) %in% names(which(colSums(samp, na.rm=TRUE) > 0))))/length(which(wildSubset > 0.1))
-    lowfreq[i] <- length(which(names(which(wildSubset > 0.01 & wildSubset < 0.1)) %in% names(which(colSums(samp, na.rm=TRUE) > 0))))/length(which(wildSubset > 0.01 & wildSubset < 0.1))
-    rare[i] <- length(which(names(which(wildSubset < 0.01)) %in% names(which(colSums(samp, na.rm=TRUE) > 0))))/length(which(wildSubset < 0.01))
-    
-  }
-  categorymat_10loc <- cbind(total,common,lowfreq,rare)
-}
-print(categorymat_10loc)
-
-# Resampling in replicate: all allele categories, all sample sizes #
-# QUESTION 32: Repeat Question 31, but store the values across 5 resampling replicates
-resamp_category10loc <- array(dim = c(164,4,5))
-category <- colnames(categorymat_10loc)
-dimnames(resamp_category10loc) <- list(paste0("sample ", 1:nrow(categorymat_10loc)), category, paste0("replicate ",1:5))
-j <- length((dimnames(resamp_category10loc)[[3]]))
-for (q in 1:j){
-  for(i in 1:nrow(wildSamp_10loc)){
-    samp <- sample(nrow(wildSamp_10loc), size = i, replace = FALSE)
-    samp <- wildSamp_10loc[samp,]
-    # Use sample to randomly subsample the matrix of wild individuals
-    # Now, measure the proportion of allelic representation in that sample
-    if (i==1) {
-      total[i] <- length(names(wildSubset)[which(names(wildSubset) %in% names(which(samp > 0)))])/length(names(wildSubset))
-      common[i] <- length(which(names(which(wildSubset > 0.1)) %in% names(which(samp > 0))))/length(which(wildSubset > 0.1))
-      lowfreq[i] <- length(which(names(which(wildSubset > 0.01 & wildSubset < 0.1)) %in% names(which(samp > 0))))/length(which(wildSubset > 0.01 & wildSubset < 0.1))
-      rare[i] <- length(which(names(which(wildSubset < 0.01)) %in% names(which(samp > 0))))/length(which(wildSubset < 0.01))
-    } else{
-      total[i] <- length(names(wildSubset)[which(names(wildSubset) %in% names(which(colSums(samp, na.rm=TRUE) > 0)))])/length(names(wildSubset))
-      common[i] <- length(which(names(which(wildSubset > 0.1)) %in% names(which(colSums(samp, na.rm=TRUE) > 0))))/length(which(wildSubset > 0.1))
-      lowfreq[i] <- length(which(names(which(wildSubset > 0.01 & wildSubset < 0.1)) %in% names(which(colSums(samp, na.rm=TRUE) > 0))))/length(which(wildSubset > 0.01 & wildSubset < 0.1))
-      rare[i] <- length(which(names(which(wildSubset < 0.01)) %in% names(which(colSums(samp, na.rm=TRUE) > 0))))/length(which(wildSubset < 0.01))
-    }
-  }
-  categorymat_10loc <- cbind(total,common,lowfreq,rare)
-  resamp_category10loc[,,q] <- categorymat_10loc
-}
-resamp_category10loc
-
-########################################
-
-samp_5loc <- sample(locNames(QUAC.MSAT.WILD.genind), size = 5, replace = FALSE)
-QUAC.MSAT.5loc.WILD.genind <- QUAC.MSAT.WILD.genind[,loc=samp_5loc]
-locNames(QUAC.MSAT.5loc.WILD.genind)
-wildSamp_5loc <- QUAC.MSAT.5loc.WILD.genind@tab
-# ALL ALLELE CATEGORIES, ALL SAMPLE SIZES #
-# QUESTION 31:
-# 
-wildComplete <- colSums(wildSamp_5loc, na.rm = TRUE)/(nrow(wildSamp_5loc)*2) 
-wildSubset <- wildComplete[wildComplete > 0]
-total <- vector(length = nrow(wildSamp_5loc))
-common <- vector(length = nrow(wildSamp_5loc))
-lowfreq <- vector(length = nrow(wildSamp_5loc))
-rare <- vector(length = nrow(wildSamp_5loc))
-wildSamp_5loc <- wildSamp_5loc[,which(colSums(wildSamp_5loc, na.rm = TRUE)!= 0)]
-
-for(i in 1:nrow(wildSamp_5loc)){
-  # Use sample to randomly subsample the matrix of wild individuals
-  samp <- sample(nrow(wildSamp_5loc), size = i, replace = FALSE)
-  samp <- wildSamp_5loc[samp,]
-  # samp <- sample(wildSamples[!is.na(wildSamples)], size = i, replace = FALSE)
-  # Now, measure the proportion of allelic representation in that sample
-  if (i==1) {
-    total[i] <- length(names(wildSubset)[which(names(wildSubset) %in% names(which(samp > 0)))])/length(names(wildSubset))
-    common[i] <- length(which(names(which(wildSubset > 0.1)) %in% names(which(samp > 0))))/length(which(wildSubset > 0.1))
-    lowfreq[i] <- length(which(names(which(wildSubset > 0.01 & wildSubset < 0.1)) %in% names(which(samp > 0))))/length(which(wildSubset > 0.01 & wildSubset < 0.1))
-    rare[i] <- length(which(names(which(wildSubset < 0.01)) %in% names(which(samp > 0))))/length(which(wildSubset < 0.01))
-  } else{
-    total[i] <- length(names(wildSubset)[which(names(wildSubset) %in% names(which(colSums(samp, na.rm=TRUE) > 0)))])/length(names(wildSubset))
-    common[i] <- length(which(names(which(wildSubset > 0.1)) %in% names(which(colSums(samp, na.rm=TRUE) > 0))))/length(which(wildSubset > 0.1))
-    lowfreq[i] <- length(which(names(which(wildSubset > 0.01 & wildSubset < 0.1)) %in% names(which(colSums(samp, na.rm=TRUE) > 0))))/length(which(wildSubset > 0.01 & wildSubset < 0.1))
-    rare[i] <- length(which(names(which(wildSubset < 0.01)) %in% names(which(colSums(samp, na.rm=TRUE) > 0))))/length(which(wildSubset < 0.01))
-    
-  }
-  categorymat_5loc <- cbind(total,common,lowfreq,rare)
-}
-print(categorymat_5loc)
-
-# Resampling in replicate: all allele categories, all sample sizes #
-# QUESTION 32: Repeat Question 31, but store the values across 5 resampling replicates
-resamp_category5loc <- array(dim = c(164,4,5))
-category <- colnames(categorymat_5loc)
-dimnames(resamp_category5loc) <- list(paste0("sample ", 1:nrow(categorymat_5loc)), category, paste0("replicate ",1:5))
-j <- length((dimnames(resamp_category5loc)[[3]]))
-for (q in 1:j){
-  for(i in 1:nrow(wildSamp_5loc)){
-    samp <- sample(nrow(wildSamp_5loc), size = i, replace = FALSE)
-    samp <- wildSamp_5loc[samp,]
-    # Use sample to randomly subsample the matrix of wild individuals
-    # Now, measure the proportion of allelic representation in that sample
-    if (i==1) {
-      total[i] <- length(names(wildSubset)[which(names(wildSubset) %in% names(which(samp > 0)))])/length(names(wildSubset))
-      common[i] <- length(which(names(which(wildSubset > 0.1)) %in% names(which(samp > 0))))/length(which(wildSubset > 0.1))
-      lowfreq[i] <- length(which(names(which(wildSubset > 0.01 & wildSubset < 0.1)) %in% names(which(samp > 0))))/length(which(wildSubset > 0.01 & wildSubset < 0.1))
-      rare[i] <- length(which(names(which(wildSubset < 0.01)) %in% names(which(samp > 0))))/length(which(wildSubset < 0.01))
-    } else{
-      total[i] <- length(names(wildSubset)[which(names(wildSubset) %in% names(which(colSums(samp, na.rm=TRUE) > 0)))])/length(names(wildSubset))
-      common[i] <- length(which(names(which(wildSubset > 0.1)) %in% names(which(colSums(samp, na.rm=TRUE) > 0))))/length(which(wildSubset > 0.1))
-      lowfreq[i] <- length(which(names(which(wildSubset > 0.01 & wildSubset < 0.1)) %in% names(which(colSums(samp, na.rm=TRUE) > 0))))/length(which(wildSubset > 0.01 & wildSubset < 0.1))
-      rare[i] <- length(which(names(which(wildSubset < 0.01)) %in% names(which(colSums(samp, na.rm=TRUE) > 0))))/length(which(wildSubset < 0.01))
-    }
-  }
-  categorymat_5loc <- cbind(total,common,lowfreq,rare)
-  resamp_category5loc[,,q] <- categorymat_5loc
-}
-resamp_category5loc
-
-
-# three resampling arrays
-resamp_category
-resamp_category10loc
-resamp_category5loc
+# Below, we complete the process of loci bootstrapping. We begin with 5 loci, 
+# then 10 loci, and the total loci amount. The code randomly samples sets of loci 25 times. The skeleton
+# for creating the resampling array code is copied from the resampling walkthrough. 
 
 ###########
 # 5 loci
@@ -248,7 +110,7 @@ for (i in 1:25) {
     resamp_category5loc[, , i] <- categorymat_5loc
   }
 }
-resamp_category5loc[,,]
+resamp_category5loc
 
 ############
 # 10 loci
@@ -293,6 +155,7 @@ for (i in 1:25) {
   }
 }
 resamp_category10loc[,,]
+
 ###############
 # total loci
 resamp_categorytotloc <- array(dim = c(164, 4, 25))
@@ -338,7 +201,15 @@ for (i in 1:25) {
 }
 resamp_categorytotloc
 
-# pass both arrays to a dataframe
+# Here we have all the resampling arrays with the different amounts of loci
+resamp_category5loc
+resamp_category10loc
+resamp_categorytotloc
+
+# We created a function that calculates the prediction intervals. That function 
+# was assigned the object name analyze_resampling_array. the input is the resampling array name.
+
+# pass all arrays to a dataframe using the function. 
 analyze_resampling_array <- function(data_array) {
   # linear model of resampling array
   totalsVector <- c(data_array[,"total",]) 
@@ -363,14 +234,17 @@ analyze_resampling_array <- function(data_array) {
   return(list(result = result, piWidth = piWidth))
 }
 
-
+# this is a list of the resampling arrays which will be iterated in a loop to 
+# execute the analyze_resampling_array function which will output the prediction interval
+# values and prediction interval widths. 
 array_list <- list(resamp_categorytotloc, resamp_category10loc, resamp_category5loc)
 
+# this matrix will store the pi values and pi widths
 # Create an empty matrix to store the results
 results_matrix <- matrix(nrow = length(array_list), ncol = 4)
-
 colnames(results_matrix) <- c("fit", "lower", "upper", "piWidth")
 rownames(results_matrix) <- c("resamp_categorytotloc","resamp_category10loc", "resamp_category5loc")
+
 # Iterate through the arrays and store results in the matrix
 for (i in 1:length(array_list)) {
   analyze_resampling_array(array_list[[i]])
@@ -381,5 +255,6 @@ for (i in 1:length(array_list)) {
 }
 print(results_matrix)
 
+# the results are saved to a .csv file
 write.csv(results_matrix, file = "C:/Users/gsalas/Documents/resampling_CIs/Code/resamp_lociMatrix.csv", 
           row.names = TRUE)

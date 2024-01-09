@@ -59,7 +59,7 @@ gardenRows <- which(QUAC.MSAT.genind@pop == "garden")
 wildRows <- which(QUAC.MSAT.genind@pop == "wild")
 
 # SEPARATE BY POPULATION
-# Creating a genind object specifically isolating wild indivudal alleles will 
+# Creating a genind object specifically isolating wild individual alleles will 
 # ensure we are not including garden individuals when subsampling loci. 
 populations <- seppop(QUAC.MSAT.genind)
 QUAC.MSAT.WILD.genind <- populations$wild
@@ -71,45 +71,75 @@ QUAC.MSAT.GARDEN.genind <- populations$garden
 
 ###########
 # 5 loci
+# Create an empty 3D array with dimensions 164 rows, 4 columns and 25 slices, to store the results.
 resamp_category5loc <- array(dim = c(164, 4, 25))
-# Loop 25 times for 25 sets (5 loci in one set) of randomly selected loci
+# Initiate a loop 25 times for 25 sets (5 loci in one set) of randomly selected loci.
 for (i in 1:25) {
-  # Randomly sample 5 loci names
+  # Randomly sample 5 loci names from the genind object
   samp_5loc <- sample(locNames(QUAC.MSAT.WILD.genind), size = 5, replace = FALSE)
-  # Subset the genind object based on the sampled loci names
+  # Subset the genind object QUAC.MSAT.WILD.genind to include only the columns corresponding to the sampled loci.
   QUAC.MSAT.5loc.WILD.genind <- QUAC.MSAT.WILD.genind[, loc = samp_5loc]
   # objects
+  # access the matrix that shows the type of alleles and quantity of said allele present in wild individuals
   wildSamp_5loc <- QUAC.MSAT.5loc.WILD.genind@tab
+  # Calculate the sum of each column in the matrix 'wildSamp_5loc', ignoring NA values. Identify the indices
+  # where the sum is not equal to zero, this indicates columns with variation in allele counts. Subset the 
+  # original matrix 'wildSamp_5loc' by selecting only the columns identified in the previous step, removing
+  # columns with no variation in allele counts
   wildSamp_5loc <- wildSamp_5loc[, which(colSums(wildSamp_5loc, na.rm = TRUE) != 0)]
+  # Calculate the sum of each column in the matrix 'wildSamp_5loc', ignoring NA values.
+  # Calculate the proportion of each allele in the wild population by dividing the sum of each allele counts
+  # by twice the number of rows in the matrix.
   wildComplete <- colSums(wildSamp_5loc, na.rm = TRUE) / (nrow(wildSamp_5loc) * 2)
+  # Subset 'wildComplete' to include only the alleles with non-zero frequency.
   wildSubset <- wildComplete[wildComplete > 0]
+  # Initialize vectors to store results
   total <- vector(length = nrow(wildSamp_5loc))
   common <- vector(length = nrow(wildSamp_5loc))
   lowfreq <- vector(length = nrow(wildSamp_5loc))
   rare <- vector(length = nrow(wildSamp_5loc))
-  # Loop for each sample size
+  # Loop for each sample size, ranging from 1 to the number of loci in the wild population
   for (j in 1:nrow(wildSamp_5loc)) {
+    # Randomly select a subset of rows from the matrix, without replacement
     samp <- sample(nrow(wildSamp_5loc), size = j, replace = FALSE)
+    # Subset the original matrix 'wildSamp_5loc' to include only the rows randomly selected in the previous step.
     samp <- wildSamp_5loc[samp,]
     # Measure the proportion of allelic representation in that sample
+    # Check if it's the first iteration of the inner loop
     if (j == 1) {
+      # Identify the names of alleles in the sample that are also present in 'wildSubset'. 
+      # Calculate the proportion of alleles in the sample that are also present in 'wildSubset'.
       total[j] <- length(names(wildSubset)[which(names(wildSubset) %in% names(which(samp > 0)))]) / length(names(wildSubset))
+      # Identify the names of the alleles in the sample that are also present in the 'wildSubset' for alleles with frequency >0.1
+      # Calculate the proportion of common alleles in the sample compared to the 'wildSubset' for alleles with frequency >0.1
       common[j] <- length(which(names(which(wildSubset > 0.1)) %in% names(which(samp > 0)))) / length(which(wildSubset > 0.1))
+      # Identify the names of alleles in the sample that are also present in the 'wildSubset' for alleles with frequency >0.01 and frequency <0.1
+      # Calculate the proportion of low frequency alleles in the sample compared to the 'wildSubset' for allels with frequency >0.01 and frequency <0.1
       lowfreq[j] <- length(which(names(which(wildSubset > 0.01 & wildSubset < 0.1)) %in% names(which(samp > 0)))) / length(which(wildSubset > 0.01 & wildSubset < 0.1))
+      # Identify the names of alleles in the sample that are also present in the 'wildSubset' for allleles with frequency <0.02.
+      # Calcualte the proportion of rare alleles in the sample compared to the 'wildSubset' for alleles with frequency <0.01.
       rare[j] <- length(which(names(which(wildSubset < 0.01)) %in% names(which(samp > 0)))) / length(which(wildSubset < 0.01))
     } else {
+      # Calculate the proportion of alleles in the sample that are also present in the 'wildSubset' for the case where j is not 1
       total[j] <- length(names(wildSubset)[which(names(wildSubset) %in% names(which(colSums(samp, na.rm = TRUE) > 0)))]) / length(names(wildSubset))
+      # Calculate the proportion of alleles of common alleles in the sample compared toe the 'wildSubset' where j is not 1
       common[j] <- length(which(names(which(wildSubset > 0.1)) %in% names(which(colSums(samp, na.rm = TRUE) > 0)))) / length(which(wildSubset > 0.1))
+      # Calculate the proportion of alleles of low frequency alleles in the sample compared to the 'wildSubset' for the case where j is not 1
       lowfreq[j] <- length(which(names(which(wildSubset > 0.01 & wildSubset < 0.1)) %in% names(which(colSums(samp, na.rm = TRUE) > 0)))) / length(which(wildSubset > 0.01 & wildSubset < 0.1))
+      # Calculate the proportion of rare alleles in the sample compared ot the 'wildSubset' for the case where j is not 1
       rare[j] <- length(which(names(which(wildSubset < 0.01)) %in% names(which(colSums(samp, na.rm = TRUE) > 0)))) / length(which(wildSubset < 0.01))
     }
+    # Combine the results (proportions) for each sample size into a matrix named 'categorymat_5loc'.
     categorymat_5loc <- cbind(total, common, lowfreq, rare)
+    # extract the column names (categories) from the matrix
     category <- colnames(categorymat_5loc)
+    # set row and column names for 'resamp_category5loc'
     dimnames(resamp_category5loc) <- list(paste0("sample ", 1:nrow(categorymat_5loc)), category, paste0("replicate ", 1:25))
     # Store the results for the current replicate in resamp_category5loc
     resamp_category5loc[, , i] <- categorymat_5loc
   }
 }
+# array containing the results
 resamp_category5loc
 
 ############

@@ -239,13 +239,16 @@ resamp_categorytotloc
 # We created a function that calculates the prediction intervals. That function 
 # was assigned the object name analyze_resampling_array. the input is the resampling array name.
 
-# pass all arrays to a dataframe using the function. 
+# pass all arrays to a dataframe using the function. define the function that takes an input 'data_array'
 analyze_resampling_array <- function(data_array) {
-  # linear model of resampling array
+  # linear model of resampling array. Extract the column named 'total' from the array.
+  # concatenate the extracted column values into the vector.
   totalsVector <- c(data_array[,"total",]) 
   
-  # Specify sample numbers column
+  # Specify sample numbers column.
+  # Create a vector of sample numbers from 1 to the number of rows in the 'total' column 
   gm_sampleNumbers <- 1:(nrow(data_array[,"total",]))
+  # Repeat the sample numbers vector for the number of replicates
   gm_sampleNumbers <- rep(gm_sampleNumbers, dim(data_array)[[3]])
   
   # Create data frame from resampling array values
@@ -253,14 +256,17 @@ analyze_resampling_array <- function(data_array) {
   
   # Build and analyze linear models
   gm_Model <- lm(sampleNumbers ~ I((totalValues)^3), data = gm_DF)
+  # Create a new data fram 'gm_newData with a single column 'totalValues' containing the value 0.95
   gm_newData <- data.frame(totalValues=0.95)
+  # Use the linear model to predict the response for the new data frame. Specify 'interval = prediction to obtain a prediction interval
   gm_95MSSEprediction <- predict(gm_Model, gm_newData, interval = "prediction")
   
   # Pass the gm_95MSSEprediction to the object storing our results 
+  # Store the predicted values and predictino interval in the object named 'result' 
   result <- gm_95MSSEprediction
-  
+  # Calculate the width of the prediction interval by substracting the lower limit from the upper limit
   piWidth <- gm_95MSSEprediction[3] - gm_95MSSEprediction[2]
-  
+  # Return a list containing the predicted values and the width of the prediction interval
   return(list(result = result, piWidth = piWidth))
 }
 
@@ -272,17 +278,23 @@ array_list <- list(resamp_categorytotloc, resamp_category10loc, resamp_category5
 # this matrix will store the pi values and pi widths
 # Create an empty matrix to store the results
 results_matrix <- matrix(nrow = length(array_list), ncol = 4)
+# Set column names for 'results_Matrix'
 colnames(results_matrix) <- c("fit", "lower", "upper", "piWidth")
+# Set row names for 'results_matrix'
 rownames(results_matrix) <- c("resamp_categorytotloc","resamp_category10loc", "resamp_category5loc")
 
 # Iterate through the arrays and store results in the matrix
+# Initiate loop that iterates over the idicies of 'array_list'
 for (i in 1:length(array_list)) {
+  # Call the 'analyze_resampling_array' function on the ith element of 'array_list'. This function returns a list with 
+  # resul and piWidth values.
   analyze_resampling_array(array_list[[i]])
-  # Store results in the matrix
+  # Store results and piWidth values in the ith row of the matrix
   results_matrix[i, ] <- c(analyze_resampling_array(array_list[[i]])$result, 
                            analyze_resampling_array(array_list[[i]])$piWidth)
   
 }
+# Print final 'results_matrix' showing the fit, lower, upper and piWidth values for each resampling array
 print(results_matrix)
 
 # the results are saved to a .csv file

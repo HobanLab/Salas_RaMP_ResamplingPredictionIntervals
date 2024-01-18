@@ -511,12 +511,12 @@ QUAC.SNP.Wild.genind <- gm_list[[2]]
 QUBO.MSAT.Wild.genind <- gm_list[[3]]
 QUBO.SNP.Wild.genind <- gm_list[[4]]
 library(adegenet)
-gm_resamp_array_function <- function(test_genind, x, y){
+gm_resamp_array_function <- function(test_genind, num_loci, num_reps){
   # Create an empty array named 'resamp_category5loc' to store results
-  resamp_category <- array(dim = c(nrow(test_genind@tab),4,y))
+  resamp_category <- array(dim = c(nrow(test_genind@tab),4,num_reps))
   # loop 25 times for sets (5 loci in one set) of randomly selected loci
-  for (i in 1:y) {
-    samp_loc <- sample(locNames(test_genind), size = x, replace = FALSE)
+  for (i in 1:num_reps) {
+    samp_loc <- sample(locNames(test_genind), size = num_loci, replace = FALSE)
     gm.Wild.genind <- test_genind[, loc = samp_loc]
     wildSamp <- gm.Wild.genind@tab
     wildSamp <- wildSamp[, which(colSums(wildSamp, na.rm = TRUE) != 0)]
@@ -544,7 +544,7 @@ gm_resamp_array_function <- function(test_genind, x, y){
       }
       categorymat <- cbind(total, common, lowfreq, rare)
       category <- colnames(categorymat)
-      dimnames(resamp_category) <- list(paste0("sample ", 1:nrow(categorymat)), category, paste0("replicate ", 1:y))
+      dimnames(resamp_category) <- list(paste0("sample ", 1:nrow(categorymat)), category, paste0("replicate ", 1:num_reps))
       # Store the results for the current replicate in resamp_category5loc
       resamp_category[, , i] <- categorymat
     }
@@ -552,9 +552,31 @@ gm_resamp_array_function <- function(test_genind, x, y){
   return(resamp_category)
 }
 
+# for (i in c(4:15, 200,500,1000,5000,10000,15267)) {
+#   for (z in 1:length(test_list)) {
+#     test_list[z] <- gm_resamp_array_function(QUAC.MSAT.Wild.genind, i, 25)
+#     if (i>15) {
+#       gm_resamp_array_function(QUAC.SNP.Wild.genind,i,25)
+#     } 
+#   }
+# }
+# test_list[1]
+# test_list <- list(
+#   QUAC_MSAT_resamp4loc
+# )
+
+QUAC_MSAT_resamp3loc <- gm_resamp_array_function(QUAC.MSAT.Wild.genind, 3, 25)
 QUAC_MSAT_resamp4loc <- gm_resamp_array_function(QUAC.MSAT.Wild.genind, 4, 25)
 QUAC_MSAT_resamp5loc <- gm_resamp_array_function(QUAC.MSAT.Wild.genind, 5, 25)
+QUAC_MSAT_resamp6loc <- gm_resamp_array_function(QUAC.MSAT.Wild.genind, 6, 25)
+QUAC_MSAT_resamp7loc <- gm_resamp_array_function(QUAC.MSAT.Wild.genind, 7, 25)
+QUAC_MSAT_resamp8loc <- gm_resamp_array_function(QUAC.MSAT.Wild.genind, 8, 25)
+QUAC_MSAT_resamp9loc <- gm_resamp_array_function(QUAC.MSAT.Wild.genind, 9, 25)
 QUAC_MSAT_resamp10loc <- gm_resamp_array_function(QUAC.MSAT.Wild.genind, 10, 25)
+QUAC_MSAT_resamp11loc <- gm_resamp_array_function(QUAC.MSAT.Wild.genind, 11, 25)
+QUAC_MSAT_resamp12loc <- gm_resamp_array_function(QUAC.MSAT.Wild.genind, 12, 25)
+QUAC_MSAT_resamp13loc <- gm_resamp_array_function(QUAC.MSAT.Wild.genind, 13, 25)
+QUAC_MSAT_resamp14loc <- gm_resamp_array_function(QUAC.MSAT.Wild.genind, 14, 25)
 QUAC_MSAT_resamptotloc <- gm_resamp_array_function(QUAC.MSAT.Wild.genind, 15, 25)
 QUAC_SNP_resamp200loc <- gm_resamp_array_function(QUAC.SNP.Wild.genind, 200, 25)
 QUAC_SNP_resamp500loc <- gm_resamp_array_function(QUAC.SNP.Wild.genind, 500, 25)
@@ -565,8 +587,10 @@ QUAC_SNP_resamptotloc <-gm_resamp_array_function(QUAC.SNP.Wild.genind, 15267, 25
 
 QUBO_MSAT_resamp3loc <- gm_resamp_array_function(QUBO.MSAT.Wild.genind, 3, 25)
 QUBO_MSAT_resamp4loc <- gm_resamp_array_function(QUBO.MSAT.Wild.genind, 4, 25)
-QUBO_MSAT_resamp9loc <- gm_resamp_array_function(QUBO.MSAT.Wild.genind, 9, 25)
+QUBO_MSAT_resamp5loc <- gm_resamp_array_function(QUBO.MSAT.Wild.genind, 5, 25)
 QUBO_MSAT_resamp6loc <- gm_resamp_array_function(QUBO.MSAT.Wild.genind, 6, 25)
+QUBO_MSAT_resamp7loc <- gm_resamp_array_function(QUBO.MSAT.Wild.genind, 7, 25)
+QUBO_MSAT_resamp8loc <- gm_resamp_array_function(QUBO.MSAT.Wild.genind, 8, 25)
 QUBO_MSAT_resamptotloc <- gm_resamp_array_function(QUBO.MSAT.Wild.genind, 9, 25)
 QUBO_SNP_resamp2kloc <- gm_resamp_array_function(QUBO.SNP.Wild.genind, 2000, 25)
 QUBO_SNP_resamp4kloc <- gm_resamp_array_function(QUBO.SNP.Wild.genind, 4000, 25)
@@ -608,9 +632,18 @@ analyze_resampling_array <- function(data_array) {
 # execute the analyze_resampling_array function which will output the prediction interval
 # values and prediction interval widths. 
 QUAC_array_list <- list(
+  QUAC_MSAT_resamp3loc,
   QUAC_MSAT_resamp4loc,
   QUAC_MSAT_resamp5loc,
+  QUAC_MSAT_resamp6loc,
+  QUAC_MSAT_resamp7loc,
+  QUAC_MSAT_resamp8loc,
+  QUAC_MSAT_resamp9loc,
   QUAC_MSAT_resamp10loc,
+  QUAC_MSAT_resamp11loc,
+  QUAC_MSAT_resamp12loc,
+  QUAC_MSAT_resamp13loc,
+  QUAC_MSAT_resamp14loc,
   QUAC_MSAT_resamptotloc,
   QUAC_SNP_resamp200loc,
   QUAC_SNP_resamp500loc,
@@ -623,8 +656,10 @@ QUAC_array_list <- list(
 QUBO_array_list <- list(
   QUBO_MSAT_resamp3loc,
   QUBO_MSAT_resamp4loc,
+  QUBO_MSAT_resamp5loc,
   QUBO_MSAT_resamp6loc,
-  QUBO_MSAT_resamp9loc,
+  QUBO_MSAT_resamp7loc,
+  QUBO_MSAT_resamp8loc,
   QUBO_MSAT_resamptotloc,
   QUBO_SNP_resamp2kloc,
   QUBO_SNP_resamp4kloc,
@@ -638,9 +673,18 @@ QUAC_results_matrix <- matrix(nrow = length(QUAC_array_list), ncol = 4)
 colnames(QUAC_results_matrix) <- c("fit", "lower", "upper", "piWidth")
 # Set row names for 'results_matrix'
 rownames(QUAC_results_matrix) <- c(
+  "QUAC_MSAT_resamp3loc",
   "QUAC_MSAT_resamp4loc",
   "QUAC_MSAT_resamp5loc",
+  "QUAC_MSAT_resamp6loc",
+  "QUAC_MSAT_resamp7loc",
+  "QUAC_MSAT_resamp8loc",
+  "QUAC_MSAT_resamp9loc",
   "QUAC_MSAT_resamp10loc",
+  "QUAC_MSAT_resamp11loc",
+  "QUAC_MSAT_resamp12loc",
+  "QUAC_MSAT_resamp13loc",
+  "QUAC_MSAT_resamp14loc",
   "QUAC_MSAT_resamptotloc",
   "QUAC_SNP_resamp200loc",
   "QUAC_SNP_resamp500loc",
@@ -657,8 +701,10 @@ colnames(QUBO_results_matrix) <- c("fit", "lower", "upper", "piWidth")
 rownames(QUBO_results_matrix) <- c(
   "QUBO_MSAT_resamp3loc",
   "QUBO_MSAT_resamp4loc",
+  "QUBO_MSAT_resamp5loc",
   "QUBO_MSAT_resamp6loc",
-  "QUBO_MSAT_resamp9loc",
+  "QUBO_MSAT_resamp7loc",
+  "QUBO_MSAT_resamp8loc",
   "QUBO_MSAT_resamptotloc",
   "QUBO_SNP_resamp2kloc",
   "QUBO_SNP_resamp4kloc",
@@ -667,17 +713,17 @@ rownames(QUBO_results_matrix) <- c(
 
 
 # Iterate through the arrays and store results in the matrix
-# Initiate loop that iterates over the idicies of 'array_list'
-test <- function(x,y){
-  for (i in 1:length(x)) {
+# Initiate loop that iterates over the indices of 'array_list'
+test <- function(array_list, input_matrix){
+  for (i in 1:length(array_list)) {
     # Call the 'analyze_resampling_array' function on the ith element of 'array_list'. This function returns a list with 
     # resul and piWidth values.
-    analyze_resampling_array(x[[i]])
+    analyze_resampling_array(array_list[[i]])
     # Store results and piWidth values in the ith row of the matrix
-    y[i, ] <- c(analyze_resampling_array(x[[i]])$result, 
-                             analyze_resampling_array(x[[i]])$piWidth)
+    input_matrix[i, ] <- c(analyze_resampling_array(array_list[[i]])$result, 
+                             analyze_resampling_array(array_list[[i]])$piWidth)
   } 
-  return(y)
+  return(input_matrix)
 }
 
 QUAC_predict_results <- test(QUAC_array_list, QUAC_results_matrix)
@@ -691,5 +737,6 @@ write.csv(QUAC_predict_results,
           row.names = TRUE)
 
 write.csv(QUBO_predict_results,
-          file = "C:/Users/gsalas/Documents/resampling_CIs/Code/Outputs/QUBO_resamp_loci.csv"
+          file = "C:/Users/gsalas/Documents/resampling_CIs/Code/Outputs/QUBO_resamp_loci.csv",
+          row.names = TRUE
             )

@@ -669,8 +669,8 @@ rownames(QUBO_results_matrix) <- c(
 test <- function(array_list, input_matrix){
   for (i in 1:length(array_list)) {
     # Store results and piWidth values in the ith row of the matrix
-    input_matrix[i, ] <- c((array_list[[i]])$result, 
-                           (array_list[[i]])$piWidth)
+    input_matrix[i, ] <- c(array_list[[i]]$result, 
+                           array_list[[i]]$piWidth)
     }
      return(input_matrix)
 }
@@ -682,9 +682,9 @@ QUBO_final_matrix_results <- test(QUBO_predict_results, QUBO_results_matrix)
 print(QUAC_final_matrix_results)
 print(QUBO_final_matrix_results)
 
-write.csv(QUAC_predict_results, 
+write.csv(QUAC_final_matrix_results, 
           file = "C:/Users/gsalas/Documents/resampling_CIs/Code/Outputs/QUAC_resamp_loci.csv",
           row.names = TRUE)
-write.csv(QUBO_predict_results,
+write.csv(QUBO_final_matrix_results,
           file = "C:/Users/gsalas/Documents/resampling_CIs/Code/Outputs/QUBO_resamp_loci.csv",
           row.names = TRUE)

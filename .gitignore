@@ -5,3 +5,8 @@ Images
 exploringAdegenet.R
 code_walkthrough.Rmd
 resamplingwalkthru.R
+# QUAC scripts
+MSATalleleCategory.R
+SNPcomalleleCategory.R
+SNPsuballeleCategory.R
+

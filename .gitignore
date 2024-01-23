@@ -1,3 +1,7 @@
 Images
 .RData
 .Rhistory
+# Tutorials and walkthroughs
+exploringAdegenet.R
+code_walkthrough.Rmd
+resamplingwalkthru.R

@@ -22,34 +22,63 @@ gm_resamp_array_function <- function(insert_genind, num_loci, num_reps){
   resamp_category <- array(dim = c(nrow(insert_genind@tab),4,num_reps))
   # loop 25 times for sets (5 loci in one set) of randomly selected loci
   for (i in 1:num_reps) {
+    # Randomly sample an amount of loci from the genind object based on user input
     samp_loc <- sample(locNames(insert_genind), size = num_loci, replace = FALSE)
+    # Subset the genind object to include only the columns corresponding to the sampled loci
     gm.Wild.genind <- insert_genind[, loc = samp_loc]
+    # declare objects
+    # access the genind matrix that shows the type of alleles and quantity present among wild individuals
     wildSamp <- gm.Wild.genind@tab
+    # calculate the sum of each column in the matrix, ignoring NA values.
+    # identify the indices where the sum is not equal to zero, this indicates columns with 
+    # variation in allele counts. Subset the original matrix by selecting only the columns identified
+    # in the previous step, removing columns with no variation in allele counts
     wildSamp <- wildSamp[, which(colSums(wildSamp, na.rm = TRUE) != 0)]
+    # calculating a vector of allele frequencies (sum of allele counts divided by number of haplotypes, or individuals * 2)
     wildComplete <- colSums(wildSamp, na.rm = TRUE) / (nrow(wildSamp) * 2)
+    # Subset 'wildComplete' to include only the alleles with non-zero frequency
     wildSubset <- wildComplete[wildComplete > 0]
+    # initialize vectors to store results 
     total <- vector(length = nrow(wildSamp))
     common <- vector(length = nrow(wildSamp))
     lowfreq <- vector(length = nrow(wildSamp))
     rare <- vector(length = nrow(wildSamp))
-    # Loop for each sample size
+    # Loop for each sample size, ranging from 1 tto the number of loci in the wild population
     for (j in 1:nrow(wildSamp)) {
+      # randomly select a subset of rows from the matrix, without replacement
       samp <- sample(nrow(wildSamp), size = j, replace = FALSE)
+      # subset the original matrix, to inlcude only the rows randomly selected
       samp <- wildSamp[samp,]
       # Measure the proportion of allelic representation in that sample
+      # Check if its the first iteration of the inner loop
       if (j == 1) {
+        # Identify the names of alleles in the sample that are also present in 'wildSubset'. 
+        # Calculate the proportion of alleles in the sample that are also present in 'wildSubset'.
         total[j] <- length(names(wildSubset)[which(names(wildSubset) %in% names(which(samp > 0)))]) / length(names(wildSubset))
+        # Identify the names of the alleles in the sample that are also present in the 'wildSubset' for alleles with frequency >0.1
+        # Calculate the proportion of common alleles in the sample compared to the 'wildSubset' for alleles with frequency >0.1
         common[j] <- length(which(names(which(wildSubset > 0.1)) %in% names(which(samp > 0)))) / length(which(wildSubset > 0.1))
+        # Identify the names of alleles in the sample that are also present in the 'wildSubset' for alleles with frequency >0.01 and frequency <0.1
+        # Calculate the proportion of low frequency alleles in the sample compared to the 'wildSubset' for allels with frequency >0.01 and frequency <0.1
         lowfreq[j] <- length(which(names(which(wildSubset > 0.01 & wildSubset < 0.1)) %in% names(which(samp > 0)))) / length(which(wildSubset > 0.01 & wildSubset < 0.1))
+        # Identify the names of alleles in the sample that are also present in the 'wildSubset' for allleles with frequency <0.02.
+        # Calcualte the proportion of rare alleles in the sample compared to the 'wildSubset' for alleles with frequency <0.01.
         rare[j] <- length(which(names(which(wildSubset < 0.01)) %in% names(which(samp > 0)))) / length(which(wildSubset < 0.01))
       } else {
+        # Calculate the proportion of alleles in the sample that are also present in the 'wildSubset' for the case where j is not 1
         total[j] <- length(names(wildSubset)[which(names(wildSubset) %in% names(which(colSums(samp, na.rm = TRUE) > 0)))]) / length(names(wildSubset))
+        # Calculate the proportion of alleles of common alleles in the sample compared toe the 'wildSubset' where j is not 1
         common[j] <- length(which(names(which(wildSubset > 0.1)) %in% names(which(colSums(samp, na.rm = TRUE) > 0)))) / length(which(wildSubset > 0.1))
+        # Calculate the proportion of alleles of low frequency alleles in the sample compared to the 'wildSubset' for the case where j is not 1
         lowfreq[j] <- length(which(names(which(wildSubset > 0.01 & wildSubset < 0.1)) %in% names(which(colSums(samp, na.rm = TRUE) > 0)))) / length(which(wildSubset > 0.01 & wildSubset < 0.1))
+        # Calculate the proportion of rare alleles in the sample compared ot the 'wildSubset' for the case where j is not 1
         rare[j] <- length(which(names(which(wildSubset < 0.01)) %in% names(which(colSums(samp, na.rm = TRUE) > 0)))) / length(which(wildSubset < 0.01))
       }
+      # Combine the results (proportions) for each sample size into a matrix named 'categorymat_10loc'.
       categorymat <- cbind(total, common, lowfreq, rare)
+      # extract the column names (categories) from the matrix
       category <- colnames(categorymat)
+      # set row and column names for 'resamp_category10loc'
       dimnames(resamp_category) <- list(paste0("sample ", 1:nrow(categorymat)), category, paste0("replicate ", 1:num_reps))
       # Store the results for the current replicate in resamp_category5loc
       resamp_category[, , i] <- categorymat
@@ -91,17 +120,27 @@ analyze_resampling_array <- function(data_array) {
 }
 
 # QUAC dataset
+# Declare "QUAC_loci_ranges" to concatenate the levels of loci to be subset
 QUAC_loci_ranges <- c(3:15,50,100,200,500,1000,5000,10000,nLoc(QUAC.SNP.Wild.genind))
+# Create a list equal to the length of the different levels that the arrays will be stored into
 QUAC_array_list = list(length(QUAC_loci_ranges))
+# Create a loop that iterates through the lenght of the different levels
 for (i in 1:length(QUAC_loci_ranges)) {
+  # declare a variable that is going to take the value of the level of loci you want to subset based on the list
   loci_amount <- QUAC_loci_ranges[i]
+  # if else statement that will store the arrays of each set of loci into the list from the MSAT genind,
+  # once the string reaches to 50, the else statement will iterate through the SNP genind.
+  # the gm_resamp_array_function takes three arguments, the genind object, the loci amount, and the amount of replicates.
   if (loci_amount < 50) {
     QUAC_array_list[[i]] <- gm_resamp_array_function(QUAC.MSAT.Wild.genind, loci_amount, 25)
   } else{
     QUAC_array_list[[i]] <- gm_resamp_array_function(QUAC.SNP.Wild.genind, loci_amount, 25)
   }
 }
+# list of all the resampling arrays with different sets of loci stored into the QUAC_array_list
 QUAC_array_list
+# lapply function that applies the analyze_resapmling_array function through the entire list
+# the only argument required is the arrays, which are stored in the list
 QUAC_predict_results <- lapply(QUAC_array_list,analyze_resampling_array)
 print(QUAC_predict_results)
 
@@ -111,15 +150,25 @@ QUAC_results_matrix <- matrix(nrow = length(QUAC_array_list), ncol = 4)
 # Set column names for 'results_Matrix'
 colnames(QUAC_results_matrix) <- c("fit", "lower", "upper", "piWidth")
 # Set row names for 'results_matrix'
+# declare an object to store the character values of the row names
 loci_names <- vector(length = nrow(QUAC_results_matrix))
+# for loop that iterates through the length of the string of loci levels.
+# the for loop extracts the number value and pastes it to a character object
+# the output will be the the genetic marker type, the level of loci, and loci.
+# for example, the first iteration will be "QUAC_MSAT 3 loci" as the first row name.
 for (i in 1:length(QUAC_loci_ranges)) {
+  # if else statement that stores the output of the character results for MSAT levels
   if (QUAC_loci_ranges[i] < 50) {
     loci_names[i] <- paste0("QUAC_MSAT ",QUAC_loci_ranges[i]," loci")
   } else{
+    # if else statement that stores the output of the character results for MSAT levels
+    
     loci_names[i] <- paste0("QUAC_SNP ",QUAC_loci_ranges[i]," loci")
   }
+  # fill the row names with the loci_names
   rownames(QUAC_results_matrix) <- loci_names
 }
+# empty matrix with descriptive row names and column names
 print(QUAC_results_matrix)
 
 # QUBO dataset

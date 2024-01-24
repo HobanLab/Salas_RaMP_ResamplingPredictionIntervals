@@ -17,6 +17,8 @@ QUAC.SNP.Wild.genind <- gm_list[[2]]
 QUBO.MSAT.Wild.genind <- gm_list[[3]]
 QUBO.SNP.Wild.genind <- gm_list[[4]]
 library(adegenet)
+
+## Building resampling array ## 
 gm_resamp_array_function <- function(insert_genind, num_loci, num_reps){
   # Create an empty array named 'resamp_category5loc' to store results
   resamp_category <- array(dim = c(nrow(insert_genind@tab),4,num_reps))
@@ -119,12 +121,33 @@ analyze_resampling_array <- function(data_array) {
   return(list(result = result, piWidth = piWidth))
 }
 
-# QUAC dataset
-# Declare "QUAC_loci_ranges" to concatenate the levels of loci to be subset
+## Filling in matrix ##
+# Iterate through the arrays and store results in the matrix
+# Initiate loop that iterates over the indices of 'array_list'
+build_matrix_func <- function(array_list, input_matrix){
+  for (i in 1:length(array_list)) {
+    # Store results and piWidth values in the ith row of the matrix
+    input_matrix[i, ] <- c(array_list[[i]]$result, 
+                           array_list[[i]]$piWidth)
+  }
+  return(input_matrix)
+}
+
+## QUAC Dataset ##
 QUAC_loci_ranges <- c(3:15,50,100,200,500,1000,5000,10000,nLoc(QUAC.SNP.Wild.genind))
 # Create a list equal to the length of the different levels that the arrays will be stored into
 QUAC_array_list = list(length(QUAC_loci_ranges))
-# Create a loop that iterates through the lenght of the different levels
+# Create a list equal to the length of the different levels that the predict values will be stored into
+QUAC_predict_results <- list(length(QUAC_loci_ranges))
+# this matrix will store the pi values and pi widths
+# Create an empty matrix to store the results
+QUAC_results_matrix <- matrix(nrow = length(QUAC_loci_ranges), ncol = 4)
+# Set column names for 'results_Matrix'
+colnames(QUAC_results_matrix) <- c("fit", "lower", "upper", "piWidth")
+# Set row names for 'results_matrix'
+# declare an object to store the character values of the row names
+loci_names <- vector(length = nrow(QUAC_results_matrix))
+# Create a loop that iterates through the length of the different levels
 for (i in 1:length(QUAC_loci_ranges)) {
   # declare a variable that is going to take the value of the level of loci you want to subset based on the list
   loci_amount <- QUAC_loci_ranges[i]
@@ -136,94 +159,65 @@ for (i in 1:length(QUAC_loci_ranges)) {
   } else{
     QUAC_array_list[[i]] <- gm_resamp_array_function(QUAC.SNP.Wild.genind, loci_amount, 25)
   }
-}
-# list of all the resampling arrays with different sets of loci stored into the QUAC_array_list
-QUAC_array_list
-# lapply function that applies the analyze_resapmling_array function through the entire list
-# the only argument required is the arrays, which are stored in the list
-QUAC_predict_results <- lapply(QUAC_array_list,analyze_resampling_array)
-print(QUAC_predict_results)
-
-# this matrix will store the pi values and pi widths
-# Create an empty matrix to store the results
-QUAC_results_matrix <- matrix(nrow = length(QUAC_array_list), ncol = 4)
-# Set column names for 'results_Matrix'
-colnames(QUAC_results_matrix) <- c("fit", "lower", "upper", "piWidth")
-# Set row names for 'results_matrix'
-# declare an object to store the character values of the row names
-loci_names <- vector(length = nrow(QUAC_results_matrix))
-# for loop that iterates through the length of the string of loci levels.
-# the for loop extracts the number value and pastes it to a character object
-# the output will be the the genetic marker type, the level of loci, and loci.
-# for example, the first iteration will be "QUAC_MSAT 3 loci" as the first row name.
-for (i in 1:length(QUAC_loci_ranges)) {
-  # if else statement that stores the output of the character results for MSAT levels
+  QUAC_predict_results[[i]] <- analyze_resampling_array(QUAC_array_list[[i]])
+  print(QUAC_predict_results)
+  # if else statement that stores the output of the character results for MSAT and SNP levels
   if (QUAC_loci_ranges[i] < 50) {
     loci_names[i] <- paste0("QUAC_MSAT ",QUAC_loci_ranges[i]," loci")
   } else{
-    # if else statement that stores the output of the character results for MSAT levels
-    
     loci_names[i] <- paste0("QUAC_SNP ",QUAC_loci_ranges[i]," loci")
   }
   # fill the row names with the loci_names
   rownames(QUAC_results_matrix) <- loci_names
+  # build the matrix using the predict results and the empty results matrix
+  QUAC_final_matrix_results <- build_matrix_func(QUAC_predict_results, QUAC_results_matrix)
 }
-# empty matrix with descriptive row names and column names
-print(QUAC_results_matrix)
+print(QUAC_final_matrix_results)
+write.csv(QUAC_final_matrix_results, 
+          file = "C:/Users/gsalas/Documents/resampling_CIs/Code/Outputs/QUAC_resamp_loci.csv",
+          row.names = TRUE)
 
-# QUBO dataset
+## QUBO dataset ##
 QUBO_loci_ranges <- c(3:9, 50, 100, 200, 500, 1000, 2000, 4000, nLoc(QUBO.SNP.Wild.genind))
+# Create a list equal to the length of the different levels that the arrays will be stored into
 QUBO_array_list = list(length(QUBO_loci_ranges))
+# Create a list equal to the length of the different levels that the predict values will be stored into
+QUBO_predict_results <- list(length(QUBO_loci_ranges))
+# this matrix will store the pi values and pi widths
+# Create an empty matrix to store the results
+QUBO_results_matrix <- matrix(nrow = length(QUBO_loci_ranges), ncol = 4)
+# Set column names for 'results_Matrix'
+colnames(QUBO_results_matrix) <- c("fit", "lower", "upper", "piWidth")
+# Set row names for 'results_matrix'
+# declare an object to store the character values of the row names
+loci_names <- vector(length = nrow(QUBO_results_matrix))
+# Create a loop that iterates through the length of the different levels
 for (i in 1:length(QUBO_loci_ranges)) {
+  # declare a variable that is going to take the value of the level of loci you want to subset based on the list
   loci_amount <- QUBO_loci_ranges[i]
+  # if else statement that will store the arrays of each set of loci into the list from the MSAT genind,
+  # once the string reaches to 50, the else statement will iterate through the SNP genind.
+  # the gm_resamp_array_function takes three arguments, the genind object, the loci amount, and the amount of replicates.
   if (loci_amount < 50) {
     QUBO_array_list[[i]] <- gm_resamp_array_function(QUBO.MSAT.Wild.genind, loci_amount, 25)
   } else{
     QUBO_array_list[[i]] <- gm_resamp_array_function(QUBO.SNP.Wild.genind, loci_amount, 25)
   }
-}
-QUBO_array_list
-QUBO_predict_results <- lapply(QUBO_array_list, analyze_resampling_array)
-print(QUBO_predict_results)
-
-# Create an empty matrix to store the results
-QUBO_results_matrix <- matrix(nrow = length(QUBO_array_list), ncol = 4)
-# Set column names for 'results_Matrix'
-colnames(QUBO_results_matrix) <- c("fit", "lower", "upper", "piWidth")
-# Set row names for 'results_matrix'
-# loci_names <- vector(mode = "character", length = nrow(QUBO_results_matrix))
-loci_names <- vector(length = nrow(QUBO_results_matrix))
-for (i in 1:length(QUBO_loci_ranges)) {
+  # store the results into a list 
+  QUBO_predict_results[[i]] <- analyze_resampling_array(QUBO_array_list[[i]])
+  print(QUBO_predict_results)
+  # if else statement that stores the output of the character results for MSAT and SNP levels
   if (QUBO_loci_ranges[i] < 50) {
     loci_names[i] <- paste0("QUBO_MSAT ",QUBO_loci_ranges[i]," loci")
   } else{
     loci_names[i] <- paste0("QUBO_SNP ",QUBO_loci_ranges[i]," loci")
   }
+  # fill the row names with the loci_names
   rownames(QUBO_results_matrix) <- loci_names
+  # build the matrix using the predict results and the empty results matrix
+  QUBO_final_matrix_results <- build_matrix_func(QUBO_predict_results, QUBO_results_matrix)
 }
-print(QUBO_results_matrix)
-
-# Iterate through the arrays and store results in the matrix
-# Initiate loop that iterates over the indices of 'array_list'
-build_matrix_func <- function(array_list, input_matrix){
-  for (i in 1:length(array_list)) {
-    # Store results and piWidth values in the ith row of the matrix
-    input_matrix[i, ] <- c(array_list[[i]]$result, 
-                           array_list[[i]]$piWidth)
-    }
-     return(input_matrix)
-}
-
-
-QUAC_final_matrix_results <- build_matrix_func(QUAC_predict_results, QUAC_results_matrix)
-QUBO_final_matrix_results <- build_matrix_func(QUBO_predict_results, QUBO_results_matrix)
-
-print(QUAC_final_matrix_results)
 print(QUBO_final_matrix_results)
-
-write.csv(QUAC_final_matrix_results, 
-          file = "C:/Users/gsalas/Documents/resampling_CIs/Code/Outputs/QUAC_resamp_loci.csv",
-          row.names = TRUE)
 write.csv(QUBO_final_matrix_results,
           file = "C:/Users/gsalas/Documents/resampling_CIs/Code/Outputs/QUBO_resamp_loci.csv",
           row.names = TRUE)

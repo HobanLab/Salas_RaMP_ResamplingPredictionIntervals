@@ -1,21 +1,31 @@
 # Overview
-This repository contains code that builds upon Quercus_IUCN_samp_sims, a previous simulation project by Kaylee Rosenberger. The goal of this subproject is to assess the variation on guidelines for minimum sample sizes required to maintain genetic diversity of various ex situ oak collections. In this subproject, we calculated 95% confidence intervals around minimum sample sizes required for 95% allelic representation across 1000 replicates for 14 IUCN red list endangered oak species using genetic marker resampling arrays. By calculating the width of the confidence intervals, the confidence of the guidelines can be quantitatively determined. Additionally, we used linear regression, a statistically rigorous technique to predict the 95% allelic representation as a function of minimum sampling size for Q. acerifolia and Q. boyntonii. We also explore how the 95% MSSE changes based on sampling of few to many loci for alleles of different frequency categories using MSAT and SNP genetic marker datasets.
-## Directory
+This repository contains code that builds upon [Quercus_IUCN_samp_sims](https://github.com/HobanLab/Quercus_IUCN_samp_sims), a previous simulation project by Kaylee Rosenberger. The goal of this subproject is to assess the variation in minimum sample size estimates (MSSEs) required to maintain genetic diversity of various ex situ oak collections. In this subproject, we calculate prediction intervals around MSSEs required for 95% allelic representation. We also explore how the 95% MSSE changes based on sampling of few to many loci for alleles of different frequency categories using MSAT and SNP genetic marker datasets.
+
+## Repository structure
+### Scripts
+1. `QUAC_MSSE_Quantiles.R`
+  - Script calculates MSSE means and quantiles, and generates plots for the total allelic representation (and other categories of allelic frequency) in order to create confidence intervals around 95% minimum sample size estimates. The approach used in this script for calculating allelic representation confidence intervals is improved upon by using the `predict` function (see `MSSE_PredictionIntervals.R`).
+    - **Inputs** 
+      - `Subset` folder--resampling arrays built from _Quercus acerifolia_ (QUAC) microsatellite (MSAT) and single nucleotide polymorphism (SNP) genetic data (for SNPs, R0 and R80). These datasets are all subset to the same number of samples, to allow for greater comparability between marker types and missing data levels.
+      
+2. `MSSE_PredictionIntervals.R`
+  - Script calculates the prediction interval (PI) values around the 95% MSSE using two different datasets (QUAC and IUCN 14 oaks), and builds a matrix that stores the PI values
+    - **Inputs**
+      - _QUAC_: `Subset` folder--resampling arrays built from _Quercus acerifolia_ (QUAC) microsatellite (MSAT) and single nucleotide polymorphism (SNP) genetic data (for SNPs, R0 and R80). These datasets are all subset to the same number of samples, to allow for greater comparability between marker types and missing data levels.
+      - _IUCN 14 oaks_: `quercus_final_results_orig.Rdata`--a resampling array containing the total allelic representation values for oaks simulated by Kaylee Rosenberger; source code found in the [`Quercus_IUCN_samp_sims` repo](https://github.com/HobanLab/Quercus_IUCN_samp_sims)
+    - **Outputs**
+      - _QUAC_: `QUAC_PI_values.csv`
+      - _IUCN 14 oaks_: `Quercus14_PI_values.csv`
+      
+3. `QUAC_QUBO_loci_bootstrapping.R` 
+  - Script builds resampling arrays based on different ranges of randomly sampled loci, calculates the prediction intervals around the 95% MSSEs, and builds a matrix that stores the PI values
+    - **Inputs**
+      - `LociBootstrapping_Datasets` folder--`genpop` objects for wild populations of _Q. acerifolia_ (QUAC) and _Q. boyntonii_ (QUBO), saved as R objects. 
+    - **Outputs**
+      - `QUAC_MSSE_Quantiles.csv`
+
 ### Datasets
-QUAC.MSAT.Complete_resampArr.Rdata (a microsatellite resampling array containing allele frequency category data that does not filter loci shared between garden and wild populations of Q. acerifolia)  
-QUAC.SNP.DN.R0.Complete (a singlenucleotide polymorphism resampling array containing allele frequency category data that used the de novo processing approach, does not filter the number of samples that share 0% of loci, and does not filter loci shared between garden and wild populations of Q. acerifolia.)
-QUAC.SNP.DN.R80.Complete_resampArr.Rdata (a single nucleotide polymorphism resampling array containing allele frequency category data that used the de novo processing approach, filters the number of samples that share 80% of loci, and does not filter loci shared between garden and wild populations of Q. acerifolia.)
-quercus_final_results_orig.Rdata  
-**LociBootstrapping_datasets**: Contains MSAT and SNP genind objects for wild populations of Q. acerifolia and Q. boyntonii saved as R objects. The slot of the genind object for each genetic marker of each species containing allele counts were filtered to only include samples with common alleles.  
-**Subset**: Contains MSAT and SNP resampling arrays that filter loci shared between garden and wild populations of Q. acerifolia. Both SNP resampling arrays use the reference alignment processing approach, while only one SNP resampling array filters the number of samples shared by 80% of loci.
+This folder contains the input files read in by the analyses in the `Scripts` folder (see outline of **Inputs** above). These files are typically either resampling arrays (sets of allelic representation values, for a given number of randomly drawn samples) or `genpop` objects (read in using the `adegenet` library) from which resampling arrays are built.
+
 ### Outputs
-14CIWidths.csv  
-datasetCIwidths.csv  
-gm_predict.csv  
-QUAC_resamp_loci.csv  
-QUBO_resamp_loci.csv  
-
-
-**QUAC_MSSE_Quantiles.R**: script calculates means, quantiles, and generates plots for the total and other allele categories in order to create confidence intervals around 95% minimum sample size estimates.   
-**QUAC_QUBO_loci_bootstrapping.R**: script builds resampling arrays that randomly sample loci at different ranges, calculates prediction intervals aroud the 95% minimum sample size estimate using MSAT and SNP genind objects for QUAC and QUBO, and builds a matrix that stores the PI values     
-**MSSE_PredictionIntervals.R**: scripts calculates prediction interval values aroud the 95% minimum sample size estimate using MSAT and SNP resampling arrays for 14 oak species and builds a matrix that stores the PI values
+This folder contains the CSV outputs generated by the analyses in the `Scripts` folder (see outline of **Outputs** above). Generally, the contents of these CSVs are minimum sample size estimates and upper/lower the confidence intervals (CI) or prediction intervals (CI) bounding them.

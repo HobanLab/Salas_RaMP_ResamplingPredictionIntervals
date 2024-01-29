@@ -5,6 +5,7 @@
 #####################################################
 # Set work directory by adding path file 
 setwd("C:/Users/gsalas/Documents/resampling_CIs/Code/")
+# QUAC.MSAT.Complete_resampArr is a resampling array containing allele frequency category data that does not filter microsatellite loci shared between garden and wild populations
 QUAC_MSAT_Complete_resampArr <- readRDS("Datasets/QUAC.MSAT.Complete_resampArr.Rdata")
 # [sample number, allele category, replicate number]
 # this represents the total allelic representation % for samples 1-100 replicate one

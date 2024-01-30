@@ -6,12 +6,12 @@ This repository contains code that builds upon [Quercus_IUCN_samp_sims](https://
 1. `QUAC_MSSE_Quantiles.R`
   - Script calculates MSSE means and quantiles, and generates plots for the total allelic representation (and other categories of allelic frequency) in order to create confidence intervals around 95% minimum sample size estimates. The approach used in this script for calculating allelic representation confidence intervals is improved upon by using the `predict` function (see `MSSE_PredictionIntervals.R`).
     - **Inputs** 
-      - `Subset` folder--resampling arrays built from _Quercus acerifolia_ (QUAC) microsatellite (MSAT) and single nucleotide polymorphism (SNP) genetic data (for SNPs, R0 and R80). These datasets are all subset to the same number of samples, to allow for greater comparability between marker types and missing data levels.
+      - `QUAC_Subset_resampArrs` folder--resampling arrays built from _Quercus acerifolia_ (QUAC) microsatellite (MSAT) and single nucleotide polymorphism (SNP) genetic data (for SNPs, R0 and R80). These datasets are all subset to the same number of samples, to allow for greater comparability between marker types and missing data levels.
       
 2. `MSSE_PredictionIntervals.R`
   - Script calculates the prediction interval (PI) values around the 95% MSSE using two different datasets (QUAC and IUCN 14 oaks), and builds a matrix that stores the PI values
     - **Inputs**
-      - _QUAC_: `Subset` folder--resampling arrays built from _Quercus acerifolia_ (QUAC) microsatellite (MSAT) and single nucleotide polymorphism (SNP) genetic data (for SNPs, R0 and R80). These datasets are all subset to the same number of samples, to allow for greater comparability between marker types and missing data levels.
+      - _QUAC_: `QUAC_Subset_resampArrs` folder--resampling arrays built from _Quercus acerifolia_ (QUAC) microsatellite (MSAT) and single nucleotide polymorphism (SNP) genetic data (for SNPs, R0 and R80). These datasets are all subset to the same number of samples, to allow for greater comparability between marker types and missing data levels.
       - _IUCN 14 oaks_: `quercus_final_results_orig.Rdata`--a resampling array containing the total allelic representation values for oaks simulated by Kaylee Rosenberger; source code found in the [`Quercus_IUCN_samp_sims` repo](https://github.com/HobanLab/Quercus_IUCN_samp_sims)
     - **Outputs**
       - _QUAC_: `QUAC_PI_values.csv`

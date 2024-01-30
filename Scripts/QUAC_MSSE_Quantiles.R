@@ -5,7 +5,7 @@
 #####################################################
 # Set work directory by adding path file 
 setwd("C:/Users/gsalas/Documents/resampling_CIs/Code/")
-# QUAC.MSAT.Complete_resampArr is a resampling array containing allele frequency category data that does not filter microsatellite loci shared between garden and wild populations
+# QUAC.MSAT.Complete_resampArr is a resampling array containing allele frequency category data that does not filter microsatellite loci shared between garden and wild populations of Q. acerifolia
 QUAC_MSAT_Complete_resampArr <- readRDS("Datasets/QUAC.MSAT.Complete_resampArr.Rdata")
 # [sample number, allele category, replicate number]
 # this represents the total allelic representation % for samples 1-100 replicate one
@@ -114,6 +114,7 @@ write.csv2(ciWidthTable, file="ciWidth.csv")
 #############################################################
 # Set work directory by adding path file 
 setwd("C:/Users/gsalas/Documents/resampling_CIs/Code/")
+# a singlenucleotide polymorphism resampling array containing allele frequency category data that used the de novo processing approach, does not filter the number of samples that share 0% of loci, and does not filter loci shared between garden and wild populations of Q. acerifolia
 QUAC_SNP_DN_Complete_resampArr<-readRDS("Datasets/QUAC.SNP.DN.R0.Complete_resampArr.Rdata")
 # declare objects to store values in vectors
 totalallelecatmean <- vector()

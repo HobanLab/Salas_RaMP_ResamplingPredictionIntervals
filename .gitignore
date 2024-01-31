@@ -9,3 +9,5 @@ resamplingwalkthru.R
 MSATalleleCategory.R
 SNPcomalleleCategory.R
 SNPsuballeleCategory.R
+# Output
+datasetCIwidths.csv

@@ -1,7 +1,7 @@
 rm(list = ls())
 library(strataG)
 library(adegenet)
-# %%% STRATAG APPROACH ----
+# %%%STRATAG APPROACH ----
 # Specify the filepath to the Arlequin file in question
 arpFilepath <- "C:/Users/gsalas/Desktop/fsc28_win64/MSAT_04pop_migLow/"
 arpFiles <- list.files(path = arpFilepath, pattern = ".arp", full.names =  TRUE)
@@ -25,3 +25,16 @@ for (i in 1:length(arpObject)) {
 }
 meanLocivec
 meanAllelevec
+
+# WRITING THE UPDATED PAR FILE ----
+parFilepath <- "C:/Users/gsalas/Desktop/fsc28_win64/RaMP_SimulationIntro_DemoParFiles/MSAT_04pop_migLow.par"
+
+deme0 <- fscDeme(parFilepath, deme.size = 2400)
+
+demes <- fscSettingsDemes(deme0)
+
+msats <- fscBlock_microsat(num.loci = 25, mut.rate = 0)
+
+genetics <- fscSettingsGenetics(msats)
+
+updatedMSAT_04pop_migLow.params <- fscWrite(demes = demes, genetics = genetics, label ="updatedMSAT_04pop_migLow")

@@ -27,14 +27,17 @@ meanLocivec
 meanAllelevec
 
 # WRITING THE UPDATED PAR FILE ----
-parFilepath <- "C:/Users/gsalas/Desktop/fsc28_win64/RaMP_SimulationIntro_DemoParFiles/MSAT_04pop_migLow.par"
+setwd("C:/Users/gsalas/Desktop/fsc28_win64/RaMP_SimulationIntro_DemoParFiles/")
 
-deme0 <- fscDeme(parFilepath, deme.size = 2400)
+deme0 <- fscDeme(deme.size = 600, sample.size = 4)
 
-demes <- fscSettingsDemes(deme0)
+demes <- fscSettingsDemes(deme0, ploidy = 2)
 
-msats <- fscBlock_microsat(num.loci = 25, mut.rate = 0)
+fscEvent(event.time = 5e-4, source = 0, sink = 0, prop.migrants = 1, new.size = 1, new.growth = 0, migr.mat = 1)
 
-genetics <- fscSettingsGenetics(msats)
+msats <- fscBlock_microsat(num.loci = 1, recomb.rate = 0, mut.rate = 1e-3)
 
-updatedMSAT_04pop_migLow.params <- fscWrite(demes = demes, genetics = genetics, label ="updatedMSAT_04pop_migLow")
+
+genetics <- fscSettingsGenetics(msats, num.chrom = 25)
+
+updatedMSAT_04pop_migLow.params <- fscWrite(demes = demes, genetics = genetics, label ="updatedMSAT_04pop_migLow", use.wd = TRUE)

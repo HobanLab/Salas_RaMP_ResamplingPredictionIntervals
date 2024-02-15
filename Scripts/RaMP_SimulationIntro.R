@@ -33,11 +33,23 @@ deme0 <- fscDeme(deme.size = 600, sample.size = 4)
 
 demes <- fscSettingsDemes(deme0, ploidy = 2)
 
-fscEvent(event.time = 5e-4, source = 0, sink = 0, prop.migrants = 1, new.size = 1, new.growth = 0, migr.mat = 1)
+events0 <- fscEvent(event.time = 5e4, source = 0, sink = 0, prop.migrants = 1, new.size = 1, new.growth = 0, migr.mat = 4)
+
+events <- fscSettingsEvents(events)
+
+migmat1 <- matrix(data = c(0, 0.001, 0.001, 0.001,
+                0.001, 0, 0.001, 0.001,
+                0.001, 0.001, 0, 0.001,
+                0.001, 0.001, 0.001, 0), nrow = 4, ncol = 4)
+migmat2 <- matrix(data = c(0, 0, 0, 0,
+                           0, 0, 0, 0,
+                           0, 0, 0, 0,
+                           0, 0, 0, 0), nrow = 4, ncol = 4)
+
+migration <- fscSettingsMigration(migmat1, migmat2)
 
 msats <- fscBlock_microsat(num.loci = 1, recomb.rate = 0, mut.rate = 1e-3)
 
-
 genetics <- fscSettingsGenetics(msats, num.chrom = 25)
 
-updatedMSAT_04pop_migLow.params <- fscWrite(demes = demes, genetics = genetics, label ="updatedMSAT_04pop_migLow", use.wd = TRUE)
+updatedMSAT_04pop_migLow.params <- fscWrite(demes = demes, genetics = genetics, events = events, migration = migration, label ="updatedMSAT_04pop_migLow", use.wd = TRUE)

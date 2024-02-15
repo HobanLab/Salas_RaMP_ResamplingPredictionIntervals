@@ -27,15 +27,20 @@ meanLocivec
 meanAllelevec
 
 # WRITING THE UPDATED PAR FILE ----
+# Double the population size
+rm(list = ls())
 setwd("C:/Users/gsalas/Desktop/fsc28_win64/RaMP_SimulationIntro_DemoParFiles/")
 
-deme0 <- fscDeme(deme.size = 600, sample.size = 4)
+deme0 <- fscDeme(deme.size = 600, sample.size = 600)
 
-demes <- fscSettingsDemes(deme0, ploidy = 2)
+demes <- fscSettingsDemes(deme0,deme0,deme0,deme0, ploidy = 2)
 
-events0 <- fscEvent(event.time = 5e4, source = 0, sink = 0, prop.migrants = 1, new.size = 1, new.growth = 0, migr.mat = 4)
+events0 <- fscEvent(event.time = 5e4, source = 0, sink = 0, prop.migrants = 0, new.size = 1, new.growth = 0, migr.mat = 1)
+events1 <- fscEvent(event.time = 5e4, source = 1, sink = 0, prop.migrants = 1, new.size = 1, new.growth = 0, migr.mat = 1)
+events2 <- fscEvent(event.time = 5e4, source = 2, sink = 0, prop.migrants = 1, new.size = 1, new.growth = 0, migr.mat = 1)
+events3 <- fscEvent(event.time = 5e4, source = 3, sink = 0, prop.migrants = 1, new.size = 1, new.growth = 0, migr.mat = 1)
 
-events <- fscSettingsEvents(events)
+events <- fscSettingsEvents(events0, events1, events2, events3)
 
 migmat1 <- matrix(data = c(0, 0.001, 0.001, 0.001,
                 0.001, 0, 0.001, 0.001,
@@ -46,10 +51,42 @@ migmat2 <- matrix(data = c(0, 0, 0, 0,
                            0, 0, 0, 0,
                            0, 0, 0, 0), nrow = 4, ncol = 4)
 
-migration <- fscSettingsMigration(migmat1, migmat2)
+migration <- fscSettingsMigration(migmat1,migmat2)
+
+msats <- fscBlock_microsat(num.loci = 1, recomb.rate = 0, mut.rate = 1e-3)
+
+genetics <- fscSettingsGenetics(msats, num.chrom = 20)
+
+updatedMSAT_04pop_migLowdoubledPop.params <- fscWrite(demes = demes, genetics = genetics, events = events, migration = migration, label ="MSAT_04pop_migLow_doubledPop", use.wd = TRUE)
+
+# Add five more loci
+rm(list = ls())
+setwd("C:/Users/gsalas/Desktop/fsc28_win64/RaMP_SimulationIntro_DemoParFiles/")
+
+deme0 <- fscDeme(deme.size = 300, sample.size = 300)
+
+demes <- fscSettingsDemes(deme0,deme0,deme0,deme0, ploidy = 2)
+
+events0 <- fscEvent(event.time = 5e4, source = 0, sink = 0, prop.migrants = 0, new.size = 1, new.growth = 0, migr.mat = 1)
+events1 <- fscEvent(event.time = 5e4, source = 1, sink = 0, prop.migrants = 1, new.size = 1, new.growth = 0, migr.mat = 1)
+events2 <- fscEvent(event.time = 5e4, source = 2, sink = 0, prop.migrants = 1, new.size = 1, new.growth = 0, migr.mat = 1)
+events3 <- fscEvent(event.time = 5e4, source = 3, sink = 0, prop.migrants = 1, new.size = 1, new.growth = 0, migr.mat = 1)
+
+events <- fscSettingsEvents(events0, events1, events2, events3)
+
+migmat1 <- matrix(data = c(0, 0.001, 0.001, 0.001,
+                           0.001, 0, 0.001, 0.001,
+                           0.001, 0.001, 0, 0.001,
+                           0.001, 0.001, 0.001, 0), nrow = 4, ncol = 4)
+migmat2 <- matrix(data = c(0, 0, 0, 0,
+                           0, 0, 0, 0,
+                           0, 0, 0, 0,
+                           0, 0, 0, 0), nrow = 4, ncol = 4)
+
+migration <- fscSettingsMigration(migmat1,migmat2)
 
 msats <- fscBlock_microsat(num.loci = 1, recomb.rate = 0, mut.rate = 1e-3)
 
 genetics <- fscSettingsGenetics(msats, num.chrom = 25)
 
-updatedMSAT_04pop_migLow.params <- fscWrite(demes = demes, genetics = genetics, events = events, migration = migration, label ="updatedMSAT_04pop_migLow", use.wd = TRUE)
+MSAT_04pop_migLow5Loci.params <- fscWrite(demes = demes, genetics = genetics, events = events, migration = migration, label ="MSAT_04pop_migLow_5Loci", use.wd = TRUE)

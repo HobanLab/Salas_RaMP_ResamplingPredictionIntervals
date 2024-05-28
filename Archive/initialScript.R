@@ -141,6 +141,8 @@ lines(upper95, col = "red",lwd = 2, lty = "dashed")
 lines(lower95, col = "green",lwd = 2, lty = "dashed")
 abline(h = 0.95, lty = "dotted", col = "orange")
 abline(v = min(which(meanRepValues > 0.95)), lty = "dotted", col = "orange")
+# abline(v = min(which(upper95 > 0.95)), lty = "dotted", col="red")
+# abline(v = min(which(lower95 > 0.95)), lty = "dotted", col="green")
 legend(250, 0.7, legend = leg.txt,
        fill = c("black", "red", "green"))
 
@@ -304,3 +306,152 @@ for (i in 1:14) {
   }
 }
 dev.off()
+
+
+# 04/22/2024
+# Set work directory by adding path file 
+setwd("C:/Users/gsalas/Documents/resampling_CIs/Code/")
+
+# Load dataset into environment
+load("Datasets/quercus_final_results_orig.Rdata")
+# now, we want to declare a higher dimension object for the 14 slices (spp.) of the array for the 3 vectors
+# create a vector of the 14 species names abbreviated
+species_name <- c("QUAC","QUAR","QUAU", "QUBO","QUCA","QUCE","QUEN","QUGE","QUGR","QUHA","QUHI","QUOG","QUPA", "QUTO")
+# create an array to store the outputs for each species
+calcs_for_quercus14 <- array(dim = c(500,4,14))
+# dimnames will create descriptions you can use instead of numbers when subsetting calcs_for_quercus14
+dimnames(calcs_for_quercus14)<-list(paste0("sample",1:500),c("meanRepValues","upper95","lower95","ciwidth"), species_name)
+meanRepValues <- vector()
+upper95 <- vector()
+lower95 <- vector()
+for (q in 1:14) {
+  for (i in 1:nrow(final_quercus_results)) {
+    # 
+    meanRepValues[i] <- mean(final_quercus_results[i,,q])
+    upper95[i] <- quantile(final_quercus_results[i,,q],0.95)
+    lower95[i] <- quantile(final_quercus_results[i,,q],0.05)
+    CIwidth <- upper95 - lower95
+  }
+  # Bind vectors together into a matrix
+  speciesMat <- cbind(meanRepValues, upper95, lower95, CIwidth)
+  # Pass the matrices into a slot of the array
+  calcs_for_quercus14[,,q] <- speciesMat
+}
+str(calcs_for_quercus14)
+# Three species confidence interval plots
+#
+# imagesDirectory is an object that is a designated file path you use to paste images of plots
+imagesDirectory <- "C:/Users/gsalas/Documents/resampling_CIs/Code/Images/"
+# create pdf using pdf(), specify the file path by pasting images directory with the .pdf title of your plot and specify dimensions
+pdf(file=paste0(imagesDirectory, "CPCposter3CIplots.pdf"), width = 11, height = 4)
+# png(file=paste0(imagesDirectory, "test.png"), units = "in", width = 11, height = 4, res = 300)
+# create pdf using pdf(), specify the file path by pasting images directory with the .pdf title
+# x <- calcs_for_quercus14
+# par(mfrow=c(1,2), omi=c(0,0,0,0))
+# plot(xlab = "", ylab = "", x[,,1][,"meanRepValues"], xlim = c(0,525), ylim = c(0,1), pch=16, col='blue')
+# abline(h = 0.95, lty = "dotted", col = "pink", lwd = 2)
+# lines(x[,,1][,"upper95"], col = "blue",lwd = 2, lty = "dashed")
+# lines(x[,,1][,"lower95"], col = "blue",lwd = 2, lty = "dashed")
+# points(xlab = "", ylab = "", x[,,2][,"meanRepValues"], xlim = c(0,525), ylim = c(0,1), pch=16, col = 'red')
+# lines(x[,,2][,"upper95"], col = "red",lwd = 2, lty = "dashed")
+# lines(x[,,2][,"lower95"], col = "red",lwd = 2, lty = "dashed")
+# points(xlab = "", ylab = "", x[,,7][,"meanRepValues"], xlim = c(0,525), ylim = c(0,1), pch=16, col = 'orange')
+# lines(x[,,7][,"upper95"], col = "orange",lwd = 2, lty = "dashed")
+# lines(x[,,7][,"lower95"], col = "orange",lwd = 2, lty = "dashed")
+# plot(xlab = "", ylab = "", x[,,1][,"meanRepValues"], xlim = c(0,525), ylim = c(0.6,1), pch=16, col='blue')
+# abline(h = 0.95, lty = "dotted", col = "pink", lwd = 2)
+# lines(x[,,1][,"upper95"], col = "blue",lwd = 2, lty = "dashed")
+# lines(x[,,1][,"lower95"], col = "blue",lwd = 2, lty = "dashed")
+# points(xlab = "", ylab = "", x[,,2][,"meanRepValues"], pch=16, col = 'red')
+# lines(x[,,2][,"upper95"], col = "red",lwd = 2, lty = "dashed")
+# lines(x[,,2][,"lower95"], col = "red",lwd = 2, lty = "dashed")
+# points(xlab = "", ylab = "", x[,,7][,"meanRepValues"], pch=16, col = 'orange')
+# lines(x[,,7][,"upper95"], col = "orange",lwd = 2, lty = "dashed")
+# lines(x[,,7][,"lower95"], col = "orange",lwd = 2, lty = "dashed")
+# # Label for x-axis
+# mtext("Proportion of allelic representation", side = 2, line = -1.5, outer=TRUE)
+# # # Label for y-axis
+# mtext("Number of randomly sampled individuals", side = 1, line = -2, outer = TRUE)
+# legend("bottomright", legend = c("Q. acerifolia", "Q. boyntonii", "Q. engelmannii", "Confidence intervals"),
+#        xpd = NA,
+#        cex = 3,
+#        col = c("blue", 'red', 'orange', "black"),
+#        lty = c(NA,NA,NA,"dashed"),
+#        pch = c(16,16,16,NA))
+# dev.off()
+
+# plot.new()
+imagesDirectory <- "C:/Users/gsalas/Documents/resampling_CIs/Code/Images/"
+png(file=paste0(imagesDirectory, "3CIplotCPC2024.png"), units = "in", width = 13.05, height = 5.57, res = 300)
+dev.new()
+x <- calcs_for_quercus14
+min_95totavg<-(min(which(x[,,1] > 0.95)))
+upperbound <- (min(which(x[,,1][,"upper95"] > 0.95)))
+lowerbound <- (min(which(x[,,1][,"lower95"] > 0.95)))
+par(mfrow=c(1,2), omi=c(0,0,0,0))
+# par("mar" = c(0,0,0,0))
+plot(xlab = "", ylab = "", x[,,1][,"meanRepValues"], xlim = c(0,525), ylim = c(0,1), pch=16, col='blue')
+lines(x[,,1][,"upper95"], col = "blue",lwd = 2, lty = "dashed")
+lines(x[,,1][,"lower95"], col = "blue",lwd = 2, lty = "dashed")
+points(xlab = "", ylab = "", x[,,2][,"meanRepValues"], xlim = c(0,525), ylim = c(0,1), pch=16, col = 'red')
+lines(x[,,2][,"upper95"], col = "red",lwd = 2, lty = "dashed")
+lines(x[,,2][,"lower95"], col = "red",lwd = 2, lty = "dashed")
+points(xlab = "", ylab = "", x[,,7][,"meanRepValues"], xlim = c(0,525), ylim = c(0,1), pch=16, col = 'orange')
+lines(x[,,7][,"upper95"], col = "orange",lwd = 2, lty = "dashed")
+lines(x[,,7][,"lower95"], col = "orange",lwd = 2, lty = "dashed")
+abline(h = 0.95, lty = "dotted", col = "pink", lwd = 2)
+legend(x = 300, y = 0.25, legend = c("Q. acerifolia", "Q. boyntonii", "Q. engelmannii", "Confidence intervals"),
+       xpd = NA,
+       cex = 1,
+       col = c("blue", 'red', 'orange', "black"),
+       lty = c(NA,NA,NA,"dashed"),
+       pch = c(16,16,16,NA))
+plot(xlab = "", ylab = "", x[,,1][,"meanRepValues"], xlim = c(0,525), ylim = c(0.6,1), pch=16, col='blue')
+lines(x[,,1][,"upper95"], col = "blue",lwd = 2, lty = "dashed")
+lines(x[,,1][,"lower95"], col = "blue",lwd = 2, lty = "dashed")
+points(xlab = "", ylab = "", x[,,2][,"meanRepValues"], pch=16, col = 'red')
+lines(x[,,2][,"upper95"], col = "red",lwd = 2, lty = "dashed")
+lines(x[,,2][,"lower95"], col = "red",lwd = 2, lty = "dashed")
+points(xlab = "", ylab = "", x[,,7][,"meanRepValues"], pch=16, col = 'orange')
+lines(x[,,7][,"upper95"], col = "orange",lwd = 2, lty = "dashed")
+lines(x[,,7][,"lower95"], col = "orange",lwd = 2, lty = "dashed")
+abline(h = 0.95, lty = "dotted", col = "pink", lwd = 2)
+text(x = 300, y = 0.7, paste("Q. acerifolia MSSE = ", min_95totavg, "individuals ", "CI [",upperbound,', ',lowerbound,']'), col="blue", cex = 1)
+# Label for x-axis
+mtext("Proportion of allelic representation", cex = 1,side = 2, line = -2, outer=TRUE)
+# # Label for y-axis
+mtext("Number of randomly sampled individuals", cex = 1, side = 1, line = -2, outer = TRUE)
+dev.off()
+
+
+
+upper95 <- vector()
+lower95 <- vector()
+CImatrix <- matrix(nrow = 14, ncol = 3)
+rownames(CImatrix) <- dimnames(calcs_for_quercus14)[[3]]
+colnames(CImatrix) <- c("MSSE", "Lower", "Upper")
+for (q in 1:14) {
+  min_95totavg <-(min(which(x[,,q] > 0.95)))
+  lowerbound <- (min(which(x[,,q][,"lower95"] > 0.95)))
+  upperbound <- (min(which(x[,,q][,"upper95"] > 0.95)))
+  CImatrix[q,] <- cbind(min_95totavg, upperbound, lowerbound)
+}
+CImatrix[is.infinite(CImatrix)]<-NA  
+setwd(paste0(wd,"/Outputs"))
+getwd()
+write.csv(CImatrix, file = "Quercus14_CI_values.csv")
+
+for (i in 1:nrow(final_quercus_results)) {
+    # 
+    meanRepValues[i] <- mean(final_quercus_results[i,,q])
+    upper95[i] <- upperbound <- (min(which(x[,,q][,"upper95"] > 0.95)))
+
+    lower95[i] <- quantile(final_quercus_results[i,,q],0.05)
+    CIwidth <- upper95 - lower95
+  }
+  # Bind vectors together into a matrix
+  speciesMat <- cbind(meanRepValues, upper95, lower95, CIwidth)
+  # Pass the matrices into a slot of the array
+  calcs_for_quercus14[,,q] <- speciesMat
+}
+

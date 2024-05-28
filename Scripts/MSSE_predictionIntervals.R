@@ -1,7 +1,7 @@
 #####################################################################
 # 2023/09/28 Predict function over multiple genetic marker datasets #
 #####################################################################
-setwd("C:/Users/gsalas/Documents/resampling_CIs/Code/Datasets")
+setwd("C:/Users/gsalas/Documents/resampling_CIs/Code/Datasets/QUAC_Subset_resampArrs")
 datasets <- list.files(path = "Subset", pattern = "Arr.Rdata", full.names =  TRUE)
 #gm stands for genetic marker. 
 # read in datasets
@@ -65,13 +65,13 @@ for (q in 1:(dim(final_quercus_results)[3])) {
   # Pass the gm_95MSSEprediction to the object storing our results by iterating
   # storing them in the rows index of predict_matrix
   quercus14_predict_Matrix[q,] <- quercus14_95MSSEprediction
-  ciWidth <- vector()
+  piWidth <- vector()
   for (z in 1:(nrow(quercus14_predict_Matrix))) {
-    ciWidth[z] <- quercus14_predict_Matrix[z,3] - quercus14_predict_Matrix[z,2]
+    piWidth[z] <- quercus14_predict_Matrix[z,3] - quercus14_predict_Matrix[z,2]
   } 
 }
 colnames(quercus14_predict_Matrix) <- c("fit", "lwr", "upr")
 rownames(quercus14_predict_Matrix) <- c("QUAC","QUAR","QUAU", "QUBO","QUCA","QUCE","QUEN","QUGE","QUGR","QUHA","QUHI","QUOG","QUPA", "QUTO")
-q14Matrix <- cbind(quercus14_predict_Matrix, ciWidth)
+q14Matrix <- cbind(quercus14_predict_Matrix, piWidth)
 write.csv(q14Matrix, file = "C:/Users/gsalas/Documents/resampling_CIs/Code/Outputs/Quercus14_PI_values.csv", 
           row.names = TRUE)

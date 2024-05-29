@@ -5,6 +5,8 @@ Images
 exploringAdegenet.R
 code_walkthrough.Rmd
 resamplingwalkthru.R
+exampleSimulation.R
+testscript.R
 # QUAC scripts
 MSATalleleCategory.R
 SNPcomalleleCategory.R
@@ -15,3 +17,5 @@ QUAC.SNP.DN.R0.Complete_resampArr.Rdata
 QUAC.SNP.DN.R80.Subset_resampArr.Rdata
 # Output
 datasetCIwidths.csv
+# Dataset
+drive-download-20240425T160007Z-001.zip

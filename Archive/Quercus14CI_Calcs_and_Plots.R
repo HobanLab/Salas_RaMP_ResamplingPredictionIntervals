@@ -338,6 +338,8 @@ for (q in 1:14) {
   calcs_for_quercus14[,,q] <- speciesMat
 }
 str(calcs_for_quercus14)
+getwd()
+saveRDS(calcs_for_quercus14, "C:/Users/gsalas/Documents/resampling_CIs/Code/Outputs/calcs_for_quercus14.Rdata")
 # Three species confidence interval plots
 #
 # imagesDirectory is an object that is a designated file path you use to paste images of plots
@@ -424,34 +426,34 @@ mtext("Number of randomly sampled individuals", cex = 1, side = 1, line = -2, ou
 dev.off()
 
 
-
-upper95 <- vector()
-lower95 <- vector()
-CImatrix <- matrix(nrow = 14, ncol = 3)
+x <- calcs_for_quercus14
+# upper95 <- vector()
+# lower95 <- vector()
+CImatrix <- matrix(nrow = 14, ncol = 4)
 rownames(CImatrix) <- dimnames(calcs_for_quercus14)[[3]]
-colnames(CImatrix) <- c("MSSE", "Lower", "Upper")
+colnames(CImatrix) <- c("MSSE", "Lower", "Upper", "CIWidth")
 for (q in 1:14) {
-  min_95totavg <-(min(which(x[,,q] > 0.95)))
+  min_95totavg <-(min(which(x[,,q][,"meanRepValues"]>0.95)))
   lowerbound <- (min(which(x[,,q][,"lower95"] > 0.95)))
   upperbound <- (min(which(x[,,q][,"upper95"] > 0.95)))
-  CImatrix[q,] <- cbind(min_95totavg, upperbound, lowerbound)
+  ciwidth <- lowerbound - upperbound
+  CImatrix[q,] <- cbind(min_95totavg, upperbound, lowerbound, ciwidth)
 }
 CImatrix[is.infinite(CImatrix)]<-NA  
-setwd(paste0(wd,"/Outputs"))
 getwd()
-write.csv(CImatrix, file = "Quercus14_CI_values.csv")
+write.csv(CImatrix, file = "Outputs/Quercus14_CI_values.csv")
 
-for (i in 1:nrow(final_quercus_results)) {
-    # 
-    meanRepValues[i] <- mean(final_quercus_results[i,,q])
-    upper95[i] <- upperbound <- (min(which(x[,,q][,"upper95"] > 0.95)))
-
-    lower95[i] <- quantile(final_quercus_results[i,,q],0.05)
-    CIwidth <- upper95 - lower95
-  }
-  # Bind vectors together into a matrix
-  speciesMat <- cbind(meanRepValues, upper95, lower95, CIwidth)
-  # Pass the matrices into a slot of the array
-  calcs_for_quercus14[,,q] <- speciesMat
-}
+# for (i in 1:nrow(final_quercus_results)) {
+#     # 
+#     meanRepValues[i] <- mean(final_quercus_results[i,,q])
+#     upper95[i] <- upperbound <- (min(which(x[,,q][,"upper95"] > 0.95)))
+# 
+#     lower95[i] <- quantile(final_quercus_results[i,,q],0.05)
+#     CIwidth <- upper95 - lower95
+#   }
+#   # Bind vectors together into a matrix
+#   speciesMat <- cbind(meanRepValues, upper95, lower95, CIwidth)
+#   # Pass the matrices into a slot of the array
+#   calcs_for_quercus14[,,q] <- speciesMat
+# }
 

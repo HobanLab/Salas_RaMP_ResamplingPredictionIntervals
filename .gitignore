@@ -6,6 +6,7 @@ exploringAdegenet.R
 code_walkthrough.Rmd
 resamplingwalkthru.R
 exampleSimulation.R
+RaMP_SimulationIntro.R
 testscript.R
 # QUAC scripts
 MSATalleleCategory.R

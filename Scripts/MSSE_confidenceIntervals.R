@@ -171,6 +171,23 @@ for (q in 1:14) {
   calcs_for_quercus14[,,q] <- speciesMat
 }
 str(calcs_for_quercus14)
+saveRDS(calcs_for_quercus14, "C:/Users/gsalas/Documents/resampling_CIs/Code/Outputs/calcs_for_quercus14.Rdata")
+x <- calcs_for_quercus14
+# upper95 <- vector()
+# lower95 <- vector()
+CImatrix <- matrix(nrow = 14, ncol = 4)
+rownames(CImatrix) <- dimnames(x)[[3]]
+colnames(CImatrix) <- c("MSSE", "Lower", "Upper", "CIWidth")
+for (q in 1:14) {
+  min_95totavg <-(min(which(x[,,q][,"meanRepValues"]>0.95)))
+  lowerbound <- (min(which(x[,,q][,"lower95"] > 0.95)))
+  upperbound <- (min(which(x[,,q][,"upper95"] > 0.95)))
+  ciwidth <- lowerbound - upperbound
+  CImatrix[q,] <- cbind(min_95totavg, upperbound, lowerbound, ciwidth)
+}
+CImatrix[is.infinite(CImatrix)]<-NA  
+getwd()
+write.csv(CImatrix, file = "Outputs/Quercus14_CI_values.csv")
 
 # imagesDirectory is an object that is a designated file path you use to paste images of plots
 imagesDirectory <- "C:/Users/gsalas/Documents/resampling_CIs/Code/Images/"
@@ -308,38 +325,7 @@ for (i in 1:14) {
 dev.off()
 
 
-# 04/22/2024
-# Set work directory by adding path file 
-setwd("C:/Users/gsalas/Documents/resampling_CIs/Code/")
-
-# Load dataset into environment
-load("Datasets/quercus_final_results_orig.Rdata")
-# now, we want to declare a higher dimension object for the 14 slices (spp.) of the array for the 3 vectors
-# create a vector of the 14 species names abbreviated
-species_name <- c("QUAC","QUAR","QUAU", "QUBO","QUCA","QUCE","QUEN","QUGE","QUGR","QUHA","QUHI","QUOG","QUPA", "QUTO")
-# create an array to store the outputs for each species
-calcs_for_quercus14 <- array(dim = c(500,4,14))
-# dimnames will create descriptions you can use instead of numbers when subsetting calcs_for_quercus14
-dimnames(calcs_for_quercus14)<-list(paste0("sample",1:500),c("meanRepValues","upper95","lower95","ciwidth"), species_name)
-meanRepValues <- vector()
-upper95 <- vector()
-lower95 <- vector()
-for (q in 1:14) {
-  for (i in 1:nrow(final_quercus_results)) {
-    # 
-    meanRepValues[i] <- mean(final_quercus_results[i,,q])
-    upper95[i] <- quantile(final_quercus_results[i,,q],0.95)
-    lower95[i] <- quantile(final_quercus_results[i,,q],0.05)
-    CIwidth <- upper95 - lower95
-  }
-  # Bind vectors together into a matrix
-  speciesMat <- cbind(meanRepValues, upper95, lower95, CIwidth)
-  # Pass the matrices into a slot of the array
-  calcs_for_quercus14[,,q] <- speciesMat
-}
-str(calcs_for_quercus14)
-getwd()
-saveRDS(calcs_for_quercus14, "C:/Users/gsalas/Documents/resampling_CIs/Code/Outputs/calcs_for_quercus14.Rdata")
+# 04/22/2022
 # Three species confidence interval plots
 #
 # imagesDirectory is an object that is a designated file path you use to paste images of plots
@@ -424,36 +410,3 @@ mtext("Proportion of allelic representation", cex = 1,side = 2, line = -2, outer
 # # Label for y-axis
 mtext("Number of randomly sampled individuals", cex = 1, side = 1, line = -2, outer = TRUE)
 dev.off()
-
-
-x <- calcs_for_quercus14
-# upper95 <- vector()
-# lower95 <- vector()
-CImatrix <- matrix(nrow = 14, ncol = 4)
-rownames(CImatrix) <- dimnames(calcs_for_quercus14)[[3]]
-colnames(CImatrix) <- c("MSSE", "Lower", "Upper", "CIWidth")
-for (q in 1:14) {
-  min_95totavg <-(min(which(x[,,q][,"meanRepValues"]>0.95)))
-  lowerbound <- (min(which(x[,,q][,"lower95"] > 0.95)))
-  upperbound <- (min(which(x[,,q][,"upper95"] > 0.95)))
-  ciwidth <- lowerbound - upperbound
-  CImatrix[q,] <- cbind(min_95totavg, upperbound, lowerbound, ciwidth)
-}
-CImatrix[is.infinite(CImatrix)]<-NA  
-getwd()
-write.csv(CImatrix, file = "Outputs/Quercus14_CI_values.csv")
-
-# for (i in 1:nrow(final_quercus_results)) {
-#     # 
-#     meanRepValues[i] <- mean(final_quercus_results[i,,q])
-#     upper95[i] <- upperbound <- (min(which(x[,,q][,"upper95"] > 0.95)))
-# 
-#     lower95[i] <- quantile(final_quercus_results[i,,q],0.05)
-#     CIwidth <- upper95 - lower95
-#   }
-#   # Bind vectors together into a matrix
-#   speciesMat <- cbind(meanRepValues, upper95, lower95, CIwidth)
-#   # Pass the matrices into a slot of the array
-#   calcs_for_quercus14[,,q] <- speciesMat
-# }
-

@@ -2,6 +2,7 @@ Images
 .RData
 .Rhistory
 # Tutorials and walkthroughs
+Categorydatasets.R
 exploringAdegenet.R
 code_walkthrough.Rmd
 resamplingwalkthru.R

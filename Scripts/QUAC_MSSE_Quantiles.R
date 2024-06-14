@@ -40,17 +40,19 @@ print(totalallelecat95lower)
 # create the file path to upload images
 imagesDirectory <- "C:/Users/gsalas/Documents/resampling_CIs/Code/Images/"
 # create a PDF file for plotting results
-pdf(file = paste0(imagesDirectory, "QUACMSATSubsettotalAllelecatPlot.pdf"))
+# pdf(file = paste0(imagesDirectory, "QUACMSATSubsettotalAllelecatPlot.pdf"), width = 11, height = 4)
+png(file=paste0(imagesDirectory, "QUACMSATSubsettotalAllelecatPlot.png"), units = "in", width = 11, height = 4, res = 300)
 # create a plot with the x-axis labeled "sample" and the y-axis labaled "Frequency%" and a title "MSAT Total category Confidence Interval"
-plot(xlab = "Sample", ylab = "Frequency%", main = "Q. acerifolia MSAT (Subset) Total Allele Category Confidence Interval",
+plot(xlab = "Number of samples", ylab = "Allelic representation (%)", main = "Q. acerifolia MSAT (Subset) Total Allele Category Confidence Interval",
      totalallelecatmean, col = "black", pch = 16)
+box("outer",lty = "solid", col="black")
 # add a dashed red line for the upper 95% confidence interval in red
 lines(totalallelecat95upper, col = "red", lwd = 2, lty = "dashed")
 # add a dashed blue line for the lower 95% confidence interval in blue
 lines(totalallelecat95lower, col = "blue", lwd = 2, lty = "dashed")
 # add a legend to the right of the plot
 leg.txt = c("total freq average", "upper 95% confidence interval", "lower 95% confidence interval")
-legend("right", 
+legend("bottomright", 
        legend = leg.txt, cex = 0.75,
        fill = c("black","red","blue"))
 # complete the PDF file
@@ -78,9 +80,11 @@ for (i in 1:nrow(QUAC_MSAT_Subset_resampArr)){
 # find the minimum sample which 'totalallelecatmean' is greater than 95
 min_95totavg<-(min(which(totalallelecatmean > 95)))
 # Create a PNG file for plotting results
-png(file = paste0(imagesDirectory, "QUACMSATSubsetallelecatmeanplot.png"))
+# pdf(file = paste0(imagesDirectory, "QUACMSATSubsetallelecatmeanplot.pdf"), width = 11, height = 4)
+# png(file = paste0(imagesDirectory, "QUACMSATSubsetallelecatmeanplot.png"), units = "in", width = 11, height = 4, res = 300)
 # Create a plot with the x-axis labeled "Sample", the y-axis labeled "Frequency%" and the title "MSAT Allele Category Averages"
-plot(xlab = "Sample", ylab = "Frequency %", main = "QUAC MSAT (Subset) Allele Category Averages", totalallelecatmean, pch = 16, ylim = c(0,100))
+plot(xlab = "Number of samples", ylab = "Allelic representation (%)", main = "Q. acerifolia MSAT (Subset) Allele Category Averages", totalallelecatmean, pch = 16, ylim = c(0,100))
+box("outer",lty = "solid", col="black")
 # Add points for different allele categories in different colors
 points(verycomallelecatmean, col="blue", pch = 16)
 points(comallelecatmean, col="green", pch = 16)
@@ -137,10 +141,12 @@ print(totalallelecat95lower)
 # create the file path to upload images
 imagesDirectory <- "C:/Users/gsalas/Documents/resampling_CIs/Code/Images/"
 # create a PDF file for plotting results
-pdf(file = paste0(imagesDirectory, "QUACSNPR0totalAllelecatPlot.pdf"))
+# pdf(file = paste0(imagesDirectory, "QUACSNPR0totalAllelecatPlot.pdf"), width = 11, height = 4)
+png(file = paste0(imagesDirectory, "QUACSNPR0totalAllelecatPlot.png"),units = "in", width = 11, height = 4, res = 300)
 # create a plot with the x-axis labeled "sample" and the y-axis labeled "Frequency%" and a title "SNP Subset Total Category Confidence Interval"
-plot(xlab = "Sample", ylab = "Frequency%", main = "Q. Acerifolia SNP R0 Subset  Total Category Confidence Interval",
+plot(xlab = "Number of samples", ylab = "Allelic representation (%)", main = "Q. Acerifolia SNP R0 (Complete) Total Category Confidence Interval",
      totalallelecatmean, col = "black", pch = 16)
+box("outer",lty = "solid", col="black")
 # add a dashed red line for the upper 95% confidence interval in red
 lines(totalallelecat95upper, col = "red", lwd = 2, lty = "dashed")
 # add a dashed blue line for the lower 95% confidence interval in blue
@@ -175,9 +181,10 @@ for (i in 1:nrow(QUAC_SNP_R0_Subset_resampArr)) {
 # find the minimum sample which 'totalallelecatmean' is greater than 95
 min_95totavg<-(min(which(totalallelecatmean > 95)))
 # Create a PNG file for plotting results
-png(file = paste0(imagesDirectory, width = 8, height = 11, units="in", "QUACSNPR0Subsetallelecatmeanplot.png"))
+png(file = paste0(imagesDirectory, "QUACSNPR0Subsetallelecatmeanplot.png"), units="in", width = 11, height = 4, res = 300)
 # Create a plot with the x-axis labeled "Sample", the y-axis labeled "Frequency%" and the title "SNP Complete Allele Category Averages"
-plot(xlab = "Sample", ylab = "Frequency %", main = "SNP Complete Allele Category Averages", totalallelecatmean, pch = 16, ylim = c(0,100))
+plot(xlab = "Number of samples", ylab = "Allelic representation (%)", main = "Q. Acerifolia SNP R0 (Complete) Allele Category Averages", totalallelecatmean, pch = 16, ylim = c(0,100))
+box("outer",lty = "solid", col="black")
 # Add points for different allele categories in different colors
 points(verycomallelecatmean, col="blue", pch = 16)
 points(comallelecatmean, col="green", pch = 16)
@@ -232,11 +239,12 @@ print(totalallelecat95lower)
 # create the file path to upload images
 imagesDirectory <- "C:/Users/gsalas/Documents/resampling_CIs/Code/Images/"
 # create a PDF file for plotting results
-pdf(file = paste0(imagesDirectory, "QUACSNPR80SubsettotalAllelecatPlot.pdf"))
+# pdf(file = paste0(imagesDirectory, "QUACSNPR80SubsettotalAllelecatPlot.pdf"))
+png(file = paste0(imagesDirectory, "QUACSNPR80SubsettotalAllelecatPlot.png"), units = "in", width = 11, height = 4, res = 300)
 # create a plot with the x-axis labeled "sample" and the y-axis labaled "Frequency%" and a title "SNP Subset Total Category Confidence Interval"
-
-plot(xlab = "Sample", ylab = "Frequency%", main = "SNP R80 Subset Total Category Confidence Interval",
+plot(xlab = "Number of samples", ylab = "Allelic representation (%)", main = "Q. acerifolia SNP R80 (Subset) Total Category Confidence Interval",
      totalallelecatmean, col = "black", pch = 16)
+box("outer",lty = "solid", col="black")
 # add a dashed red line for the upper 95% confidence interval in red
 lines(totalallelecat95upper, col = "red", lwd = 2, lty = "dashed")
 # add a dashed blue line for the lower 95% confidence interval in blue
@@ -271,9 +279,11 @@ for (i in 1:nrow(QUAC_SNP_R80_Subset_resampArr)) {
 # find the minimum sample which 'totalallelecatmean' is greater than 95
 min_95totavg<-(min(which(totalallelecatmean > 95)))
 # Create a PDF file for plotting results
-pdf(file = paste0(imagesDirectory, "QUACSNPR80allelecatmeanplot.pdf"))
+# pdf(file = paste0(imagesDirectory, "QUACSNPR80allelecatmeanplot.pdf"))
+png(file = paste0(imagesDirectory, "QUACSNPR80allelecatmeanplot.png"), units = "in", width = 11, height = 4, res = 300)
 # Create a plot with the x-axis labeled "Sample", the y-axis labeled "Frequency%" and the title "SNP Subset Allele Category Averages"
-plot(xlab = "Sample", ylab = "Frequency %", main = "SNP Subset Allele Category Averages", totalallelecatmean, pch = 16, ylim = c(0,100))
+plot(xlab = "Number of samples", ylab = "Allelic representation (%)", main = "Q. acerifolia SNP R80 (Subset) Allele Category Averages", totalallelecatmean, pch = 16, ylim = c(0,100))
+box("outer",lty = "solid", col="black")
 # Add points for different allele categories in different colors
 points(verycomallelecatmean, col="blue", pch = 16)
 points(comallelecatmean, col="green", pch = 16)

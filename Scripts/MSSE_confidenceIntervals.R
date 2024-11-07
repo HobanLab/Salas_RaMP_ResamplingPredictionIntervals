@@ -105,6 +105,17 @@ legend(650, 250, legend = leg.txt,
        fill = c("black"))
 
 # IDEA 2
+# Declare a vector to capture the average allelic representation values
+meanRepValues <- vector()
+# Calculate the average allelic representation values across replicates, for each row of the 
+# resampling array
+for(i in 1:nrow(final_quercus_results)){
+  meanRepValues[i] <- mean(final_quercus_results[i,,1])
+}
+# Find the minimum number of samples for which the average allelic representation is greater 
+# than 0.95
+min(which(meanRepValues > 0.95))
+
 p<-1
 # this shows the genetic diversity value in 95 percentile of the values across the replicates for a sample size of one for species one
 quantile(final_quercus_results[p,,1],0.95)
@@ -158,7 +169,7 @@ meanRepValues <- vector()
 upper95 <- vector()
 lower95 <- vector()
 for (q in 1:14) {
-  for (i in 1:nrow(final_quercus_results)) {
+  for (i in 1:nrow(final_quercus_results[,,q])) {
     # 
     meanRepValues[i] <- mean(final_quercus_results[i,,q])
     upper95[i] <- quantile(final_quercus_results[i,,q],0.95)
